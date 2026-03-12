@@ -1,0 +1,310 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1080, initial-scale=1.0" />
+<title>SMJ Whatnot Top Overlay</title>
+<style>
+:root{
+  --bg1: rgba(5,10,22,.96);
+  --bg2: rgba(7,18,38,.94);
+  --line: rgba(255,255,255,.12);
+  --text:#f5f7fb;
+  --muted:#b8c2d9;
+  --accent:#61b8ff;
+}
+html,body{
+  margin:0;padding:0;width:1080px;height:720px;overflow:hidden;
+  font-family:Montserrat,Arial,sans-serif;background:transparent;color:var(--text);
+}
+.overlay{
+  width:1080px;height:720px;
+  display:grid;
+  grid-template-rows:90px 1fr 48px;
+  gap:6px;padding:6px;box-sizing:border-box;
+}
+.header,.team-wrap,.ticker{
+  background:linear-gradient(180deg,var(--bg2),var(--bg1));
+  border-radius:16px;border:1px solid var(--line);
+  overflow:hidden;
+}
+.header{
+  display:grid;
+  grid-template-columns:90px 1fr 210px;
+  align-items:center;
+  padding:8px 14px;
+}
+.logo img{width:70px;height:70px;object-fit:contain;display:block;}
+#title{
+  position:relative;
+  overflow:hidden;
+  font-size:34px;font-weight:1000;text-align:center;
+}
+#title span{
+  display:inline-block;
+  white-space:nowrap;
+  padding-left:100%;
+  animation:titleScroll 12s linear infinite;
+}
+@keyframes titleScroll{
+  from{transform:translateX(0)}
+  to{transform:translateX(-100%)}
+}
+.counter-wrap{display:flex;justify-content:flex-end;}
+.counter{
+  min-width:170px;
+  text-align:center;
+  padding:8px 10px;
+  border-radius:14px;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.1);
+}
+.counter .label{
+  font-size:11px;font-weight:800;letter-spacing:1px;color:var(--muted);
+}
+.counter .value{
+  margin-top:2px;font-size:30px;font-weight:1000;line-height:1;
+}
+.counter.bump .value{animation:counterPop .35s ease-out;}
+@keyframes counterPop{
+  0%{transform:scale(.82);}
+  60%{transform:scale(1.12);}
+  100%{transform:scale(1);}
+}
+.team-wrap{padding:8px;box-sizing:border-box;}
+.teams-grid{
+  height:100%;
+  display:grid;
+  grid-template-columns:repeat(8,1fr);
+  grid-template-rows:repeat(4,1fr);
+  gap:6px;
+}
+.team{
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.05);
+  border-radius:10px;border:1px solid rgba(255,255,255,.08);
+  position:relative;overflow:hidden;
+}
+.team img{
+  width:72%;height:72%;object-fit:contain;display:block;
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,.28));
+}
+.team.sold img{
+  filter:grayscale(100%) brightness(.45);
+  opacity:.75;
+}
+.team.sold::after{
+  content:"✕";
+  position:absolute;
+  top:50%;left:50%;
+  transform:translate(-50%,-56%);
+  font-size:40px;font-weight:1000;color:red;
+  text-shadow:0 0 12px rgba(255,0,0,.88);
+  pointer-events:none;
+}
+.team.flash{animation:tileFlash .4s ease-out;}
+@keyframes tileFlash{
+  0%{box-shadow:0 0 0 rgba(97,184,255,0);}
+  50%{box-shadow:0 0 18px rgba(97,184,255,.55);}
+  100%{box-shadow:0 0 0 rgba(97,184,255,0);}
+}
+.team-code{
+  position:absolute;top:4px;left:6px;
+  font-size:11px;font-weight:900;letter-spacing:.4px;
+  text-shadow:0 1px 3px rgba(0,0,0,.55);
+}
+.team-initials{
+  position:absolute;
+  bottom:4px;left:50%;
+  transform:translateX(-50%);
+  font-size:11px;font-weight:900;
+  color:var(--text);
+  background:rgba(4,10,22,.88);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:999px;
+  padding:2px 8px;
+  max-width:88%;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.ticker{
+  display:flex;align-items:center;overflow:hidden;padding:8px 12px;box-sizing:border-box;
+}
+.ticker-label{
+  flex:0 0 auto;
+  margin-right:10px;
+  font-size:12px;font-weight:900;letter-spacing:1px;color:var(--muted);
+}
+.ticker-track{min-width:0;overflow:hidden;width:100%;}
+#tickerText{
+  white-space:nowrap;
+  display:inline-block;
+  padding-left:100%;
+  animation:ticker 24s linear infinite;
+  font-size:18px;font-weight:900;
+}
+@keyframes ticker{
+  from{transform:translateX(0)}
+  to{transform:translateX(-100%)}
+}
+.status-note{
+  position:absolute;
+  right:10px;
+  bottom:10px;
+  font-size:11px;
+  color:rgba(255,255,255,.55);
+}
+</style>
+</head>
+<body>
+<div class="overlay">
+  <div class="header">
+    <div class="logo"><img src="Logo Master.png" alt="SMJ Logo"></div>
+    <div id="title"><span>NFL BREAK NIGHT</span></div>
+    <div class="counter-wrap">
+      <div class="counter" id="counterBox">
+        <div class="label">TEAMS SOLD</div>
+        <div class="value"><span id="soldCount">0</span>/32</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="team-wrap">
+    <div class="teams-grid" id="grid"></div>
+  </div>
+
+  <div class="ticker">
+    <div class="ticker-label">LIVE</div>
+    <div class="ticker-track">
+      <div id="tickerText">Welcome to SMJ Sports Cards & Collectibles!</div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
+
+const TEAM_DATA = [
+  ['ari','ARI'],['atl','ATL'],['bal','BAL'],['buf','BUF'],['car','CAR'],['chi','CHI'],['cin','CIN'],['cle','CLE'],
+  ['dal','DAL'],['den','DEN'],['det','DET'],['gb','GB'],['hou','HOU'],['ind','IND'],['jax','JAX'],['kc','KC'],
+  ['lv','LV'],['lac','LAC'],['lar','LAR'],['mia','MIA'],['min','MIN'],['ne','NE'],['no','NO'],['nyg','NYG'],
+  ['nyj','NYJ'],['phi','PHI'],['pit','PIT'],['sea','SEA'],['sf','SF'],['tb','TB'],['ten','TEN'],['was','WAS']
+];
+
+// Paste the same Firebase config into BOTH files.
+const firebaseConfig = {
+  apiKey: "PASTE_YOURS",
+  authDomain: "PASTE_YOURS",
+  databaseURL: "PASTE_YOURS",
+  projectId: "PASTE_YOURS",
+  storageBucket: "PASTE_YOURS",
+  messagingSenderId: "PASTE_YOURS",
+  appId: "PASTE_YOURS"
+};
+
+// Change this only if you want a different shared room/state key.
+const STATE_PATH = "overlayState/main";
+
+const stateDefaults = {
+  title: "NFL BREAK NIGHT",
+  soldTeams: {},
+  tickerMode: "assignments",
+  defaultTicker: "Welcome to SMJ Sports Cards & Collectibles!"
+};
+
+let state = structuredClone(stateDefaults);
+let lastSoldCount = 0;
+let lastSerialized = "";
+
+function initials(name){
+  if(!name) return "";
+  const cleaned = name.trim().split(/\s+/).filter(Boolean);
+  if(cleaned.length === 1) return cleaned[0].slice(0,3).toUpperCase();
+  return cleaned.slice(0,2).map(x => x[0].toUpperCase()).join('');
+}
+function buildAssignmentTicker(){
+  const entries = TEAM_DATA
+    .filter(([k]) => state.soldTeams[k])
+    .map(([k,label]) => {
+      const info = state.soldTeams[k];
+      const buyer = typeof info === "string" ? info : info.buyer;
+      return `${label}: ${buyer}`;
+    });
+  if(entries.length === 0) return "Welcome to SMJ Sports Cards & Collectibles!";
+  return entries.join(" • ");
+}
+function updateTicker(){
+  document.getElementById("tickerText").textContent =
+    state.tickerMode === "assignments" ? buildAssignmentTicker() : (state.defaultTicker || "Welcome to SMJ Sports Cards & Collectibles!");
+}
+function bumpCounter(){
+  const box = document.getElementById("counterBox");
+  box.classList.remove("bump");
+  void box.offsetWidth;
+  box.classList.add("bump");
+}
+function updateTop(){
+  document.querySelector("#title span").textContent = state.title || "NFL BREAK NIGHT";
+  document.getElementById("soldCount").innerText = Object.keys(state.soldTeams || {}).length;
+}
+function render(){
+  const g = document.getElementById("grid");
+  g.innerHTML = "";
+  TEAM_DATA.forEach(([k,label]) => {
+    const info = state.soldTeams?.[k];
+    const buyer = !info ? "" : (typeof info === "string" ? info : info.buyer);
+    const d = document.createElement("div");
+    d.className = "team" + (info ? " sold" : "");
+    d.title = info ? `${label} — ${buyer}` : `${label} — Available`;
+
+    const code = document.createElement("div");
+    code.className = "team-code";
+    code.textContent = label;
+    d.appendChild(code);
+
+    const img = document.createElement("img");
+    img.src = `https://a.espncdn.com/i/teamlogos/nfl/500/${k}.png`;
+    img.alt = label;
+    d.appendChild(img);
+
+    if(buyer && buyer !== "Sold"){
+      const badge = document.createElement("div");
+      badge.className = "team-initials";
+      badge.textContent = initials(buyer);
+      d.appendChild(badge);
+    }
+
+    g.appendChild(d);
+  });
+
+  const soldCount = Object.keys(state.soldTeams || {}).length;
+  if (soldCount !== lastSoldCount) {
+    bumpCounter();
+    lastSoldCount = soldCount;
+  }
+  updateTop();
+  updateTicker();
+}
+
+try {
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  onValue(ref(db, STATE_PATH), (snapshot) => {
+    const value = snapshot.val() || {};
+    const merged = { ...stateDefaults, ...value };
+    const serialized = JSON.stringify(merged);
+    if (serialized !== lastSerialized) {
+      state = merged;
+      lastSerialized = serialized;
+      render();
+    }
+  });
+} catch (err) {
+  console.error(err);
+  document.body.insertAdjacentHTML("beforeend", '<div class="status-note">Firebase not configured</div>');
+  render();
+}
+</script>
+</body>
+</html>
