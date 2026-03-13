@@ -1,10 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>SMJ Overlay Control</title>
-
 <style>
 :root{
   --bg:#081221;
@@ -13,14 +13,24 @@
   --line:rgba(255,255,255,.12);
   --text:#f5f7fb;
   --muted:#b8c2d9;
+  --accent:#61b8ff;
 }
+*{box-sizing:border-box}
 body{
   margin:0;
   font-family:Montserrat,Arial,sans-serif;
   background:linear-gradient(180deg,#081221,#0d1b30);
   color:var(--text);
 }
-.wrap{max-width:900px;margin:0 auto;padding:18px;}
+.wrap{
+  max-width:900px;
+  margin:0 auto;
+  padding:18px;
+}
+h1{
+  margin:0 0 14px;
+  font-size:26px;
+}
 .group{
   background:linear-gradient(180deg,var(--panel2),var(--panel));
   border:1px solid var(--line);
@@ -28,116 +38,278 @@ body{
   padding:14px;
   margin-bottom:14px;
 }
-.row{display:flex;gap:10px;flex-wrap:wrap;}
-input,select,button{
+label{
+  display:block;
+  font-size:12px;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin-bottom:6px;
+  letter-spacing:1px;
+}
+.row{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+input,select,button,textarea{
   font:inherit;
+}
+input,select,textarea{
+  width:100%;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.12);
+  color:var(--text);
   padding:12px;
   border-radius:12px;
-  border:1px solid rgba(255,255,255,.12);
 }
-input,select{background:rgba(255,255,255,.06);color:white;width:100%;}
 button{
-  background:linear-gradient(90deg,#61b8ff,#1d58d8);
   border:0;
-  color:white;
+  border-radius:12px;
+  padding:12px 14px;
+  background:linear-gradient(90deg,#61b8ff,#1d58d8);
+  color:#fff;
   font-weight:900;
   cursor:pointer;
 }
-.status{font-size:14px;margin-top:8px;}
+button.secondary{
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.08);
+}
+button.good{
+  background:linear-gradient(90deg,#2bb673,#43d17a);
+}
+.half{flex:1 1 280px}
+.third{flex:1 1 180px}
+.note{
+  font-size:13px;
+  color:var(--muted);
+  line-height:1.45;
+}
+.status{
+  font-size:13px;
+  color:var(--muted);
+  margin-top:10px;
+}
+.table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:14px;
+}
+.table th,.table td{
+  border-bottom:1px solid rgba(255,255,255,.08);
+  padding:8px 6px;
+  text-align:left;
+}
+.table th{color:var(--muted); font-size:12px; text-transform:uppercase;}
 </style>
 </head>
-
 <body>
 <div class="wrap">
+  <h1>SMJ Overlay Control</h1>
 
-<h2>SMJ Overlay Control</h2>
+  <div class="group">
+    <div class="note">Paste the same Firebase config into this file and the overlay file. Open this page on your tablet and the overlay page in OBS.</div>
+    <div class="status" id="connectionStatus">Not connected yet.</div>
+  </div>
 
-<div class="group">
-<div id="connectionStatus" class="status">Not connected yet.</div>
-</div>
+  <div class="group">
+    <label>Overlay Title</label>
+    <div class="row">
+      <input id="titleInput" class="half" placeholder="NFL Break Night">
+      <button onclick="setTitle()">Set Title</button>
+    </div>
+  </div>
 
-<div class="group">
-<label>Overlay Title</label>
-<div class="row">
-<input id="titleInput" placeholder="NFL Break Night">
-<button onclick="setTitle()">Set Title</button>
-</div>
-</div>
+  <div class="group">
+    <label>Assign Buyer + Base Cards</label>
+    <div class="row">
+      <select id="teamDropdown" class="third"></select>
+      <input id="buyerInput" class="third" placeholder="Buyer name">
+      <select id="baseDropdown" class="third">
+        <option value="Yes">Base Cards: Yes</option>
+        <option value="No">Base Cards: No</option>
+      </select>
+    </div>
+    <div class="row" style="margin-top:10px;">
+      <button class="good half" onclick="assignBuyer()">Assign</button>
+      <button class="secondary half" onclick="clearSelectedTeam()">Clear Selected Team</button>
+    </div>
+  </div>
 
-<div class="group">
-<label>Assign Buyer</label>
-<div class="row">
-<select id="teamDropdown"></select>
-<input id="buyerInput" placeholder="Buyer name">
-<button onclick="assignBuyer()">Assign</button>
-</div>
-</div>
+  <div class="group">
+    <label>Ticker</label>
+    <div class="row">
+      <input id="tickerInput" class="half" placeholder="Custom ticker text">
+      <button onclick="setTicker()">Set Custom</button>
+      <button class="secondary" onclick="toggleAssignmentTicker()">Toggle Assignment Ticker</button>
+    </div>
+  </div>
 
+  <div class="group">
+    <label>Assignments</label>
+    <div style="overflow:auto">
+      <table class="table">
+        <thead>
+          <tr><th>Team</th><th>Buyer</th><th>Initials</th><th>Base</th></tr>
+        </thead>
+        <tbody id="assignmentsBody"></tbody>
+      </table>
+    </div>
+    <div class="row" style="margin-top:10px;">
+      <button class="good half" onclick="downloadAssignmentsXLSX()">Download Assignment XLSX</button>
+    </div>
+  </div>
 </div>
 
 <script type="module">
-
-/* ✅ Firebase imports (CORRECT) */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
+import { getDatabase, ref, onValue, set, update } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
+import * as XLSX from "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/+esm";
 
-/* ✅ TEAM LIST */
 const TEAM_DATA = [
-['ari','ARI'],['atl','ATL'],['bal','BAL'],['buf','BUF'],['car','CAR'],['chi','CHI'],['cin','CIN'],['cle','CLE'],
-['dal','DAL'],['den','DEN'],['det','DET'],['gb','GB'],['hou','HOU'],['ind','IND'],['jax','JAX'],['kc','KC'],
-['lv','LV'],['lac','LAC'],['lar','LAR'],['mia','MIA'],['min','MIN'],['ne','NE'],['no','NO'],['nyg','NYG'],
-['nyj','NYJ'],['phi','PHI'],['pit','PIT'],['sea','SEA'],['sf','SF'],['tb','TB'],['ten','TEN'],['was','WAS']
+  ['ari','ARI'],['atl','ATL'],['bal','BAL'],['buf','BUF'],['car','CAR'],['chi','CHI'],['cin','CIN'],['cle','CLE'],
+  ['dal','DAL'],['den','DEN'],['det','DET'],['gb','GB'],['hou','HOU'],['ind','IND'],['jax','JAX'],['kc','KC'],
+  ['lv','LV'],['lac','LAC'],['lar','LAR'],['mia','MIA'],['min','MIN'],['ne','NE'],['no','NO'],['nyg','NYG'],
+  ['nyj','NYJ'],['phi','PHI'],['pit','PIT'],['sea','SEA'],['sf','SF'],['tb','TB'],['ten','TEN'],['was','WAS']
 ];
 
-/* ✅ YOUR CLEAN CONFIG (FIXED) */
-const firebaseConfig = {
+  const firebaseConfig = {
   apiKey: "AIzaSyAP5JIYtql-4YB-wAgNT2Urja4DUOFoRws",
   authDomain: "smj-overlay.firebaseapp.com",
   databaseURL: "https://smj-overlay-default-rtdb.firebaseio.com",
   projectId: "smj-overlay",
   storageBucket: "smj-overlay.firebasestorage.app",
   messagingSenderId: "1034121319902",
-  appId: "1:1034121319902:web:2b88ce1cc3ccf79766794f"
+  appId: "1:1034121319902:web:2b88ce1cc3ccf79766794f",
+  measurementId: "G-511F87E4GE"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
 };
 
 const STATE_PATH = "overlayState/main";
 
-/* ✅ INIT */
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-const stateRef = ref(db, STATE_PATH);
+const defaults = {
+  title: "NFL BREAK NIGHT",
+  soldTeams: {},
+  tickerMode: "assignments",
+  defaultTicker: "Welcome to SMJ Sports Cards & Collectibles!"
+};
 
-/* Populate dropdown */
-const dd = document.getElementById("teamDropdown");
-TEAM_DATA.forEach(([k,label])=>{
-  const opt=document.createElement("option");
-  opt.value=k;
-  opt.textContent=label;
-  dd.appendChild(opt);
-});
+let db;
+let state = structuredClone(defaults);
 
-/* Connection listener */
-onValue(stateRef,(snap)=>{
-  document.getElementById("connectionStatus").innerText="Connected.";
-});
-
-/* Controls */
-
-window.setTitle=async function(){
-  const v=document.getElementById("titleInput").value.trim();
-  if(!v)return;
-  await update(stateRef,{title:v.toUpperCase()});
+function initials(name){
+  if(!name) return "";
+  const cleaned = name.trim().split(/\s+/).filter(Boolean);
+  if(cleaned.length === 1) return cleaned[0].slice(0,3).toUpperCase();
+  return cleaned.slice(0,2).map(x => x[0].toUpperCase()).join('');
+}
+function safeTitleFile(){
+  return (state.title || "break")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g,"_")
+    .replace(/^_|_$/g,"");
+}
+function renderAssignments(){
+  const tbody = document.getElementById("assignmentsBody");
+  tbody.innerHTML = "";
+  TEAM_DATA.forEach(([k,label]) => {
+    const info = state.soldTeams?.[k];
+    if(!info) return;
+    const buyer = typeof info === "string" ? info : info.buyer;
+    const baseCards = typeof info === "string" ? "Yes" : info.baseCards;
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${label}</td><td>${buyer}</td><td>${initials(buyer)}</td><td>${baseCards}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+function renderInputs(){
+  document.getElementById("titleInput").value = state.title || "";
+}
+function populateDropdown(){
+  const dd = document.getElementById("teamDropdown");
+  dd.innerHTML = "";
+  TEAM_DATA.forEach(([k,label]) => {
+    const opt = document.createElement("option");
+    opt.value = k;
+    opt.textContent = label;
+    dd.appendChild(opt);
+  });
+}
+window.setTitle = async function(){
+  const v = document.getElementById("titleInput").value.trim();
+  if(!v) return;
+  await update(ref(db, STATE_PATH), { title: v.toUpperCase() });
+}
+window.assignBuyer = async function(){
+  const team = document.getElementById("teamDropdown").value;
+  const buyer = document.getElementById("buyerInput").value.trim();
+  const baseCards = document.getElementById("baseDropdown").value;
+  if(!buyer) return;
+  const nextSold = { ...(state.soldTeams || {}) };
+  nextSold[team] = { buyer, baseCards };
+  await update(ref(db, STATE_PATH), { soldTeams: nextSold });
+  document.getElementById("buyerInput").value = "";
+}
+window.clearSelectedTeam = async function(){
+  const team = document.getElementById("teamDropdown").value;
+  const nextSold = { ...(state.soldTeams || {}) };
+  delete nextSold[team];
+  await update(ref(db, STATE_PATH), { soldTeams: nextSold });
+}
+window.setTicker = async function(){
+  const v = document.getElementById("tickerInput").value.trim();
+  if(!v) return;
+  await update(ref(db, STATE_PATH), { defaultTicker: v, tickerMode: "default" });
+}
+window.toggleAssignmentTicker = async function(){
+  const nextMode = state.tickerMode === "assignments" ? "default" : "assignments";
+  await update(ref(db, STATE_PATH), { tickerMode: nextMode });
+}
+window.downloadAssignmentsXLSX = function(){
+  const rows = [];
+  rows.push([state.title || "BREAK"]);
+  rows.push([]);
+  rows.push(["Team Code","Buyer Name","Buyer Initials","Wants Base Cards"]);
+  TEAM_DATA.forEach(([k,label]) => {
+    const info = state.soldTeams?.[k];
+    if(!info) return;
+    const buyer = typeof info === "string" ? info : info.buyer;
+    const baseCards = typeof info === "string" ? "Yes" : info.baseCards;
+    rows.push([label, buyer, initials(buyer), baseCards]);
+  });
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Assignments");
+  XLSX.writeFile(wb, `${safeTitleFile()}_assignments.xlsx`);
 }
 
-window.assignBuyer=async function(){
-  const team=dd.value;
-  const buyer=document.getElementById("buyerInput").value.trim();
-  if(!buyer)return;
-  const updateObj={};
-  updateObj[`soldTeams/${team}`]={buyer};
-  await update(stateRef,updateObj);
+try{
+  const app = initializeApp(firebaseConfig);
+  db = getDatabase(app);
+  const stateRef = ref(db, STATE_PATH);
+  onValue(stateRef, async (snap) => {
+    const val = snap.val();
+    if (val === null) {
+      await set(stateRef, defaults);
+      return;
+    }
+    state = { ...defaults, ...val };
+    document.getElementById("connectionStatus").textContent = "Connected.";
+    renderInputs();
+    renderAssignments();
+  }, () => {
+    document.getElementById("connectionStatus").textContent = "Connection error.";
+  });
+} catch(err){
+  console.error(err);
+  document.getElementById("connectionStatus").textContent = "Firebase not configured.";
 }
 
+populateDropdown();
 </script>
 </body>
 </html>
