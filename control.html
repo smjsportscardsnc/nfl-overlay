@@ -13,6 +13,7 @@
   --line:rgba(255,255,255,.12);
   --text:#f5f7fb;
   --muted:#b8c2d9;
+  --warn:#ffb347;
 }
 *{box-sizing:border-box}
 body{
@@ -21,7 +22,7 @@ body{
   background:linear-gradient(180deg,#081221,#0d1b30);
   color:var(--text);
 }
-.wrap{max-width:980px;margin:0 auto;padding:18px;}
+.wrap{max-width:1080px;margin:0 auto;padding:18px;}
 h1{margin:0 0 14px;font-size:26px;}
 .group{
   background:linear-gradient(180deg,var(--panel2),var(--panel));
@@ -68,9 +69,6 @@ button.good{
 button.warn{
   background:linear-gradient(90deg,#ff6b6b,#ff8e53);
 }
-button.pass{
-  background:linear-gradient(90deg,#ff6464,#d91f35);
-}
 button.base-yes{
   background:linear-gradient(90deg,#2bb673,#43d17a);
 }
@@ -81,6 +79,56 @@ button.base-no{
 .third{flex:1 1 180px}
 .note{font-size:13px;color:var(--muted);line-height:1.45;}
 .status{font-size:13px;color:var(--muted);margin-top:10px;}
+.team-picker{
+  display:grid;
+  grid-template-columns:repeat(8,minmax(0,1fr));
+  gap:8px;
+}
+.team-tile{
+  position:relative;
+  border:1px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.05);
+  border-radius:12px;
+  padding:8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:68px;
+  cursor:pointer;
+}
+.team-tile.selected{
+  border-color:#61b8ff;
+  box-shadow:0 0 0 1px rgba(97,184,255,.5), 0 0 14px rgba(97,184,255,.2);
+}
+.team-tile.assigned{
+  border-color:rgba(255,255,255,.18);
+}
+.team-tile.nobase{
+  border-color:rgba(255,179,71,.9);
+  box-shadow: inset 0 0 0 1px rgba(255,179,71,.45);
+}
+.team-tile img{
+  width:42px;height:42px;object-fit:contain;
+}
+.team-tile .code{
+  position:absolute;top:5px;left:7px;
+  font-size:10px;font-weight:1000;letter-spacing:.4px;color:var(--muted);
+}
+.team-tile .buyer{
+  position:absolute;bottom:4px;left:50%;
+  transform:translateX(-50%);
+  max-width:90%;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  font-size:10px;font-weight:1000;
+  background:rgba(4,10,22,.9);
+  padding:2px 6px;border-radius:999px;
+}
+.team-tile .nobase-tag{
+  position:absolute;right:4px;bottom:4px;
+  font-size:9px;font-weight:1000;
+  background:var(--warn);color:#201300;
+  padding:2px 5px;border-radius:999px;
+}
 .table{width:100%;border-collapse:collapse;font-size:14px;}
 .table th,.table td{
   border-bottom:1px solid rgba(255,255,255,.08);
@@ -98,18 +146,33 @@ button.base-no{
   gap:6px;
   flex-wrap:wrap;
 }
+.recap-only .non-recap{
+  display:none;
+}
+.recap-banner{
+  display:none;
+  margin-top:10px;
+  font-size:13px;
+  color:var(--warn);
+  font-weight:1000;
+  letter-spacing:.8px;
+}
+.recap-only .recap-banner{
+  display:block;
+}
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="wrap" id="appWrap">
   <h1>SMJ Overlay Control</h1>
 
   <div class="group">
     <div class="note">Use this page on your tablet. It controls the overlay in OBS through Firebase.</div>
     <div class="status" id="connectionStatus">Not connected yet.</div>
+    <div class="recap-banner">RECAP MODE ENABLED</div>
   </div>
 
-  <div class="group">
+  <div class="group non-recap">
     <label>Overlay Title</label>
     <div class="row">
       <input id="titleInput" class="half" placeholder="NFL Break Night">
@@ -118,19 +181,17 @@ button.base-no{
   </div>
 
   <div class="group">
-    <label>Assign Buyer</label>
-    <div class="row">
-      <select id="teamDropdown" class="third"></select>
-      <input id="buyerInput" class="third" placeholder="Whatnot username">
-    </div>
+    <label>Click A Team To Select It</label>
+    <div class="team-picker" id="teamPicker"></div>
     <div class="row" style="margin-top:10px;">
-      <button class="good half" onclick="assignBuyer()">Assign Team</button>
-      <button class="secondary half" onclick="clearSelectedTeam()">Clear Selected Team</button>
+      <input id="buyerInput" class="half" placeholder="Whatnot username">
+      <button class="good" onclick="assignBuyer()">Assign Selected Team</button>
+      <button class="secondary" onclick="clearSelectedTeam()">Clear Selected Team</button>
     </div>
-    <div class="note" style="margin-top:10px;">Base cards default to <strong>Yes</strong> when assigned. You can change them later in the table below.</div>
+    <div class="note" style="margin-top:10px;">Base cards default to <strong>No</strong>. Teams with <strong>No base</strong> are highlighted in orange on the overlay. Use recap mode during shipping to review and bulk update.</div>
   </div>
 
-  <div class="group">
+  <div class="group non-recap">
     <label>Ticker</label>
     <div class="row">
       <input id="tickerInput" class="half" placeholder="Custom ticker text">
@@ -140,11 +201,11 @@ button.base-no{
   </div>
 
   <div class="group">
-    <label>Video Splash Buttons</label>
+    <label>Recap & Bulk Tools</label>
     <div class="row">
-      <button class="pass third" onclick="triggerSplash('stash')">Play Stash or Pass</button>
-      <button class="third" onclick="triggerSplash('spin')">Play Spin 2 Choose 1</button>
-      <button class="warn third" onclick="clearSplash()">Clear Splash</button>
+      <button class="secondary third" onclick="toggleRecapMode()">Toggle Recap Mode</button>
+      <button class="good third" onclick="setAllBase('Yes')">Set All Base = Yes</button>
+      <button class="warn third" onclick="setAllBase('No')">Set All Base = No</button>
     </div>
   </div>
 
@@ -200,12 +261,13 @@ const defaults = {
   soldTeams: {},
   tickerMode: "assignments",
   defaultTicker: "Welcome to SMJ Sports Cards & Collectibles!",
-  activeSplash: ""
+  recapMode: false
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 let state = structuredClone(defaults);
+let selectedTeam = "";
 
 function safeTitleFile(){
   return (state.title || "break")
@@ -213,22 +275,57 @@ function safeTitleFile(){
     .replace(/[^a-z0-9]+/g,"_")
     .replace(/^_|_$/g,"");
 }
-
-function populateDropdown(){
-  const dd = document.getElementById("teamDropdown");
-  dd.innerHTML = "";
-  TEAM_DATA.forEach(([k,label]) => {
-    const opt = document.createElement("option");
-    opt.value = k;
-    opt.textContent = label;
-    dd.appendChild(opt);
-  });
+function logoUrl(k){
+  return `https://a.espncdn.com/i/teamlogos/nfl/500/${k}.png`;
 }
-
 function renderInputs(){
   document.getElementById("titleInput").value = state.title || "";
+  document.getElementById("appWrap").classList.toggle("recap-only", !!state.recapMode);
 }
+function renderTeamPicker(){
+  const picker = document.getElementById("teamPicker");
+  picker.innerHTML = "";
+  TEAM_DATA.forEach(([k,label]) => {
+    const info = state.soldTeams?.[k];
+    const buyer = !info ? "" : (typeof info === "string" ? info : info.buyer);
+    const baseCards = !info ? "" : (typeof info === "string" ? "No" : info.baseCards);
 
+    const tile = document.createElement("button");
+    tile.type = "button";
+    tile.className = "team-tile" + (selectedTeam === k ? " selected" : "") + (info ? " assigned" : "") + (info && baseCards === "No" ? " nobase" : "");
+    tile.onclick = () => {
+      selectedTeam = k;
+      renderTeamPicker();
+    };
+
+    const code = document.createElement("div");
+    code.className = "code";
+    code.textContent = label;
+
+    const img = document.createElement("img");
+    img.src = logoUrl(k);
+    img.alt = label;
+
+    tile.appendChild(code);
+    tile.appendChild(img);
+
+    if(buyer && buyer !== "Sold"){
+      const buyerTag = document.createElement("div");
+      buyerTag.className = "buyer";
+      buyerTag.textContent = buyer;
+      tile.appendChild(buyerTag);
+    }
+
+    if(info && baseCards === "No"){
+      const tag = document.createElement("div");
+      tag.className = "nobase-tag";
+      tag.textContent = "NO BASE";
+      tile.appendChild(tag);
+    }
+
+    picker.appendChild(tile);
+  });
+}
 function renderAssignments(){
   const tbody = document.getElementById("assignmentsBody");
   tbody.innerHTML = "";
@@ -236,7 +333,7 @@ function renderAssignments(){
     const info = state.soldTeams?.[k];
     if(!info) return;
     const buyer = typeof info === "string" ? info : info.buyer;
-    const baseCards = typeof info === "string" ? "Yes" : info.baseCards;
+    const baseCards = typeof info === "string" ? "No" : info.baseCards;
 
     const tr = document.createElement("tr");
 
@@ -278,66 +375,65 @@ window.setTitle = async function(){
   if(!v) return;
   await update(ref(db, STATE_PATH), { title: v.toUpperCase() });
 };
-
 window.assignBuyer = async function(){
-  const team = document.getElementById("teamDropdown").value;
+  const team = selectedTeam;
   const buyer = document.getElementById("buyerInput").value.trim();
-  if(!buyer) return;
+  if(!team || !buyer) return;
   const nextSold = { ...(state.soldTeams || {}) };
-  nextSold[team] = { buyer, baseCards: "Yes" };
+  nextSold[team] = { buyer, baseCards: "No" };
   await update(ref(db, STATE_PATH), { soldTeams: nextSold });
   document.getElementById("buyerInput").value = "";
 };
-
 window.clearSelectedTeam = async function(){
-  const team = document.getElementById("teamDropdown").value;
+  const team = selectedTeam;
+  if(!team) return;
   const nextSold = { ...(state.soldTeams || {}) };
   delete nextSold[team];
   await update(ref(db, STATE_PATH), { soldTeams: nextSold });
 };
-
 window.toggleBase = async function(team){
   const nextSold = { ...(state.soldTeams || {}) };
   const info = nextSold[team];
   if(!info) return;
-
   if(typeof info === "string"){
-    nextSold[team] = { buyer: info, baseCards: "No" };
+    nextSold[team] = { buyer: info, baseCards: "Yes" };
   } else {
     nextSold[team] = {
       ...info,
       baseCards: info.baseCards === "Yes" ? "No" : "Yes"
     };
   }
-
   await update(ref(db, STATE_PATH), { soldTeams: nextSold });
 };
-
 window.removeTeam = async function(team){
   const nextSold = { ...(state.soldTeams || {}) };
   delete nextSold[team];
   await update(ref(db, STATE_PATH), { soldTeams: nextSold });
 };
-
 window.setTicker = async function(){
   const v = document.getElementById("tickerInput").value.trim();
   if(!v) return;
   await update(ref(db, STATE_PATH), { defaultTicker: v, tickerMode: "default" });
 };
-
 window.toggleAssignmentTicker = async function(){
   const nextMode = state.tickerMode === "assignments" ? "default" : "assignments";
   await update(ref(db, STATE_PATH), { tickerMode: nextMode });
 };
-
-window.triggerSplash = async function(type){
-  await update(ref(db, STATE_PATH), { activeSplash: type });
+window.toggleRecapMode = async function(){
+  await update(ref(db, STATE_PATH), { recapMode: !state.recapMode });
 };
-
-window.clearSplash = async function(){
-  await update(ref(db, STATE_PATH), { activeSplash: "" });
+window.setAllBase = async function(value){
+  const nextSold = { ...(state.soldTeams || {}) };
+  Object.keys(nextSold).forEach(team => {
+    const info = nextSold[team];
+    if(typeof info === "string"){
+      nextSold[team] = { buyer: info, baseCards: value };
+    } else {
+      nextSold[team] = { ...info, baseCards: value };
+    }
+  });
+  await update(ref(db, STATE_PATH), { soldTeams: nextSold });
 };
-
 window.clearOverlayForNewBreak = async function(){
   const keepTitle = document.getElementById("titleInput").value.trim() || "NFL BREAK NIGHT";
   await set(ref(db, STATE_PATH), {
@@ -346,8 +442,8 @@ window.clearOverlayForNewBreak = async function(){
   });
   document.getElementById("buyerInput").value = "";
   document.getElementById("tickerInput").value = "";
+  selectedTeam = "";
 };
-
 window.downloadAssignmentsXLSX = function(){
   const rows = [];
   rows.push([state.title || "BREAK"]);
@@ -357,7 +453,7 @@ window.downloadAssignmentsXLSX = function(){
     const info = state.soldTeams?.[k];
     if(!info) return;
     const buyer = typeof info === "string" ? info : info.buyer;
-    const baseCards = typeof info === "string" ? "Yes" : info.baseCards;
+    const baseCards = typeof info === "string" ? "No" : info.baseCards;
     rows.push([label, buyer, baseCards]);
   });
   const ws = XLSX.utils.aoa_to_sheet(rows);
@@ -376,13 +472,12 @@ onValue(stateRef, async (snap) => {
   state = { ...defaults, ...val };
   document.getElementById("connectionStatus").textContent = "Connected.";
   renderInputs();
+  renderTeamPicker();
   renderAssignments();
-  populateDropdown();
 }, () => {
   document.getElementById("connectionStatus").textContent = "Connection error.";
 });
-
-populateDropdown();
 </script>
 </body>
 </html>
+
