@@ -143,12 +143,16 @@ button.pass{
         <tbody id="assignmentsBody"></tbody>
       </table>
     </div>
+    <div class="row" style="margin-top:10px;">
+      <button class="good half" onclick="downloadAssignmentsXLSX()">Download Assignment XLSX</button>
+    </div>
   </div>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import { getDatabase, ref, onValue, set, update } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
+import * as XLSX from "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/+esm";
 
 const TEAM_DATA = [
   ['ari','ARI'],['atl','ATL'],['bal','BAL'],['buf','BUF'],['car','CAR'],['chi','CHI'],['cin','CIN'],['cle','CLE'],
@@ -158,14 +162,13 @@ const TEAM_DATA = [
 ];
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAP5JIYtql-4YB-wAgNT2Urja4DUOFoRws",
-  authDomain: "smj-overlay.firebaseapp.com",
-  databaseURL: "https://smj-overlay-default-rtdb.firebaseio.com",
-  projectId: "smj-overlay",
-  storageBucket: "smj-overlay.firebasestorage.app",
-  messagingSenderId: "1034121319902",
-  appId: "1:1034121319902:web:2b88ce1cc3ccf79766794f",
-  measurementId: "G-511F87E4GE"
+  apiKey: "PASTE_YOURS",
+  authDomain: "PASTE_YOURS",
+  databaseURL: "PASTE_YOURS",
+  projectId: "PASTE_YOURS",
+  storageBucket: "PASTE_YOURS",
+  messagingSenderId: "PASTE_YOURS",
+  appId: "PASTE_YOURS"
 };
 
 const STATE_PATH = "overlayState/main";
@@ -181,6 +184,12 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 let state = structuredClone(defaults);
 
+function safeTitleFile(){
+  return (state.title || "break")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g,"_")
+    .replace(/^_|_$/g,"");
+}
 function populateDropdown(){
   const dd = document.getElementById("teamDropdown");
   dd.innerHTML = "";
@@ -242,6 +251,23 @@ window.triggerSplash = async function(type){
 };
 window.clearSplash = async function(){
   await update(ref(db, STATE_PATH), { activeSplash: "" });
+};
+window.downloadAssignmentsXLSX = function(){
+  const rows = [];
+  rows.push([state.title || "BREAK"]);
+  rows.push([]);
+  rows.push(["Team","Buyer Username","Wants Base Cards"]);
+  TEAM_DATA.forEach(([k,label]) => {
+    const info = state.soldTeams?.[k];
+    if(!info) return;
+    const buyer = typeof info === "string" ? info : info.buyer;
+    const baseCards = typeof info === "string" ? "Yes" : info.baseCards;
+    rows.push([label, buyer, baseCards]);
+  });
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Assignments");
+  XLSX.writeFile(wb, `${safeTitleFile()}_assignments.xlsx`);
 };
 
 const stateRef = ref(db, STATE_PATH);
