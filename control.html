@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,7 +13,6 @@
   --line:rgba(255,255,255,.12);
   --text:#f5f7fb;
   --muted:#b8c2d9;
-  --accent:#61b8ff;
 }
 *{box-sizing:border-box}
 body{
@@ -21,15 +21,8 @@ body{
   background:linear-gradient(180deg,#081221,#0d1b30);
   color:var(--text);
 }
-.wrap{
-  max-width:900px;
-  margin:0 auto;
-  padding:18px;
-}
-h1{
-  margin:0 0 14px;
-  font-size:26px;
-}
+.wrap{max-width:900px;margin:0 auto;padding:18px;}
+h1{margin:0 0 14px;font-size:26px;}
 .group{
   background:linear-gradient(180deg,var(--panel2),var(--panel));
   border:1px solid var(--line);
@@ -45,14 +38,8 @@ label{
   margin-bottom:6px;
   letter-spacing:1px;
 }
-.row{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-}
-input,select,button,textarea{
-  font:inherit;
-}
+.row{display:flex;gap:10px;flex-wrap:wrap;}
+input,select,button,textarea{font:inherit;}
 input,select,textarea{
   width:100%;
   background:rgba(255,255,255,.06);
@@ -77,27 +64,20 @@ button.secondary{
 button.good{
   background:linear-gradient(90deg,#2bb673,#43d17a);
 }
+button.warn{
+  background:linear-gradient(90deg,#ff6b6b,#ff8e53);
+}
+button.pass{
+  background:linear-gradient(90deg,#ff6464,#d91f35);
+}
 .half{flex:1 1 280px}
 .third{flex:1 1 180px}
-.note{
-  font-size:13px;
-  color:var(--muted);
-  line-height:1.45;
-}
-.status{
-  font-size:13px;
-  color:var(--muted);
-  margin-top:10px;
-}
-.table{
-  width:100%;
-  border-collapse:collapse;
-  font-size:14px;
-}
+.note{font-size:13px;color:var(--muted);line-height:1.45;}
+.status{font-size:13px;color:var(--muted);margin-top:10px;}
+.table{width:100%;border-collapse:collapse;font-size:14px;}
 .table th,.table td{
   border-bottom:1px solid rgba(255,255,255,.08);
-  padding:8px 6px;
-  text-align:left;
+  padding:8px 6px;text-align:left;
 }
 .table th{color:var(--muted); font-size:12px; text-transform:uppercase;}
 </style>
@@ -123,7 +103,7 @@ button.good{
     <label>Assign Buyer + Base Cards</label>
     <div class="row">
       <select id="teamDropdown" class="third"></select>
-      <input id="buyerInput" class="third" placeholder="Buyer name">
+      <input id="buyerInput" class="third" placeholder="Whatnot username">
       <select id="baseDropdown" class="third">
         <option value="Yes">Base Cards: Yes</option>
         <option value="No">Base Cards: No</option>
@@ -145,17 +125,23 @@ button.good{
   </div>
 
   <div class="group">
+    <label>Video Splash Buttons</label>
+    <div class="row">
+      <button class="pass third" onclick="triggerSplash('stash')">Play Stash or Pass</button>
+      <button class="third" onclick="triggerSplash('spin')">Play Spin 2 Choose 1</button>
+      <button class="warn third" onclick="clearSplash()">Clear Splash</button>
+    </div>
+  </div>
+
+  <div class="group">
     <label>Assignments</label>
     <div style="overflow:auto">
       <table class="table">
         <thead>
-          <tr><th>Team</th><th>Buyer</th><th>Initials</th><th>Base</th></tr>
+          <tr><th>Team</th><th>Buyer</th><th>Base</th></tr>
         </thead>
         <tbody id="assignmentsBody"></tbody>
       </table>
-    </div>
-    <div class="row" style="margin-top:10px;">
-      <button class="good half" onclick="downloadAssignmentsXLSX()">Download Assignment XLSX</button>
     </div>
   </div>
 </div>
@@ -163,7 +149,6 @@ button.good{
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import { getDatabase, ref, onValue, set, update } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
-import * as XLSX from "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/+esm";
 
 const TEAM_DATA = [
   ['ari','ARI'],['atl','ATL'],['bal','BAL'],['buf','BUF'],['car','CAR'],['chi','CHI'],['cin','CIN'],['cle','CLE'],
@@ -179,53 +164,22 @@ const firebaseConfig = {
   projectId: "smj-overlay",
   storageBucket: "smj-overlay.firebasestorage.app",
   messagingSenderId: "1034121319902",
-  appId: "1:1034121319902:web:2b88ce1cc3ccf79766794f"
+  appId: "1:1034121319902:web:2b88ce1cc3ccf79766794f",
+  measurementId: "G-511F87E4GE"
 };
 
 const STATE_PATH = "overlayState/main";
-
 const defaults = {
   title: "NFL BREAK NIGHT",
   soldTeams: {},
   tickerMode: "assignments",
-  defaultTicker: "Welcome to SMJ Sports Cards & Collectibles!"
+  defaultTicker: "Welcome to SMJ Sports Cards & Collectibles!",
+  activeSplash: ""
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 let state = structuredClone(defaults);
-
-function initials(name){
-  if(!name) return "";
-  const cleaned = name.trim().split(/\\s+/).filter(Boolean);
-  if(cleaned.length === 1) return cleaned[0].slice(0,3).toUpperCase();
-  return cleaned.slice(0,2).map(x => x[0].toUpperCase()).join('');
-}
-
-function safeTitleFile(){
-  return (state.title || "break")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g,"_")
-    .replace(/^_|_$/g,"");
-}
-
-function renderAssignments(){
-  const tbody = document.getElementById("assignmentsBody");
-  tbody.innerHTML = "";
-  TEAM_DATA.forEach(([k,label]) => {
-    const info = state.soldTeams?.[k];
-    if(!info) return;
-    const buyer = typeof info === "string" ? info : info.buyer;
-    const baseCards = typeof info === "string" ? "Yes" : info.baseCards;
-    const tr = document.createElement("tr");
-    tr.innerHTML = `<td>${label}</td><td>${buyer}</td><td>${initials(buyer)}</td><td>${baseCards}</td>`;
-    tbody.appendChild(tr);
-  });
-}
-
-function renderInputs(){
-  document.getElementById("titleInput").value = state.title || "";
-}
 
 function populateDropdown(){
   const dd = document.getElementById("teamDropdown");
@@ -237,13 +191,27 @@ function populateDropdown(){
     dd.appendChild(opt);
   });
 }
-
+function renderInputs(){
+  document.getElementById("titleInput").value = state.title || "";
+}
+function renderAssignments(){
+  const tbody = document.getElementById("assignmentsBody");
+  tbody.innerHTML = "";
+  TEAM_DATA.forEach(([k,label]) => {
+    const info = state.soldTeams?.[k];
+    if(!info) return;
+    const buyer = typeof info === "string" ? info : info.buyer;
+    const baseCards = typeof info === "string" ? "Yes" : info.baseCards;
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${label}</td><td>${buyer}</td><td>${baseCards}</td>`;
+    tbody.appendChild(tr);
+  });
+}
 window.setTitle = async function(){
   const v = document.getElementById("titleInput").value.trim();
   if(!v) return;
   await update(ref(db, STATE_PATH), { title: v.toUpperCase() });
 };
-
 window.assignBuyer = async function(){
   const team = document.getElementById("teamDropdown").value;
   const buyer = document.getElementById("buyerInput").value.trim();
@@ -254,66 +222,42 @@ window.assignBuyer = async function(){
   await update(ref(db, STATE_PATH), { soldTeams: nextSold });
   document.getElementById("buyerInput").value = "";
 };
-
 window.clearSelectedTeam = async function(){
   const team = document.getElementById("teamDropdown").value;
   const nextSold = { ...(state.soldTeams || {}) };
   delete nextSold[team];
   await update(ref(db, STATE_PATH), { soldTeams: nextSold });
 };
-
 window.setTicker = async function(){
   const v = document.getElementById("tickerInput").value.trim();
   if(!v) return;
   await update(ref(db, STATE_PATH), { defaultTicker: v, tickerMode: "default" });
 };
-
 window.toggleAssignmentTicker = async function(){
   const nextMode = state.tickerMode === "assignments" ? "default" : "assignments";
   await update(ref(db, STATE_PATH), { tickerMode: nextMode });
 };
-
-window.downloadAssignmentsXLSX = function(){
-  const rows = [];
-  rows.push([state.title || "BREAK"]);
-  rows.push([]);
-  rows.push(["Team Code","Buyer Name","Buyer Initials","Wants Base Cards"]);
-  TEAM_DATA.forEach(([k,label]) => {
-    const info = state.soldTeams?.[k];
-    if(!info) return;
-    const buyer = typeof info === "string" ? info : info.buyer;
-    const baseCards = typeof info === "string" ? "Yes" : info.baseCards;
-    rows.push([label, buyer, initials(buyer), baseCards]);
-  });
-  const ws = XLSX.utils.aoa_to_sheet(rows);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Assignments");
-  XLSX.writeFile(wb, `${safeTitleFile()}_assignments.xlsx`);
+window.triggerSplash = async function(type){
+  await update(ref(db, STATE_PATH), { activeSplash: type });
+};
+window.clearSplash = async function(){
+  await update(ref(db, STATE_PATH), { activeSplash: "" });
 };
 
-try{
-  const stateRef = ref(db, STATE_PATH);
-  onValue(
-    stateRef,
-    async (snap) => {
-      const val = snap.val();
-      if (val === null) {
-        await set(stateRef, defaults);
-        return;
-      }
-      state = { ...defaults, ...val };
-      document.getElementById("connectionStatus").textContent = "Connected.";
-      renderInputs();
-      renderAssignments();
-    },
-    () => {
-      document.getElementById("connectionStatus").textContent = "Connection error.";
-    }
-  );
-} catch(err){
-  console.error(err);
-  document.getElementById("connectionStatus").textContent = "Firebase not configured.";
-}
+const stateRef = ref(db, STATE_PATH);
+onValue(stateRef, async (snap) => {
+  const val = snap.val();
+  if (val === null) {
+    await set(stateRef, defaults);
+    return;
+  }
+  state = { ...defaults, ...val };
+  document.getElementById("connectionStatus").textContent = "Connected.";
+  renderInputs();
+  renderAssignments();
+}, () => {
+  document.getElementById("connectionStatus").textContent = "Connection error.";
+});
 
 populateDropdown();
 </script>
