@@ -12,6 +12,7 @@
   --line: rgba(255,255,255,.12);
   --text:#f5f7fb;
   --muted:#b8c2d9;
+  --warn:#ffb347;
 }
 html,body{
   margin:0;padding:0;width:1080px;height:720px;overflow:hidden;
@@ -104,6 +105,10 @@ html,body{
   text-shadow:0 0 12px rgba(255,0,0,.88);
   pointer-events:none;
 }
+.team.nobase{
+  border-color: rgba(255,179,71,.9);
+  box-shadow: inset 0 0 0 1px rgba(255,179,71,.55), 0 0 16px rgba(255,179,71,.3);
+}
 .team-code{
   position:absolute;top:4px;left:6px;
   font-size:11px;font-weight:900;letter-spacing:.4px;
@@ -122,6 +127,18 @@ html,body{
   max-width:92%;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
+.nobase-tag{
+  position:absolute;
+  right:4px;
+  bottom:4px;
+  font-size:9px;
+  font-weight:1000;
+  padding:2px 5px;
+  border-radius:999px;
+  color:#241500;
+  background:var(--warn);
+  box-shadow:0 1px 4px rgba(0,0,0,.25);
+}
 .ticker{
   display:flex;align-items:center;overflow:hidden;padding:8px 12px;box-sizing:border-box;
 }
@@ -135,51 +152,35 @@ html,body{
   white-space:nowrap;
   display:inline-block;
   padding-left:100%;
-  animation:ticker 24s linear infinite;
+  animation:ticker 26s linear infinite;
   font-size:18px;font-weight:900;
 }
 @keyframes ticker{
   from{transform:translateX(0)}
   to{transform:translateX(-100%)}
 }
+.mode-chip{
+  position:absolute;
+  right:10px;
+  top:98px;
+  z-index:20;
+  padding:7px 10px;
+  border-radius:999px;
+  background:rgba(255,179,71,.15);
+  border:1px solid rgba(255,179,71,.45);
+  color:var(--warn);
+  font-size:11px;
+  font-weight:1000;
+  letter-spacing:.8px;
+  display:none;
+}
+.mode-chip.show{display:block;}
 .status-note{
   position:absolute;
   right:10px;
   bottom:10px;
   font-size:11px;
   color:rgba(255,255,255,.55);
-}
-.splash-layer{
-  position:absolute;
-  inset:0;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  pointer-events:none;
-  z-index:30;
-}
-.splash-layer.show{display:flex;}
-.splash-box{
-  width:min(980px,92%);
-  max-height:86%;
-  transform:translateY(-8px) scale(.82);
-  opacity:0;
-}
-.splash-layer.show .splash-box{
-  animation:splashFlyIn .45s cubic-bezier(.2,.8,.2,1) forwards;
-}
-@keyframes splashFlyIn{
-  0%{opacity:0; transform:translateY(-70px) scale(.7);}
-  65%{opacity:1; transform:translateY(6px) scale(1.03);}
-  100%{opacity:1; transform:translateY(0) scale(1);}
-}
-.splash-video{
-  width:100%;
-  max-height:520px;
-  object-fit:contain;
-  border-radius:24px;
-  box-shadow:0 20px 50px rgba(0,0,0,.45);
-  background:transparent;
 }
 </style>
 </head>
@@ -196,6 +197,8 @@ html,body{
     </div>
   </div>
 
+  <div class="mode-chip" id="recapChip">RECAP MODE</div>
+
   <div class="team-wrap">
     <div class="teams-grid" id="grid"></div>
   </div>
@@ -204,22 +207,6 @@ html,body{
     <div class="ticker-label">LIVE</div>
     <div class="ticker-track">
       <div id="tickerText">Welcome to SMJ Sports Cards & Collectibles!</div>
-    </div>
-  </div>
-
-  <div class="splash-layer" id="stashSplash">
-    <div class="splash-box">
-      <video class="splash-video" id="stashVideo" muted playsinline preload="auto">
-        <source src="stash-or-pass.mp4" type="video/mp4">
-      </video>
-    </div>
-  </div>
-
-  <div class="splash-layer" id="spinSplash">
-    <div class="splash-box">
-      <video class="splash-video" id="spinVideo" muted playsinline preload="auto">
-        <source src="spin-2-choose-1.mp4" type="video/mp4">
-      </video>
     </div>
   </div>
 </div>
@@ -252,13 +239,12 @@ const stateDefaults = {
   soldTeams: {},
   tickerMode: "assignments",
   defaultTicker: "Welcome to SMJ Sports Cards & Collectibles!",
-  activeSplash: ""
+  recapMode: false
 };
 
 let state = structuredClone(stateDefaults);
 let lastSoldCount = 0;
 let lastSerialized = "";
-let lastSplash = "";
 
 function fitTitle(){
   const holder = document.getElementById("title");
@@ -278,8 +264,9 @@ function buildAssignmentTicker(){
       const buyer = typeof info === "string" ? info : info.buyer;
       return `${label}: ${buyer}`;
     });
-  if(entries.length === 0) return "Welcome to SMJ Sports Cards & Collectibles!";
-  return entries.join(" • ");
+  const welcome = "Welcome to SMJ Sports Cards & Collectibles!";
+  if(entries.length === 0) return welcome;
+  return entries.join(" • ") + " • " + welcome;
 }
 function updateTicker(){
   document.getElementById("tickerText").textContent =
@@ -295,6 +282,7 @@ function updateTop(){
   document.querySelector("#title span").textContent = state.title || "NFL BREAK NIGHT";
   fitTitle();
   document.getElementById("soldCount").innerText = Object.keys(state.soldTeams || {}).length;
+  document.getElementById("recapChip").classList.toggle("show", !!state.recapMode);
 }
 function render(){
   const g = document.getElementById("grid");
@@ -302,9 +290,10 @@ function render(){
   TEAM_DATA.forEach(([k,label]) => {
     const info = state.soldTeams?.[k];
     const buyer = !info ? "" : (typeof info === "string" ? info : info.buyer);
+    const baseCards = !info ? "" : (typeof info === "string" ? "No" : info.baseCards);
     const d = document.createElement("div");
-    d.className = "team" + (info ? " sold" : "");
-    d.title = info ? `${label} — ${buyer}` : `${label} — Available`;
+    d.className = "team" + (info ? " sold" : "") + (info && baseCards === "No" ? " nobase" : "");
+    d.title = info ? `${label} — ${buyer} — Base: ${baseCards}` : `${label} — Available`;
 
     const code = document.createElement("div");
     code.className = "team-code";
@@ -323,6 +312,13 @@ function render(){
       d.appendChild(badge);
     }
 
+    if(info && baseCards === "No"){
+      const tag = document.createElement("div");
+      tag.className = "nobase-tag";
+      tag.textContent = "NO BASE";
+      d.appendChild(tag);
+    }
+
     g.appendChild(d);
   });
 
@@ -334,34 +330,6 @@ function render(){
   updateTop();
   updateTicker();
 }
-function hideSplashes(){
-  document.getElementById("stashSplash").classList.remove("show");
-  document.getElementById("spinSplash").classList.remove("show");
-}
-function triggerSplash(type){
-  hideSplashes();
-  if(type === "stash"){
-    const layer = document.getElementById("stashSplash");
-    const video = document.getElementById("stashVideo");
-    layer.classList.add("show");
-    video.currentTime = 0;
-    video.play().catch(()=>{});
-  } else if(type === "spin"){
-    const layer = document.getElementById("spinSplash");
-    const video = document.getElementById("spinVideo");
-    layer.classList.add("show");
-    video.currentTime = 0;
-    video.play().catch(()=>{});
-  }
-}
-function setupVideoAutoHide(id, layerId){
-  const video = document.getElementById(id);
-  const layer = document.getElementById(layerId);
-  video.addEventListener("ended", ()=> layer.classList.remove("show"));
-  video.addEventListener("error", ()=> layer.classList.remove("show"));
-}
-setupVideoAutoHide("stashVideo", "stashSplash");
-setupVideoAutoHide("spinVideo", "spinSplash");
 
 try {
   const app = initializeApp(firebaseConfig);
@@ -374,14 +342,6 @@ try {
       state = merged;
       lastSerialized = serialized;
       render();
-      if ((state.activeSplash || "") !== lastSplash) {
-        lastSplash = state.activeSplash || "";
-        if (!lastSplash) {
-          hideSplashes();
-        } else {
-          triggerSplash(lastSplash);
-        }
-      }
     }
   });
 } catch (err) {
@@ -394,4 +354,5 @@ window.addEventListener("resize", fitTitle);
 </script>
 </body>
 </html>
+
 
