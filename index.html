@@ -12,7 +12,6 @@
   --line: rgba(255,255,255,.12);
   --text:#f5f7fb;
   --muted:#b8c2d9;
-  --accent:#61b8ff;
 }
 html,body{
   margin:0;padding:0;width:1080px;height:720px;overflow:hidden;
@@ -23,6 +22,7 @@ html,body{
   display:grid;
   grid-template-rows:90px 1fr 48px;
   gap:6px;padding:6px;box-sizing:border-box;
+  position:relative;
 }
 .header,.team-wrap,.ticker{
   background:linear-gradient(180deg,var(--bg2),var(--bg1));
@@ -34,22 +34,23 @@ html,body{
   grid-template-columns:90px 1fr 210px;
   align-items:center;
   padding:8px 14px;
+  min-width:0;
 }
 .logo img{width:70px;height:70px;object-fit:contain;display:block;}
 #title{
-  position:relative;
+  min-width:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
   overflow:hidden;
-  font-size:34px;font-weight:1000;text-align:center;
 }
 #title span{
-  display:inline-block;
+  display:block;
   white-space:nowrap;
-  padding-left:100%;
-  animation:titleScroll 12s linear infinite;
-}
-@keyframes titleScroll{
-  from{transform:translateX(0)}
-  to{transform:translateX(-100%)}
+  font-size:34px;
+  font-weight:1000;
+  text-align:center;
+  line-height:1;
 }
 .counter-wrap{display:flex;justify-content:flex-end;}
 .counter{
@@ -103,28 +104,22 @@ html,body{
   text-shadow:0 0 12px rgba(255,0,0,.88);
   pointer-events:none;
 }
-.team.flash{animation:tileFlash .4s ease-out;}
-@keyframes tileFlash{
-  0%{box-shadow:0 0 0 rgba(97,184,255,0);}
-  50%{box-shadow:0 0 18px rgba(97,184,255,.55);}
-  100%{box-shadow:0 0 0 rgba(97,184,255,0);}
-}
 .team-code{
   position:absolute;top:4px;left:6px;
   font-size:11px;font-weight:900;letter-spacing:.4px;
   text-shadow:0 1px 3px rgba(0,0,0,.55);
 }
-.team-initials{
+.team-username{
   position:absolute;
   bottom:4px;left:50%;
   transform:translateX(-50%);
-  font-size:11px;font-weight:900;
+  font-size:10px;font-weight:900;
   color:var(--text);
-  background:rgba(4,10,22,.88);
+  background:rgba(4,10,22,.92);
   border:1px solid rgba(255,255,255,.12);
   border-radius:999px;
   padding:2px 8px;
-  max-width:88%;
+  max-width:92%;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
 .ticker{
@@ -154,6 +149,38 @@ html,body{
   font-size:11px;
   color:rgba(255,255,255,.55);
 }
+.splash-layer{
+  position:absolute;
+  inset:0;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  pointer-events:none;
+  z-index:30;
+}
+.splash-layer.show{display:flex;}
+.splash-box{
+  width:min(980px,92%);
+  max-height:86%;
+  transform:translateY(-8px) scale(.82);
+  opacity:0;
+}
+.splash-layer.show .splash-box{
+  animation:splashFlyIn .45s cubic-bezier(.2,.8,.2,1) forwards;
+}
+@keyframes splashFlyIn{
+  0%{opacity:0; transform:translateY(-70px) scale(.7);}
+  65%{opacity:1; transform:translateY(6px) scale(1.03);}
+  100%{opacity:1; transform:translateY(0) scale(1);}
+}
+.splash-video{
+  width:100%;
+  max-height:520px;
+  object-fit:contain;
+  border-radius:24px;
+  box-shadow:0 20px 50px rgba(0,0,0,.45);
+  background:transparent;
+}
 </style>
 </head>
 <body>
@@ -179,6 +206,22 @@ html,body{
       <div id="tickerText">Welcome to SMJ Sports Cards & Collectibles!</div>
     </div>
   </div>
+
+  <div class="splash-layer" id="stashSplash">
+    <div class="splash-box">
+      <video class="splash-video" id="stashVideo" muted playsinline preload="auto">
+        <source src="stash-or-pass.mp4" type="video/mp4">
+      </video>
+    </div>
+  </div>
+
+  <div class="splash-layer" id="spinSplash">
+    <div class="splash-box">
+      <video class="splash-video" id="spinVideo" muted playsinline preload="auto">
+        <source src="spin-2-choose-1.mp4" type="video/mp4">
+      </video>
+    </div>
+  </div>
 </div>
 
 <script type="module">
@@ -192,17 +235,7 @@ const TEAM_DATA = [
   ['nyj','NYJ'],['phi','PHI'],['pit','PIT'],['sea','SEA'],['sf','SF'],['tb','TB'],['ten','TEN'],['was','WAS']
 ];
 
-// Paste the same Firebase config into BOTH files.
 const firebaseConfig = {
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
-
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
   apiKey: "AIzaSyAP5JIYtql-4YB-wAgNT2Urja4DUOFoRws",
   authDomain: "smj-overlay.firebaseapp.com",
   databaseURL: "https://smj-overlay-default-rtdb.firebaseio.com",
@@ -211,32 +244,31 @@ const firebaseConfig = {
   messagingSenderId: "1034121319902",
   appId: "1:1034121319902:web:2b88ce1cc3ccf79766794f",
   measurementId: "G-511F87E4GE"
-  };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
 };
 
-// Change this only if you want a different shared room/state key.
 const STATE_PATH = "overlayState/main";
-
 const stateDefaults = {
   title: "NFL BREAK NIGHT",
   soldTeams: {},
   tickerMode: "assignments",
-  defaultTicker: "Welcome to SMJ Sports Cards & Collectibles!"
+  defaultTicker: "Welcome to SMJ Sports Cards & Collectibles!",
+  activeSplash: ""
 };
 
 let state = structuredClone(stateDefaults);
 let lastSoldCount = 0;
 let lastSerialized = "";
+let lastSplash = "";
 
-function initials(name){
-  if(!name) return "";
-  const cleaned = name.trim().split(/\s+/).filter(Boolean);
-  if(cleaned.length === 1) return cleaned[0].slice(0,3).toUpperCase();
-  return cleaned.slice(0,2).map(x => x[0].toUpperCase()).join('');
+function fitTitle(){
+  const holder = document.getElementById("title");
+  const span = holder.querySelector("span");
+  let size = 34;
+  span.style.fontSize = size + "px";
+  while (span.scrollWidth > holder.clientWidth - 4 && size > 18) {
+    size -= 1;
+    span.style.fontSize = size + "px";
+  }
 }
 function buildAssignmentTicker(){
   const entries = TEAM_DATA
@@ -261,6 +293,7 @@ function bumpCounter(){
 }
 function updateTop(){
   document.querySelector("#title span").textContent = state.title || "NFL BREAK NIGHT";
+  fitTitle();
   document.getElementById("soldCount").innerText = Object.keys(state.soldTeams || {}).length;
 }
 function render(){
@@ -285,8 +318,8 @@ function render(){
 
     if(buyer && buyer !== "Sold"){
       const badge = document.createElement("div");
-      badge.className = "team-initials";
-      badge.textContent = initials(buyer);
+      badge.className = "team-username";
+      badge.textContent = buyer;
       d.appendChild(badge);
     }
 
@@ -301,6 +334,34 @@ function render(){
   updateTop();
   updateTicker();
 }
+function hideSplashes(){
+  document.getElementById("stashSplash").classList.remove("show");
+  document.getElementById("spinSplash").classList.remove("show");
+}
+function triggerSplash(type){
+  hideSplashes();
+  if(type === "stash"){
+    const layer = document.getElementById("stashSplash");
+    const video = document.getElementById("stashVideo");
+    layer.classList.add("show");
+    video.currentTime = 0;
+    video.play().catch(()=>{});
+  } else if(type === "spin"){
+    const layer = document.getElementById("spinSplash");
+    const video = document.getElementById("spinVideo");
+    layer.classList.add("show");
+    video.currentTime = 0;
+    video.play().catch(()=>{});
+  }
+}
+function setupVideoAutoHide(id, layerId){
+  const video = document.getElementById(id);
+  const layer = document.getElementById(layerId);
+  video.addEventListener("ended", ()=> layer.classList.remove("show"));
+  video.addEventListener("error", ()=> layer.classList.remove("show"));
+}
+setupVideoAutoHide("stashVideo", "stashSplash");
+setupVideoAutoHide("spinVideo", "spinSplash");
 
 try {
   const app = initializeApp(firebaseConfig);
@@ -313,6 +374,14 @@ try {
       state = merged;
       lastSerialized = serialized;
       render();
+      if ((state.activeSplash || "") !== lastSplash) {
+        lastSplash = state.activeSplash || "";
+        if (!lastSplash) {
+          hideSplashes();
+        } else {
+          triggerSplash(lastSplash);
+        }
+      }
     }
   });
 } catch (err) {
@@ -320,6 +389,9 @@ try {
   document.body.insertAdjacentHTML("beforeend", '<div class="status-note">Firebase not configured</div>');
   render();
 }
+
+window.addEventListener("resize", fitTitle);
 </script>
 </body>
 </html>
+
