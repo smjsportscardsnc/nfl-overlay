@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -173,20 +172,14 @@ const TEAM_DATA = [
   ['nyj','NYJ'],['phi','PHI'],['pit','PIT'],['sea','SEA'],['sf','SF'],['tb','TB'],['ten','TEN'],['was','WAS']
 ];
 
-  const firebaseConfig = {
+const firebaseConfig = {
   apiKey: "AIzaSyAP5JIYtql-4YB-wAgNT2Urja4DUOFoRws",
   authDomain: "smj-overlay.firebaseapp.com",
   databaseURL: "https://smj-overlay-default-rtdb.firebaseio.com",
   projectId: "smj-overlay",
   storageBucket: "smj-overlay.firebasestorage.app",
   messagingSenderId: "1034121319902",
-  appId: "1:1034121319902:web:2b88ce1cc3ccf79766794f",
-  measurementId: "G-511F87E4GE"
-  };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
+  appId: "1:1034121319902:web:2b88ce1cc3ccf79766794f"
 };
 
 const STATE_PATH = "overlayState/main";
@@ -198,21 +191,24 @@ const defaults = {
   defaultTicker: "Welcome to SMJ Sports Cards & Collectibles!"
 };
 
-let db;
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 let state = structuredClone(defaults);
 
 function initials(name){
   if(!name) return "";
-  const cleaned = name.trim().split(/\s+/).filter(Boolean);
+  const cleaned = name.trim().split(/\\s+/).filter(Boolean);
   if(cleaned.length === 1) return cleaned[0].slice(0,3).toUpperCase();
   return cleaned.slice(0,2).map(x => x[0].toUpperCase()).join('');
 }
+
 function safeTitleFile(){
   return (state.title || "break")
     .toLowerCase()
     .replace(/[^a-z0-9]+/g,"_")
     .replace(/^_|_$/g,"");
 }
+
 function renderAssignments(){
   const tbody = document.getElementById("assignmentsBody");
   tbody.innerHTML = "";
@@ -226,9 +222,11 @@ function renderAssignments(){
     tbody.appendChild(tr);
   });
 }
+
 function renderInputs(){
   document.getElementById("titleInput").value = state.title || "";
 }
+
 function populateDropdown(){
   const dd = document.getElementById("teamDropdown");
   dd.innerHTML = "";
@@ -239,11 +237,13 @@ function populateDropdown(){
     dd.appendChild(opt);
   });
 }
+
 window.setTitle = async function(){
   const v = document.getElementById("titleInput").value.trim();
   if(!v) return;
   await update(ref(db, STATE_PATH), { title: v.toUpperCase() });
-}
+};
+
 window.assignBuyer = async function(){
   const team = document.getElementById("teamDropdown").value;
   const buyer = document.getElementById("buyerInput").value.trim();
@@ -253,22 +253,26 @@ window.assignBuyer = async function(){
   nextSold[team] = { buyer, baseCards };
   await update(ref(db, STATE_PATH), { soldTeams: nextSold });
   document.getElementById("buyerInput").value = "";
-}
+};
+
 window.clearSelectedTeam = async function(){
   const team = document.getElementById("teamDropdown").value;
   const nextSold = { ...(state.soldTeams || {}) };
   delete nextSold[team];
   await update(ref(db, STATE_PATH), { soldTeams: nextSold });
-}
+};
+
 window.setTicker = async function(){
   const v = document.getElementById("tickerInput").value.trim();
   if(!v) return;
   await update(ref(db, STATE_PATH), { defaultTicker: v, tickerMode: "default" });
-}
+};
+
 window.toggleAssignmentTicker = async function(){
   const nextMode = state.tickerMode === "assignments" ? "default" : "assignments";
   await update(ref(db, STATE_PATH), { tickerMode: nextMode });
-}
+};
+
 window.downloadAssignmentsXLSX = function(){
   const rows = [];
   rows.push([state.title || "BREAK"]);
@@ -285,25 +289,27 @@ window.downloadAssignmentsXLSX = function(){
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "Assignments");
   XLSX.writeFile(wb, `${safeTitleFile()}_assignments.xlsx`);
-}
+};
 
 try{
-  const app = initializeApp(firebaseConfig);
-  db = getDatabase(app);
   const stateRef = ref(db, STATE_PATH);
-  onValue(stateRef, async (snap) => {
-    const val = snap.val();
-    if (val === null) {
-      await set(stateRef, defaults);
-      return;
+  onValue(
+    stateRef,
+    async (snap) => {
+      const val = snap.val();
+      if (val === null) {
+        await set(stateRef, defaults);
+        return;
+      }
+      state = { ...defaults, ...val };
+      document.getElementById("connectionStatus").textContent = "Connected.";
+      renderInputs();
+      renderAssignments();
+    },
+    () => {
+      document.getElementById("connectionStatus").textContent = "Connection error.";
     }
-    state = { ...defaults, ...val };
-    document.getElementById("connectionStatus").textContent = "Connected.";
-    renderInputs();
-    renderAssignments();
-  }, () => {
-    document.getElementById("connectionStatus").textContent = "Connection error.";
-  });
+  );
 } catch(err){
   console.error(err);
   document.getElementById("connectionStatus").textContent = "Firebase not configured.";
