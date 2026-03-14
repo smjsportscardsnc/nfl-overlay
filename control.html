@@ -130,11 +130,6 @@ button.base-no{
   font-size:12px;
   border-radius:10px;
 }
-.actions{
-  display:flex;
-  gap:6px;
-  flex-wrap:wrap;
-}
 .recap-only .non-recap{
   display:none;
 }
@@ -215,12 +210,16 @@ button.base-no{
         <tbody id="assignmentsBody"></tbody>
       </table>
     </div>
+    <div class="row" style="margin-top:10px;">
+      <button class="good half" onclick="downloadAssignmentsXLSX()">Download Assignment XLSX</button>
+    </div>
   </div>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import { getDatabase, ref, onValue, set, update } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
+import * as XLSX from "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/+esm";
 
 const TEAM_DATA = [
   ['ari','ARI'],['atl','ATL'],['bal','BAL'],['buf','BUF'],['car','CAR'],['chi','CHI'],['cin','CIN'],['cle','CLE'],
@@ -254,6 +253,12 @@ const db = getDatabase(app);
 let state = structuredClone(defaults);
 let selectedTeam = "";
 
+function safeTitleFile(){
+  return (state.title || "break")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g,"_")
+    .replace(/^_|_$/g,"");
+}
 function renderInputs(){
   document.getElementById("titleInput").value = state.title || "";
   document.getElementById("appWrap").classList.toggle("recap-only", !!state.recapMode);
@@ -403,6 +408,23 @@ window.clearOverlayForNewBreak = async function(){
   document.getElementById("buyerInput").value = "";
   document.getElementById("tickerInput").value = "";
   selectedTeam = "";
+};
+window.downloadAssignmentsXLSX = function(){
+  const rows = [];
+  rows.push([state.title || "BREAK"]);
+  rows.push([]);
+  rows.push(["Team","Buyer Username","Wants Base Cards"]);
+  TEAM_DATA.forEach(([k,label]) => {
+    const info = state.soldTeams?.[k];
+    if(!info) return;
+    const buyer = typeof info === "string" ? info : info.buyer;
+    const baseCards = typeof info === "string" ? "No" : info.baseCards;
+    rows.push([label, buyer, baseCards]);
+  });
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Assignments");
+  XLSX.writeFile(wb, `${safeTitleFile()}_assignments.xlsx`);
 };
 
 const stateRef = ref(db, STATE_PATH);
