@@ -3,217 +3,178 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=1080, initial-scale=1.0" />
-<title>SMJ Whatnot Top Overlay</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SMJ Overlay Control</title>
 <style>
 :root{
-  --bg1: rgba(5,10,22,.96);
-  --bg2: rgba(7,18,38,.94);
-  --line: rgba(255,255,255,.12);
+  --bg:#081221;
+  --panel:#10203a;
+  --panel2:#132847;
+  --line:rgba(255,255,255,.12);
   --text:#f5f7fb;
   --muted:#b8c2d9;
-  --warn:#ffb347;
 }
-html,body{
-  margin:0;padding:0;width:1080px;height:720px;overflow:hidden;
-  font-family:Montserrat,Arial,sans-serif;background:transparent;color:var(--text);
-}
-.overlay{
-  width:1080px;height:720px;
-  display:grid;
-  grid-template-rows:90px 1fr 48px;
-  gap:6px;padding:6px;box-sizing:border-box;
-  position:relative;
-}
-.header,.team-wrap,.ticker{
-  background:linear-gradient(180deg,var(--bg2),var(--bg1));
-  border-radius:16px;border:1px solid var(--line);
-  overflow:hidden;
-}
-.header{
-  display:grid;
-  grid-template-columns:90px 1fr 210px;
-  align-items:center;
-  padding:8px 14px;
-  min-width:0;
-}
-.logo img{width:70px;height:70px;object-fit:contain;display:block;}
-#title{
-  min-width:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  overflow:hidden;
-}
-#title span{
-  display:block;
-  white-space:nowrap;
-  font-size:34px;
-  font-weight:1000;
-  text-align:center;
-  line-height:1;
-}
-.counter-wrap{display:flex;justify-content:flex-end;}
-.counter{
-  min-width:170px;
-  text-align:center;
-  padding:8px 10px;
-  border-radius:14px;
-  background:rgba(255,255,255,.06);
-  border:1px solid rgba(255,255,255,.1);
-}
-.counter .label{
-  font-size:11px;font-weight:800;letter-spacing:1px;color:var(--muted);
-}
-.counter .value{
-  margin-top:2px;font-size:30px;font-weight:1000;line-height:1;
-}
-.counter.bump .value{animation:counterPop .35s ease-out;}
-@keyframes counterPop{
-  0%{transform:scale(.82);}
-  60%{transform:scale(1.12);}
-  100%{transform:scale(1);}
-}
-.team-wrap{padding:8px;box-sizing:border-box;}
-.teams-grid{
-  height:100%;
-  display:grid;
-  grid-template-columns:repeat(8,1fr);
-  grid-template-rows:repeat(4,1fr);
-  gap:6px;
-}
-.team{
-  display:flex;align-items:center;justify-content:center;
-  background:rgba(255,255,255,.05);
-  border-radius:10px;border:1px solid rgba(255,255,255,.08);
-  position:relative;overflow:hidden;
-}
-.team img{
-  width:72%;height:72%;object-fit:contain;display:block;
-  filter:drop-shadow(0 2px 4px rgba(0,0,0,.28));
-}
-.team.sold img{
-  filter:grayscale(100%) brightness(.45);
-  opacity:.75;
-}
-.team.sold::after{
-  content:"✕";
-  position:absolute;
-  top:50%;left:50%;
-  transform:translate(-50%,-56%);
-  font-size:40px;font-weight:1000;color:red;
-  text-shadow:0 0 12px rgba(255,0,0,.88);
-  pointer-events:none;
-}
-.team.nobase{
-  border-color: rgba(255,179,71,.9);
-  box-shadow: inset 0 0 0 1px rgba(255,179,71,.55), 0 0 16px rgba(255,179,71,.3);
-}
-.team-code{
-  position:absolute;top:4px;left:6px;
-  font-size:11px;font-weight:900;letter-spacing:.4px;
-  text-shadow:0 1px 3px rgba(0,0,0,.55);
-}
-.team-username{
-  position:absolute;
-  bottom:4px;left:50%;
-  transform:translateX(-50%);
-  font-size:10px;font-weight:900;
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Montserrat,Arial,sans-serif;
+  background:linear-gradient(180deg,#081221,#0d1b30);
   color:var(--text);
-  background:rgba(4,10,22,.92);
+}
+.wrap{max-width:980px;margin:0 auto;padding:18px;}
+h1{margin:0 0 14px;font-size:26px;}
+.group{
+  background:linear-gradient(180deg,var(--panel2),var(--panel));
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:14px;
+  margin-bottom:14px;
+}
+label{
+  display:block;
+  font-size:12px;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin-bottom:6px;
+  letter-spacing:1px;
+}
+.row{display:flex;gap:10px;flex-wrap:wrap;}
+input,select,button,textarea{font:inherit;}
+input,select,textarea{
+  width:100%;
+  background:rgba(255,255,255,.06);
   border:1px solid rgba(255,255,255,.12);
-  border-radius:999px;
-  padding:2px 8px;
-  max-width:92%;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  color:var(--text);
+  padding:12px;
+  border-radius:12px;
+  min-width:0;
 }
-.nobase-tag{
-  position:absolute;
-  right:4px;
-  bottom:4px;
-  font-size:9px;
-  font-weight:1000;
-  padding:2px 5px;
-  border-radius:999px;
-  color:#241500;
-  background:var(--warn);
-  box-shadow:0 1px 4px rgba(0,0,0,.25);
+button{
+  border:0;
+  border-radius:12px;
+  padding:12px 14px;
+  background:linear-gradient(90deg,#61b8ff,#1d58d8);
+  color:#fff;
+  font-weight:900;
+  cursor:pointer;
 }
-.ticker{
-  display:flex;align-items:center;overflow:hidden;padding:8px 12px;box-sizing:border-box;
+button.secondary{
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.08);
 }
-.ticker-label{
-  flex:0 0 auto;
-  margin-right:10px;
-  font-size:12px;font-weight:900;letter-spacing:1px;color:var(--muted);
+button.good{
+  background:linear-gradient(90deg,#2bb673,#43d17a);
 }
-.ticker-track{min-width:0;overflow:hidden;width:100%;}
-#tickerText{
-  white-space:nowrap;
-  display:inline-block;
-  padding-left:100%;
-  animation:ticker 26s linear infinite;
-  font-size:18px;font-weight:900;
+button.warn{
+  background:linear-gradient(90deg,#ff6b6b,#ff8e53);
 }
-@keyframes ticker{
-  from{transform:translateX(0)}
-  to{transform:translateX(-100%)}
+button.pass{
+  background:linear-gradient(90deg,#ff6464,#d91f35);
 }
-.mode-chip{
-  position:absolute;
-  right:10px;
-  top:98px;
-  z-index:20;
-  padding:7px 10px;
-  border-radius:999px;
-  background:rgba(255,179,71,.15);
-  border:1px solid rgba(255,179,71,.45);
-  color:var(--warn);
-  font-size:11px;
-  font-weight:1000;
-  letter-spacing:.8px;
-  display:none;
+button.base-yes{
+  background:linear-gradient(90deg,#2bb673,#43d17a);
 }
-.mode-chip.show{display:block;}
-.status-note{
-  position:absolute;
-  right:10px;
-  bottom:10px;
-  font-size:11px;
-  color:rgba(255,255,255,.55);
+button.base-no{
+  background:linear-gradient(90deg,#ff6b6b,#ff8e53);
+}
+.half{flex:1 1 280px}
+.third{flex:1 1 180px}
+.note{font-size:13px;color:var(--muted);line-height:1.45;}
+.status{font-size:13px;color:var(--muted);margin-top:10px;}
+.table{width:100%;border-collapse:collapse;font-size:14px;}
+.table th,.table td{
+  border-bottom:1px solid rgba(255,255,255,.08);
+  padding:8px 6px;text-align:left;
+  vertical-align:middle;
+}
+.table th{color:var(--muted); font-size:12px; text-transform:uppercase;}
+.small-btn{
+  padding:8px 10px;
+  font-size:12px;
+  border-radius:10px;
+}
+.actions{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
 }
 </style>
 </head>
 <body>
-<div class="overlay">
-  <div class="header">
-    <div class="logo"><img src="Logo Master.png" alt="SMJ Logo"></div>
-    <div id="title"><span>NFL BREAK NIGHT</span></div>
-    <div class="counter-wrap">
-      <div class="counter" id="counterBox">
-        <div class="label">TEAMS SOLD</div>
-        <div class="value"><span id="soldCount">0</span>/32</div>
-      </div>
+<div class="wrap">
+  <h1>SMJ Overlay Control</h1>
+
+  <div class="group">
+    <div class="note">Use this page on your tablet. It controls the overlay in OBS through Firebase.</div>
+    <div class="status" id="connectionStatus">Not connected yet.</div>
+  </div>
+
+  <div class="group">
+    <label>Overlay Title</label>
+    <div class="row">
+      <input id="titleInput" class="half" placeholder="NFL Break Night">
+      <button onclick="setTitle()">Set Title</button>
     </div>
   </div>
 
-  <div class="mode-chip" id="recapChip">RECAP MODE</div>
-
-  <div class="team-wrap">
-    <div class="teams-grid" id="grid"></div>
+  <div class="group">
+    <label>Assign Buyer</label>
+    <div class="row">
+      <select id="teamDropdown" class="third"></select>
+      <input id="buyerInput" class="third" placeholder="Whatnot username">
+    </div>
+    <div class="row" style="margin-top:10px;">
+      <button class="good half" onclick="assignBuyer()">Assign Team</button>
+      <button class="secondary half" onclick="clearSelectedTeam()">Clear Selected Team</button>
+    </div>
+    <div class="note" style="margin-top:10px;">Base cards default to <strong>Yes</strong> when assigned. You can change them later in the table below.</div>
   </div>
 
-  <div class="ticker">
-    <div class="ticker-label">LIVE</div>
-    <div class="ticker-track">
-      <div id="tickerText">Welcome to SMJ Sports Cards & Collectibles!</div>
+  <div class="group">
+    <label>Ticker</label>
+    <div class="row">
+      <input id="tickerInput" class="half" placeholder="Custom ticker text">
+      <button onclick="setTicker()">Set Custom</button>
+      <button class="secondary" onclick="toggleAssignmentTicker()">Toggle Assignment Ticker</button>
+    </div>
+  </div>
+
+  <div class="group">
+    <label>Video Splash Buttons</label>
+    <div class="row">
+      <button class="pass third" onclick="triggerSplash('stash')">Play Stash or Pass</button>
+      <button class="third" onclick="triggerSplash('spin')">Play Spin 2 Choose 1</button>
+      <button class="warn third" onclick="clearSplash()">Clear Splash</button>
+    </div>
+  </div>
+
+  <div class="group">
+    <label>Break Reset</label>
+    <div class="row">
+      <button class="warn half" onclick="clearOverlayForNewBreak()">Clear Overlay For New Break</button>
+    </div>
+  </div>
+
+  <div class="group">
+    <label>Assignments</label>
+    <div style="overflow:auto">
+      <table class="table">
+        <thead>
+          <tr><th>Team</th><th>Buyer</th><th>Base Cards</th><th>Actions</th></tr>
+        </thead>
+        <tbody id="assignmentsBody"></tbody>
+      </table>
+    </div>
+    <div class="row" style="margin-top:10px;">
+      <button class="good half" onclick="downloadAssignmentsXLSX()">Download Assignment XLSX</button>
     </div>
   </div>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
+import { getDatabase, ref, onValue, set, update } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
+import * as XLSX from "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/+esm";
 
 const TEAM_DATA = [
   ['ari','ARI'],['atl','ATL'],['bal','BAL'],['buf','BUF'],['car','CAR'],['chi','CHI'],['cin','CIN'],['cle','CLE'],
@@ -234,124 +195,194 @@ const firebaseConfig = {
 };
 
 const STATE_PATH = "overlayState/main";
-const stateDefaults = {
+const defaults = {
   title: "NFL BREAK NIGHT",
   soldTeams: {},
   tickerMode: "assignments",
   defaultTicker: "Welcome to SMJ Sports Cards & Collectibles!",
-  recapMode: false
+  activeSplash: ""
 };
 
-let state = structuredClone(stateDefaults);
-let lastSoldCount = 0;
-let lastSerialized = "";
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+let state = structuredClone(defaults);
 
-function fitTitle(){
-  const holder = document.getElementById("title");
-  const span = holder.querySelector("span");
-  let size = 34;
-  span.style.fontSize = size + "px";
-  while (span.scrollWidth > holder.clientWidth - 4 && size > 18) {
-    size -= 1;
-    span.style.fontSize = size + "px";
-  }
+function safeTitleFile(){
+  return (state.title || "break")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g,"_")
+    .replace(/^_|_$/g,"");
 }
-function buildAssignmentTicker(){
-  const entries = TEAM_DATA
-    .filter(([k]) => state.soldTeams[k])
-    .map(([k,label]) => {
-      const info = state.soldTeams[k];
-      const buyer = typeof info === "string" ? info : info.buyer;
-      return `${label}: ${buyer}`;
-    });
-  const welcome = "Welcome to SMJ Sports Cards & Collectibles!";
-  if(entries.length === 0) return welcome;
-  return entries.join(" • ") + " • " + welcome;
+
+function populateDropdown(){
+  const dd = document.getElementById("teamDropdown");
+  dd.innerHTML = "";
+  TEAM_DATA.forEach(([k,label]) => {
+    const opt = document.createElement("option");
+    opt.value = k;
+    opt.textContent = label;
+    dd.appendChild(opt);
+  });
 }
-function updateTicker(){
-  document.getElementById("tickerText").textContent =
-    state.tickerMode === "assignments" ? buildAssignmentTicker() : (state.defaultTicker || "Welcome to SMJ Sports Cards & Collectibles!");
+
+function renderInputs(){
+  document.getElementById("titleInput").value = state.title || "";
 }
-function bumpCounter(){
-  const box = document.getElementById("counterBox");
-  box.classList.remove("bump");
-  void box.offsetWidth;
-  box.classList.add("bump");
-}
-function updateTop(){
-  document.querySelector("#title span").textContent = state.title || "NFL BREAK NIGHT";
-  fitTitle();
-  document.getElementById("soldCount").innerText = Object.keys(state.soldTeams || {}).length;
-  document.getElementById("recapChip").classList.toggle("show", !!state.recapMode);
-}
-function render(){
-  const g = document.getElementById("grid");
-  g.innerHTML = "";
+
+function renderAssignments(){
+  const tbody = document.getElementById("assignmentsBody");
+  tbody.innerHTML = "";
   TEAM_DATA.forEach(([k,label]) => {
     const info = state.soldTeams?.[k];
-    const buyer = !info ? "" : (typeof info === "string" ? info : info.buyer);
-    const baseCards = !info ? "" : (typeof info === "string" ? "No" : info.baseCards);
-    const d = document.createElement("div");
-    d.className = "team" + (info ? " sold" : "") + (info && baseCards === "No" ? " nobase" : "");
-    d.title = info ? `${label} — ${buyer} — Base: ${baseCards}` : `${label} — Available`;
+    if(!info) return;
+    const buyer = typeof info === "string" ? info : info.buyer;
+    const baseCards = typeof info === "string" ? "Yes" : info.baseCards;
 
-    const code = document.createElement("div");
-    code.className = "team-code";
-    code.textContent = label;
-    d.appendChild(code);
+    const tr = document.createElement("tr");
 
-    const img = document.createElement("img");
-    img.src = `https://a.espncdn.com/i/teamlogos/nfl/500/${k}.png`;
-    img.alt = label;
-    d.appendChild(img);
+    const teamTd = document.createElement("td");
+    teamTd.textContent = label;
 
-    if(buyer && buyer !== "Sold"){
-      const badge = document.createElement("div");
-      badge.className = "team-username";
-      badge.textContent = buyer;
-      d.appendChild(badge);
-    }
+    const buyerTd = document.createElement("td");
+    buyerTd.textContent = buyer;
 
-    if(info && baseCards === "No"){
-      const tag = document.createElement("div");
-      tag.className = "nobase-tag";
-      tag.textContent = "NO BASE";
-      d.appendChild(tag);
-    }
+    const baseTd = document.createElement("td");
+    const baseBtn = document.createElement("button");
+    baseBtn.className = "small-btn " + (baseCards === "Yes" ? "base-yes" : "base-no");
+    baseBtn.textContent = baseCards;
+    baseBtn.onclick = () => toggleBase(k);
+    baseTd.appendChild(baseBtn);
 
-    g.appendChild(d);
+    const actionsTd = document.createElement("td");
+    const actions = document.createElement("div");
+    actions.className = "actions";
+
+    const removeBtn = document.createElement("button");
+    removeBtn.className = "small-btn secondary";
+    removeBtn.textContent = "Remove";
+    removeBtn.onclick = () => removeTeam(k);
+
+    actions.appendChild(removeBtn);
+    actionsTd.appendChild(actions);
+
+    tr.appendChild(teamTd);
+    tr.appendChild(buyerTd);
+    tr.appendChild(baseTd);
+    tr.appendChild(actionsTd);
+    tbody.appendChild(tr);
   });
+}
 
-  const soldCount = Object.keys(state.soldTeams || {}).length;
-  if (soldCount !== lastSoldCount) {
-    bumpCounter();
-    lastSoldCount = soldCount;
+window.setTitle = async function(){
+  const v = document.getElementById("titleInput").value.trim();
+  if(!v) return;
+  await update(ref(db, STATE_PATH), { title: v.toUpperCase() });
+};
+
+window.assignBuyer = async function(){
+  const team = document.getElementById("teamDropdown").value;
+  const buyer = document.getElementById("buyerInput").value.trim();
+  if(!buyer) return;
+  const nextSold = { ...(state.soldTeams || {}) };
+  nextSold[team] = { buyer, baseCards: "Yes" };
+  await update(ref(db, STATE_PATH), { soldTeams: nextSold });
+  document.getElementById("buyerInput").value = "";
+};
+
+window.clearSelectedTeam = async function(){
+  const team = document.getElementById("teamDropdown").value;
+  const nextSold = { ...(state.soldTeams || {}) };
+  delete nextSold[team];
+  await update(ref(db, STATE_PATH), { soldTeams: nextSold });
+};
+
+window.toggleBase = async function(team){
+  const nextSold = { ...(state.soldTeams || {}) };
+  const info = nextSold[team];
+  if(!info) return;
+
+  if(typeof info === "string"){
+    nextSold[team] = { buyer: info, baseCards: "No" };
+  } else {
+    nextSold[team] = {
+      ...info,
+      baseCards: info.baseCards === "Yes" ? "No" : "Yes"
+    };
   }
-  updateTop();
-  updateTicker();
-}
 
-try {
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
-  onValue(ref(db, STATE_PATH), (snapshot) => {
-    const value = snapshot.val() || {};
-    const merged = { ...stateDefaults, ...value };
-    const serialized = JSON.stringify(merged);
-    if (serialized !== lastSerialized) {
-      state = merged;
-      lastSerialized = serialized;
-      render();
-    }
+  await update(ref(db, STATE_PATH), { soldTeams: nextSold });
+};
+
+window.removeTeam = async function(team){
+  const nextSold = { ...(state.soldTeams || {}) };
+  delete nextSold[team];
+  await update(ref(db, STATE_PATH), { soldTeams: nextSold });
+};
+
+window.setTicker = async function(){
+  const v = document.getElementById("tickerInput").value.trim();
+  if(!v) return;
+  await update(ref(db, STATE_PATH), { defaultTicker: v, tickerMode: "default" });
+};
+
+window.toggleAssignmentTicker = async function(){
+  const nextMode = state.tickerMode === "assignments" ? "default" : "assignments";
+  await update(ref(db, STATE_PATH), { tickerMode: nextMode });
+};
+
+window.triggerSplash = async function(type){
+  await update(ref(db, STATE_PATH), { activeSplash: type });
+};
+
+window.clearSplash = async function(){
+  await update(ref(db, STATE_PATH), { activeSplash: "" });
+};
+
+window.clearOverlayForNewBreak = async function(){
+  const keepTitle = document.getElementById("titleInput").value.trim() || "NFL BREAK NIGHT";
+  await set(ref(db, STATE_PATH), {
+    ...defaults,
+    title: keepTitle.toUpperCase()
   });
-} catch (err) {
-  console.error(err);
-  document.body.insertAdjacentHTML("beforeend", '<div class="status-note">Firebase not configured</div>');
-  render();
-}
+  document.getElementById("buyerInput").value = "";
+  document.getElementById("tickerInput").value = "";
+};
 
-window.addEventListener("resize", fitTitle);
+window.downloadAssignmentsXLSX = function(){
+  const rows = [];
+  rows.push([state.title || "BREAK"]);
+  rows.push([]);
+  rows.push(["Team","Buyer Username","Wants Base Cards"]);
+  TEAM_DATA.forEach(([k,label]) => {
+    const info = state.soldTeams?.[k];
+    if(!info) return;
+    const buyer = typeof info === "string" ? info : info.buyer;
+    const baseCards = typeof info === "string" ? "Yes" : info.baseCards;
+    rows.push([label, buyer, baseCards]);
+  });
+  const ws = XLSX.utils.aoa_to_sheet(rows);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Assignments");
+  XLSX.writeFile(wb, `${safeTitleFile()}_assignments.xlsx`);
+};
+
+const stateRef = ref(db, STATE_PATH);
+onValue(stateRef, async (snap) => {
+  const val = snap.val();
+  if (val === null) {
+    await set(stateRef, defaults);
+    return;
+  }
+  state = { ...defaults, ...val };
+  document.getElementById("connectionStatus").textContent = "Connected.";
+  renderInputs();
+  renderAssignments();
+  populateDropdown();
+}, () => {
+  document.getElementById("connectionStatus").textContent = "Connection error.";
+});
+
+populateDropdown();
 </script>
 </body>
 </html>
-
