@@ -14,28 +14,19 @@
   --muted:#b8c2d9;
 }
 html,body{
-  margin:0;
-  padding:0;
-  width:1080px;
-  height:720px;
-  overflow:hidden;
-  font-family:Montserrat,Arial,sans-serif;
-  background:transparent;
-  color:var(--text);
+  margin:0;padding:0;width:1080px;height:720px;overflow:hidden;
+  font-family:Montserrat,Arial,sans-serif;background:transparent;color:var(--text);
 }
 .overlay{
-  width:1080px;
-  height:720px;
+  width:1080px;height:720px;
   display:grid;
   grid-template-rows:90px 1fr 48px;
-  gap:6px;
-  padding:6px;
-  box-sizing:border-box;
+  gap:6px;padding:6px;box-sizing:border-box;
+  position:relative;
 }
 .header,.team-wrap,.ticker{
   background:linear-gradient(180deg,var(--bg2),var(--bg1));
-  border-radius:16px;
-  border:1px solid var(--line);
+  border-radius:16px;border:1px solid var(--line);
   overflow:hidden;
 }
 .header{
@@ -45,12 +36,7 @@ html,body{
   padding:8px 14px;
   min-width:0;
 }
-.logo img{
-  width:70px;
-  height:70px;
-  object-fit:contain;
-  display:block;
-}
+.logo img{width:70px;height:70px;object-fit:contain;display:block;}
 #title{
   min-width:0;
   display:flex;
@@ -66,10 +52,7 @@ html,body{
   text-align:center;
   line-height:1;
 }
-.counter-wrap{
-  display:flex;
-  justify-content:flex-end;
-}
+.counter-wrap{display:flex;justify-content:flex-end;}
 .counter{
   min-width:170px;
   text-align:center;
@@ -79,29 +62,19 @@ html,body{
   border:1px solid rgba(255,255,255,.1);
 }
 .counter .label{
-  font-size:11px;
-  font-weight:800;
-  letter-spacing:1px;
-  color:var(--muted);
+  font-size:11px;font-weight:800;letter-spacing:1px;color:var(--muted);
 }
 .counter .value{
-  margin-top:2px;
-  font-size:30px;
-  font-weight:1000;
-  line-height:1;
+  margin-top:2px;font-size:30px;font-weight:1000;line-height:1;
 }
-.counter.bump .value{
-  animation:counterPop .35s ease-out;
-}
+.counter.bump .value{animation:counterPop .35s ease-out;}
 @keyframes counterPop{
   0%{transform:scale(.82);}
   60%{transform:scale(1.12);}
   100%{transform:scale(1);}
 }
-.team-wrap{
-  padding:8px;
-  box-sizing:border-box;
-}
+
+.team-wrap{padding:8px;box-sizing:border-box;}
 .teams-grid{
   height:100%;
   display:grid;
@@ -110,20 +83,13 @@ html,body{
   gap:6px;
 }
 .team{
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  display:flex;align-items:center;justify-content:center;
   background:rgba(255,255,255,.05);
-  border-radius:10px;
-  border:1px solid rgba(255,255,255,.08);
-  position:relative;
-  overflow:hidden;
+  border-radius:10px;border:1px solid rgba(255,255,255,.08);
+  position:relative;overflow:hidden;
 }
 .team img{
-  width:72%;
-  height:72%;
-  object-fit:contain;
-  display:block;
+  width:72%;height:72%;object-fit:contain;display:block;
   filter:drop-shadow(0 2px 4px rgba(0,0,0,.28));
 }
 .team.sold img{
@@ -133,68 +99,62 @@ html,body{
 .team.sold::after{
   content:"✕";
   position:absolute;
-  top:50%;
-  left:50%;
+  top:50%;left:50%;
   transform:translate(-50%,-56%);
-  font-size:40px;
-  font-weight:1000;
-  color:red;
+  font-size:40px;font-weight:1000;color:red;
   text-shadow:0 0 12px rgba(255,0,0,.88);
   pointer-events:none;
 }
+.team.just-sold{
+  animation:soldFlash .55s ease-out;
+}
+.team.just-sold img{
+  animation:soldLogoDip .55s ease-out;
+}
+@keyframes soldFlash{
+  0%{box-shadow:0 0 0 rgba(97,184,255,0); transform:scale(.95);}
+  50%{box-shadow:0 0 18px rgba(97,184,255,.45); transform:scale(1.03);}
+  100%{box-shadow:0 0 0 rgba(97,184,255,0); transform:scale(1);}
+}
+@keyframes soldLogoDip{
+  0%{transform:scale(1);}
+  45%{transform:scale(.92);}
+  100%{transform:scale(1);}
+}
 .team-code{
-  position:absolute;
-  top:4px;
-  left:6px;
-  font-size:11px;
-  font-weight:900;
-  letter-spacing:.4px;
+  position:absolute;top:4px;left:6px;
+  font-size:11px;font-weight:900;letter-spacing:.4px;
   text-shadow:0 1px 3px rgba(0,0,0,.55);
 }
 .team-username{
   position:absolute;
-  bottom:4px;
-  left:50%;
+  bottom:4px;left:50%;
   transform:translateX(-50%);
-  font-size:10px;
-  font-weight:900;
+  font-size:10px;font-weight:900;
   color:var(--text);
   background:rgba(4,10,22,.92);
   border:1px solid rgba(255,255,255,.12);
   border-radius:999px;
   padding:2px 8px;
   max-width:92%;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
+
 .ticker{
-  display:flex;
-  align-items:center;
-  overflow:hidden;
-  padding:8px 12px;
-  box-sizing:border-box;
+  display:flex;align-items:center;overflow:hidden;padding:8px 12px;box-sizing:border-box;
 }
 .ticker-label{
   flex:0 0 auto;
   margin-right:10px;
-  font-size:12px;
-  font-weight:900;
-  letter-spacing:1px;
-  color:var(--muted);
+  font-size:12px;font-weight:900;letter-spacing:1px;color:var(--muted);
 }
-.ticker-track{
-  min-width:0;
-  overflow:hidden;
-  width:100%;
-}
+.ticker-track{min-width:0;overflow:hidden;width:100%;}
 #tickerText{
   white-space:nowrap;
   display:inline-block;
   padding-left:100%;
   animation:ticker 26s linear infinite;
-  font-size:18px;
-  font-weight:900;
+  font-size:18px;font-weight:900;
 }
 @keyframes ticker{
   from{transform:translateX(0)}
@@ -215,9 +175,45 @@ html,body{
   letter-spacing:.8px;
   display:none;
 }
-.mode-chip.show{
-  display:block;
+.mode-chip.show{display:block;}
+
+.recap-splash{
+  position:absolute;
+  inset:0;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  pointer-events:none;
+  z-index:40;
 }
+.recap-splash.show{display:flex;}
+.recap-splash-card{
+  padding:26px 34px;
+  border-radius:22px;
+  background:linear-gradient(180deg, rgba(15,30,58,.95), rgba(7,18,38,.96));
+  border:1px solid rgba(255,255,255,.16);
+  box-shadow:0 18px 50px rgba(0,0,0,.45);
+  animation:recapFly .7s cubic-bezier(.2,.8,.2,1) forwards;
+  text-align:center;
+}
+.recap-splash-title{
+  font-size:46px;
+  font-weight:1000;
+  letter-spacing:1px;
+  line-height:1;
+}
+.recap-splash-sub{
+  margin-top:8px;
+  font-size:18px;
+  font-weight:800;
+  color:var(--muted);
+}
+@keyframes recapFly{
+  0%{opacity:0; transform:translateY(-60px) scale(.86);}
+  55%{opacity:1; transform:translateY(6px) scale(1.03);}
+  100%{opacity:1; transform:translateY(0) scale(1);}
+}
+
 .status-note{
   position:absolute;
   right:10px;
@@ -250,6 +246,13 @@ html,body{
     <div class="ticker-label">LIVE</div>
     <div class="ticker-track">
       <div id="tickerText">Welcome to SMJ Sports Cards & Collectibles!</div>
+    </div>
+  </div>
+
+  <div class="recap-splash" id="recapSplash">
+    <div class="recap-splash-card">
+      <div class="recap-splash-title">RECAP MODE</div>
+      <div class="recap-splash-sub">Ready for shipping review</div>
     </div>
   </div>
 </div>
@@ -288,6 +291,9 @@ const stateDefaults = {
 let state = structuredClone(stateDefaults);
 let lastSoldCount = 0;
 let lastSerialized = "";
+let previousSoldKeys = new Set();
+let lastRecapMode = false;
+let recapSplashTimer = null;
 
 function fitTitle(){
   const holder = document.getElementById("title");
@@ -299,7 +305,6 @@ function fitTitle(){
     span.style.fontSize = size + "px";
   }
 }
-
 function buildAssignmentTicker(){
   const entries = TEAM_DATA
     .filter(([k]) => state.soldTeams[k])
@@ -312,35 +317,38 @@ function buildAssignmentTicker(){
   if(entries.length === 0) return welcome;
   return entries.join(" • ") + " • " + welcome;
 }
-
 function updateTicker(){
   document.getElementById("tickerText").textContent =
     state.tickerMode === "assignments" ? buildAssignmentTicker() : (state.defaultTicker || "Welcome to SMJ Sports Cards & Collectibles!");
 }
-
 function bumpCounter(){
   const box = document.getElementById("counterBox");
   box.classList.remove("bump");
   void box.offsetWidth;
   box.classList.add("bump");
 }
-
+function showRecapSplash(){
+  const splash = document.getElementById("recapSplash");
+  splash.classList.remove("show");
+  void splash.offsetWidth;
+  splash.classList.add("show");
+  if (recapSplashTimer) clearTimeout(recapSplashTimer);
+  recapSplashTimer = setTimeout(() => splash.classList.remove("show"), 1500);
+}
 function updateTop(){
   document.querySelector("#title span").textContent = state.title || "NFL BREAK NIGHT";
   fitTitle();
   document.getElementById("soldCount").innerText = Object.keys(state.soldTeams || {}).length;
   document.getElementById("recapChip").classList.toggle("show", !!state.recapMode);
 }
-
-function render(){
+function render(newlySoldKeys = new Set()){
   const g = document.getElementById("grid");
   g.innerHTML = "";
   TEAM_DATA.forEach(([k,label]) => {
     const info = state.soldTeams?.[k];
     const buyer = !info ? "" : (typeof info === "string" ? info : info.buyer);
-
     const d = document.createElement("div");
-    d.className = "team" + (info ? " sold" : "");
+    d.className = "team" + (info ? " sold" : "") + (newlySoldKeys.has(k) ? " just-sold" : "");
     d.title = info ? `${label} — ${buyer}` : `${label} — Available`;
 
     const code = document.createElement("div");
@@ -380,9 +388,18 @@ try {
     const merged = { ...stateDefaults, ...value };
     const serialized = JSON.stringify(merged);
     if (serialized !== lastSerialized) {
+      const currentSoldKeys = new Set(Object.keys(merged.soldTeams || {}));
+      const newlySoldKeys = new Set([...currentSoldKeys].filter(k => !previousSoldKeys.has(k)));
+
       state = merged;
       lastSerialized = serialized;
-      render();
+      render(newlySoldKeys);
+
+      if (!!state.recapMode && !lastRecapMode) {
+        showRecapSplash();
+      }
+      lastRecapMode = !!state.recapMode;
+      previousSoldKeys = currentSoldKeys;
     }
   });
 } catch (err) {
