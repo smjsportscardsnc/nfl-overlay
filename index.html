@@ -16,7 +16,6 @@
 
 html,body{
   margin:0;
-  padding:0;
   width:1080px;
   height:720px;
   overflow:hidden;
@@ -26,13 +25,12 @@ html,body{
 }
 
 .overlay{
-  width:1080px;
-  height:720px;
+  width:100%;
+  height:100%;
   display:grid;
   grid-template-rows:90px 1fr 48px;
   gap:6px;
   padding:6px;
-  box-sizing:border-box;
   position:relative;
 }
 
@@ -45,7 +43,6 @@ html,body{
   background-size:65%;
   opacity:0.06;
   filter:blur(2px);
-  pointer-events:none;
   z-index:0;
 }
 
@@ -58,14 +55,13 @@ html,body{
   background:linear-gradient(180deg,var(--bg2),var(--bg1));
   border-radius:16px;
   border:1px solid var(--line);
-  overflow:hidden;
 }
 
 .header{
   display:grid;
-  grid-template-columns:1fr 210px;
+  grid-template-columns:1fr 200px;
   align-items:center;
-  padding:8px 14px;
+  padding:10px;
 }
 
 #title{
@@ -79,27 +75,23 @@ html,body{
 }
 
 .counter .value{
-  font-size:30px;
+  font-size:28px;
   font-weight:bold;
 }
 
-.team-wrap{
-  padding:8px;
-}
-
 .teams-grid{
-  height:100%;
   display:grid;
   grid-template-columns:repeat(8,1fr);
   grid-template-rows:repeat(4,1fr);
   gap:6px;
+  height:100%;
 }
 
 .team{
-  display:flex;
-  align-items:center;
-  justify-content:center;
   background:rgba(255,255,255,.05);
+  display:flex;
+  justify-content:center;
+  align-items:center;
   border-radius:10px;
   position:relative;
 }
@@ -114,28 +106,29 @@ html,body{
 }
 
 .team.just-sold{
-  animation:flash .5s ease-out;
+  animation:pop .4s ease;
 }
 
-@keyframes flash{
-  0%{transform:scale(.9);}
-  50%{transform:scale(1.1);}
-  100%{transform:scale(1);}
+@keyframes pop{
+  0%{transform:scale(.9)}
+  50%{transform:scale(1.1)}
+  100%{transform:scale(1)}
 }
 
 .team-username{
   position:absolute;
-  bottom:4px;
+  bottom:3px;
   font-size:10px;
   background:black;
   padding:2px 6px;
-  border-radius:8px;
+  border-radius:6px;
 }
 
 .ticker{
   display:flex;
   align-items:center;
-  padding:8px;
+  overflow:hidden;
+  padding-left:10px;
 }
 
 #tickerText{
@@ -148,20 +141,20 @@ html,body{
   to{transform:translateX(-100%)}
 }
 
-/* 🎬 RECAP SPLASH */
+/* 🎬 RECAP */
 .recap{
   position:absolute;
   inset:0;
   display:none;
-  align-items:center;
   justify-content:center;
+  align-items:center;
   font-size:50px;
   font-weight:bold;
 }
 
 .recap.show{
   display:flex;
-  animation:fade .6s;
+  animation:fade .5s;
 }
 
 @keyframes fade{
@@ -176,7 +169,7 @@ html,body{
 <div class="overlay">
 
   <div class="header">
-    <div id="title">NFL BREAK NIGHT</div>
+    <div id="title">BREAK</div>
     <div class="counter">
       <div class="value" id="count">0/32</div>
     </div>
@@ -198,15 +191,22 @@ html,body{
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
 
-const config = {
-  apiKey:"PASTE",
-  databaseURL:"PASTE"
+/* 🔥 PASTE YOUR FIREBASE CONFIG HERE */
+const firebaseConfig = {
+  apiKey: "AIzaSyAP5JIYtql-4YB-wAgNT2Urja4DUOFoRws",
+  authDomain: "smj-overlay.firebaseapp.com",
+  databaseURL: "https://smj-overlay-default-rtdb.firebaseio.com",
+  projectId: "smj-overlay",
+  storageBucket: "smj-overlay.firebasestorage.app",
+  messagingSenderId: "1034121319902",
+  appId: "1:1034121319902:web:2b88ce1cc3ccf79766794f",
+  measurementId: "G-511F87E4GE"
 };
 
-const app = initializeApp(config);
+const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-const teams = [
+const TEAMS = [
 'ari','atl','bal','buf','car','chi','cin','cle',
 'dal','den','det','gb','hou','ind','jax','kc',
 'lv','lac','lar','mia','min','ne','no','nyg',
@@ -215,19 +215,18 @@ const teams = [
 
 let prev = {};
 
-function render(data){
-  const g = document.getElementById("grid");
-  g.innerHTML="";
-
+function render(sold){
+  const grid = document.getElementById("grid");
+  grid.innerHTML="";
   let count = 0;
 
-  teams.forEach(t=>{
+  TEAMS.forEach(t=>{
     const d = document.createElement("div");
-    const sold = data?.[t];
+    const data = sold?.[t];
 
-    d.className = "team" + (sold?" sold":"");
+    d.className = "team" + (data?" sold":"");
 
-    if(sold && !prev[t]){
+    if(data && !prev[t]){
       d.classList.add("just-sold");
     }
 
@@ -236,20 +235,19 @@ function render(data){
 
     d.appendChild(img);
 
-    if(sold){
+    if(data){
       count++;
-      const u = document.createElement("div");
-      u.className="team-username";
-      u.innerText = sold.buyer;
-      d.appendChild(u);
+      const tag = document.createElement("div");
+      tag.className = "team-username";
+      tag.innerText = data.buyer;
+      d.appendChild(tag);
     }
 
-    g.appendChild(d);
+    grid.appendChild(d);
   });
 
   document.getElementById("count").innerText = count + "/32";
-
-  prev = {...data};
+  prev = {...sold};
 }
 
 onValue(ref(db,"overlayState/main"), snap=>{
@@ -257,9 +255,10 @@ onValue(ref(db,"overlayState/main"), snap=>{
 
   document.getElementById("title").innerText = s.title || "BREAK";
 
-  render(s.soldTeams);
+  render(s.soldTeams || {});
 
-  document.getElementById("recap").classList.toggle("show", s.recapMode);
+  document.getElementById("recap")
+    .classList.toggle("show", s.recapMode);
 });
 </script>
 
