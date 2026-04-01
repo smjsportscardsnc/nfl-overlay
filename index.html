@@ -39,16 +39,17 @@ html,body{
   content:"";
   position:absolute;
   inset:0;
-  background:url("./logo.png") center center no-repeat;
-  background-size:65%;
-  opacity:0.06;
-  filter:blur(2px);
-  z-index:0;
-}
 
-.overlay > *{
-  position:relative;
-  z-index:1;
+  background-image:url("./logo.png");
+  background-repeat:no-repeat;
+  background-position:center;
+  background-size:55%;
+
+  opacity:0.05;
+  filter:blur(1.5px) brightness(0.9);
+
+  pointer-events:none;
+  z-index:0;
 }
 
 .header,.team-wrap,.ticker{
