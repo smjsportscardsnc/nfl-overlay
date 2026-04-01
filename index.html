@@ -1,10 +1,10 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=1080, initial-scale=1.0" />
-<title>SMJ Whatnot Top Overlay</title>
+<title>SMJ Overlay</title>
+
 <style>
 :root{
   --bg1: rgba(5,10,22,.96);
@@ -13,68 +13,80 @@
   --text:#f5f7fb;
   --muted:#b8c2d9;
 }
+
 html,body{
-  margin:0;padding:0;width:1080px;height:720px;overflow:hidden;
-  font-family:Montserrat,Arial,sans-serif;background:transparent;color:var(--text);
-}
-.overlay{
-  width:1080px;height:720px;
-  display:grid;
-  grid-template-rows:90px 1fr 48px;
-  gap:6px;padding:6px;box-sizing:border-box;
-  position:relative;
-}
-.header,.team-wrap,.ticker{
-  background:linear-gradient(180deg,var(--bg2),var(--bg1));
-  border-radius:16px;border:1px solid var(--line);
+  margin:0;
+  padding:0;
+  width:1080px;
+  height:720px;
   overflow:hidden;
-}
-.header{
-  display:grid;
-  grid-template-columns:90px 1fr 210px;
-  align-items:center;
-  padding:8px 14px;
-  min-width:0;
-}
-.logo img{width:70px;height:70px;object-fit:contain;display:block;}
-#title{
-  min-width:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  overflow:hidden;
-}
-#title span{
-  display:block;
-  white-space:nowrap;
-  font-size:34px;
-  font-weight:1000;
-  text-align:center;
-  line-height:1;
-}
-.counter-wrap{display:flex;justify-content:flex-end;}
-.counter{
-  min-width:170px;
-  text-align:center;
-  padding:8px 10px;
-  border-radius:14px;
-  background:rgba(255,255,255,.06);
-  border:1px solid rgba(255,255,255,.1);
-}
-.counter .label{
-  font-size:11px;font-weight:800;letter-spacing:1px;color:var(--muted);
-}
-.counter .value{
-  margin-top:2px;font-size:30px;font-weight:1000;line-height:1;
-}
-.counter.bump .value{animation:counterPop .35s ease-out;}
-@keyframes counterPop{
-  0%{transform:scale(.82);}
-  60%{transform:scale(1.12);}
-  100%{transform:scale(1);}
+  font-family:Arial, sans-serif;
+  background:transparent;
+  color:var(--text);
 }
 
-.team-wrap{padding:8px;box-sizing:border-box;}
+.overlay{
+  width:1080px;
+  height:720px;
+  display:grid;
+  grid-template-rows:90px 1fr 48px;
+  gap:6px;
+  padding:6px;
+  box-sizing:border-box;
+  position:relative;
+}
+
+/* 🔥 BACKGROUND LOGO */
+.overlay::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:url("Logo Master.png") center center no-repeat;
+  background-size:65%;
+  opacity:0.06;
+  filter:blur(2px);
+  pointer-events:none;
+  z-index:0;
+}
+
+.overlay > *{
+  position:relative;
+  z-index:1;
+}
+
+.header,.team-wrap,.ticker{
+  background:linear-gradient(180deg,var(--bg2),var(--bg1));
+  border-radius:16px;
+  border:1px solid var(--line);
+  overflow:hidden;
+}
+
+.header{
+  display:grid;
+  grid-template-columns:1fr 210px;
+  align-items:center;
+  padding:8px 14px;
+}
+
+#title{
+  text-align:center;
+  font-size:34px;
+  font-weight:1000;
+}
+
+.counter{
+  text-align:center;
+}
+
+.counter .value{
+  font-size:30px;
+  font-weight:bold;
+}
+
+.team-wrap{
+  padding:8px;
+}
+
 .teams-grid{
   height:100%;
   display:grid;
@@ -82,334 +94,174 @@ html,body{
   grid-template-rows:repeat(4,1fr);
   gap:6px;
 }
+
 .team{
-  display:flex;align-items:center;justify-content:center;
+  display:flex;
+  align-items:center;
+  justify-content:center;
   background:rgba(255,255,255,.05);
-  border-radius:10px;border:1px solid rgba(255,255,255,.08);
-  position:relative;overflow:hidden;
+  border-radius:10px;
+  position:relative;
 }
+
 .team img{
-  width:72%;height:72%;object-fit:contain;display:block;
-  filter:drop-shadow(0 2px 4px rgba(0,0,0,.28));
+  width:70%;
 }
+
 .team.sold img{
-  filter:grayscale(100%) brightness(.45);
-  opacity:.75;
+  filter:grayscale(100%);
+  opacity:.6;
 }
-.team.sold::after{
-  content:"✕";
-  position:absolute;
-  top:50%;left:50%;
-  transform:translate(-50%,-56%);
-  font-size:40px;font-weight:1000;color:red;
-  text-shadow:0 0 12px rgba(255,0,0,.88);
-  pointer-events:none;
-}
+
 .team.just-sold{
-  animation:soldFlash .55s ease-out;
+  animation:flash .5s ease-out;
 }
-.team.just-sold img{
-  animation:soldLogoDip .55s ease-out;
-}
-@keyframes soldFlash{
-  0%{box-shadow:0 0 0 rgba(97,184,255,0); transform:scale(.95);}
-  50%{box-shadow:0 0 18px rgba(97,184,255,.45); transform:scale(1.03);}
-  100%{box-shadow:0 0 0 rgba(97,184,255,0); transform:scale(1);}
-}
-@keyframes soldLogoDip{
-  0%{transform:scale(1);}
-  45%{transform:scale(.92);}
+
+@keyframes flash{
+  0%{transform:scale(.9);}
+  50%{transform:scale(1.1);}
   100%{transform:scale(1);}
 }
-.team-code{
-  position:absolute;top:4px;left:6px;
-  font-size:11px;font-weight:900;letter-spacing:.4px;
-  text-shadow:0 1px 3px rgba(0,0,0,.55);
-}
+
 .team-username{
   position:absolute;
-  bottom:4px;left:50%;
-  transform:translateX(-50%);
-  font-size:10px;font-weight:900;
-  color:var(--text);
-  background:rgba(4,10,22,.92);
-  border:1px solid rgba(255,255,255,.12);
-  border-radius:999px;
-  padding:2px 8px;
-  max-width:92%;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  bottom:4px;
+  font-size:10px;
+  background:black;
+  padding:2px 6px;
+  border-radius:8px;
 }
 
 .ticker{
-  display:flex;align-items:center;overflow:hidden;padding:8px 12px;box-sizing:border-box;
+  display:flex;
+  align-items:center;
+  padding:8px;
 }
-.ticker-label{
-  flex:0 0 auto;
-  margin-right:10px;
-  font-size:12px;font-weight:900;letter-spacing:1px;color:var(--muted);
-}
-.ticker-track{min-width:0;overflow:hidden;width:100%;}
+
 #tickerText{
   white-space:nowrap;
-  display:inline-block;
-  padding-left:100%;
-  animation:ticker 26s linear infinite;
-  font-size:18px;font-weight:900;
+  animation:ticker 25s linear infinite;
 }
+
 @keyframes ticker{
-  from{transform:translateX(0)}
+  from{transform:translateX(100%)}
   to{transform:translateX(-100%)}
 }
-.mode-chip{
-  position:absolute;
-  right:10px;
-  top:98px;
-  z-index:20;
-  padding:7px 10px;
-  border-radius:999px;
-  background:rgba(255,255,255,.08);
-  border:1px solid rgba(255,255,255,.15);
-  color:var(--text);
-  font-size:11px;
-  font-weight:1000;
-  letter-spacing:.8px;
-  display:none;
-}
-.mode-chip.show{display:block;}
 
-.recap-splash{
+/* 🎬 RECAP SPLASH */
+.recap{
   position:absolute;
   inset:0;
   display:none;
   align-items:center;
   justify-content:center;
-  pointer-events:none;
-  z-index:40;
-}
-.recap-splash.show{display:flex;}
-.recap-splash-card{
-  padding:26px 34px;
-  border-radius:22px;
-  background:linear-gradient(180deg, rgba(15,30,58,.95), rgba(7,18,38,.96));
-  border:1px solid rgba(255,255,255,.16);
-  box-shadow:0 18px 50px rgba(0,0,0,.45);
-  animation:recapFly .7s cubic-bezier(.2,.8,.2,1) forwards;
-  text-align:center;
-}
-.recap-splash-title{
-  font-size:46px;
-  font-weight:1000;
-  letter-spacing:1px;
-  line-height:1;
-}
-.recap-splash-sub{
-  margin-top:8px;
-  font-size:18px;
-  font-weight:800;
-  color:var(--muted);
-}
-@keyframes recapFly{
-  0%{opacity:0; transform:translateY(-60px) scale(.86);}
-  55%{opacity:1; transform:translateY(6px) scale(1.03);}
-  100%{opacity:1; transform:translateY(0) scale(1);}
+  font-size:50px;
+  font-weight:bold;
 }
 
-.status-note{
-  position:absolute;
-  right:10px;
-  bottom:10px;
-  font-size:11px;
-  color:rgba(255,255,255,.55);
+.recap.show{
+  display:flex;
+  animation:fade .6s;
+}
+
+@keyframes fade{
+  from{opacity:0}
+  to{opacity:1}
 }
 </style>
 </head>
+
 <body>
+
 <div class="overlay">
+
   <div class="header">
-    <div class="logo"><img src="Logo Master.png" alt="SMJ Logo"></div>
-    <div id="title"><span>NFL BREAK NIGHT</span></div>
-    <div class="counter-wrap">
-      <div class="counter" id="counterBox">
-        <div class="label">TEAMS SOLD</div>
-        <div class="value"><span id="soldCount">0</span>/32</div>
-      </div>
+    <div id="title">NFL BREAK NIGHT</div>
+    <div class="counter">
+      <div class="value" id="count">0/32</div>
     </div>
   </div>
-
-  <div class="mode-chip" id="recapChip">RECAP MODE</div>
 
   <div class="team-wrap">
     <div class="teams-grid" id="grid"></div>
   </div>
 
   <div class="ticker">
-    <div class="ticker-label">LIVE</div>
-    <div class="ticker-track">
-      <div id="tickerText">Welcome to SMJ Sports Cards & Collectibles!</div>
-    </div>
+    <div id="tickerText">Welcome to SMJ Sports Cards & Collectibles!</div>
   </div>
 
-  <div class="recap-splash" id="recapSplash">
-    <div class="recap-splash-card">
-      <div class="recap-splash-title">RECAP MODE</div>
-      <div class="recap-splash-sub">Ready for shipping review</div>
-    </div>
-  </div>
+  <div class="recap" id="recap">RECAP MODE</div>
+
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
 
-const TEAM_DATA = [
-  ['ari','ARI'],['atl','ATL'],['bal','BAL'],['buf','BUF'],['car','CAR'],['chi','CHI'],['cin','CIN'],['cle','CLE'],
-  ['dal','DAL'],['den','DEN'],['det','DET'],['gb','GB'],['hou','HOU'],['ind','IND'],['jax','JAX'],['kc','KC'],
-  ['lv','LV'],['lac','LAC'],['lar','LAR'],['mia','MIA'],['min','MIN'],['ne','NE'],['no','NO'],['nyg','NYG'],
-  ['nyj','NYJ'],['phi','PHI'],['pit','PIT'],['sea','SEA'],['sf','SF'],['tb','TB'],['ten','TEN'],['was','WAS']
+const config = {
+  apiKey:"PASTE",
+  databaseURL:"PASTE"
+};
+
+const app = initializeApp(config);
+const db = getDatabase(app);
+
+const teams = [
+'ari','atl','bal','buf','car','chi','cin','cle',
+'dal','den','det','gb','hou','ind','jax','kc',
+'lv','lac','lar','mia','min','ne','no','nyg',
+'nyj','phi','pit','sea','sf','tb','ten','was'
 ];
 
-const firebaseConfig = {
-  apiKey: "AIzaSyAP5JIYtql-4YB-wAgNT2Urja4DUOFoRws",
-  authDomain: "smj-overlay.firebaseapp.com",
-  databaseURL: "https://smj-overlay-default-rtdb.firebaseio.com",
-  projectId: "smj-overlay",
-  storageBucket: "smj-overlay.firebasestorage.app",
-  messagingSenderId: "1034121319902",
-  appId: "1:1034121319902:web:2b88ce1cc3ccf79766794f",
-  measurementId: "G-511F87E4GE"
-};
+let prev = {};
 
-const STATE_PATH = "overlayState/main";
-const stateDefaults = {
-  title: "NFL BREAK NIGHT",
-  soldTeams: {},
-  tickerMode: "assignments",
-  defaultTicker: "Welcome to SMJ Sports Cards & Collectibles!",
-  recapMode: false
-};
-
-let state = structuredClone(stateDefaults);
-let lastSoldCount = 0;
-let lastSerialized = "";
-let previousSoldKeys = new Set();
-let lastRecapMode = false;
-let recapSplashTimer = null;
-
-function fitTitle(){
-  const holder = document.getElementById("title");
-  const span = holder.querySelector("span");
-  let size = 34;
-  span.style.fontSize = size + "px";
-  while (span.scrollWidth > holder.clientWidth - 4 && size > 18) {
-    size -= 1;
-    span.style.fontSize = size + "px";
-  }
-}
-function buildAssignmentTicker(){
-  const entries = TEAM_DATA
-    .filter(([k]) => state.soldTeams[k])
-    .map(([k,label]) => {
-      const info = state.soldTeams[k];
-      const buyer = typeof info === "string" ? info : info.buyer;
-      return `${label}: ${buyer}`;
-    });
-  const welcome = "Welcome to SMJ Sports Cards & Collectibles!";
-  if(entries.length === 0) return welcome;
-  return entries.join(" • ") + " • " + welcome;
-}
-function updateTicker(){
-  document.getElementById("tickerText").textContent =
-    state.tickerMode === "assignments" ? buildAssignmentTicker() : (state.defaultTicker || "Welcome to SMJ Sports Cards & Collectibles!");
-}
-function bumpCounter(){
-  const box = document.getElementById("counterBox");
-  box.classList.remove("bump");
-  void box.offsetWidth;
-  box.classList.add("bump");
-}
-function showRecapSplash(){
-  const splash = document.getElementById("recapSplash");
-  splash.classList.remove("show");
-  void splash.offsetWidth;
-  splash.classList.add("show");
-  if (recapSplashTimer) clearTimeout(recapSplashTimer);
-  recapSplashTimer = setTimeout(() => splash.classList.remove("show"), 1500);
-}
-function updateTop(){
-  document.querySelector("#title span").textContent = state.title || "NFL BREAK NIGHT";
-  fitTitle();
-  document.getElementById("soldCount").innerText = Object.keys(state.soldTeams || {}).length;
-  document.getElementById("recapChip").classList.toggle("show", !!state.recapMode);
-}
-function render(newlySoldKeys = new Set()){
+function render(data){
   const g = document.getElementById("grid");
-  g.innerHTML = "";
-  TEAM_DATA.forEach(([k,label]) => {
-    const info = state.soldTeams?.[k];
-    const buyer = !info ? "" : (typeof info === "string" ? info : info.buyer);
-    const d = document.createElement("div");
-    d.className = "team" + (info ? " sold" : "") + (newlySoldKeys.has(k) ? " just-sold" : "");
-    d.title = info ? `${label} — ${buyer}` : `${label} — Available`;
+  g.innerHTML="";
 
-    const code = document.createElement("div");
-    code.className = "team-code";
-    code.textContent = label;
-    d.appendChild(code);
+  let count = 0;
+
+  teams.forEach(t=>{
+    const d = document.createElement("div");
+    const sold = data?.[t];
+
+    d.className = "team" + (sold?" sold":"");
+
+    if(sold && !prev[t]){
+      d.classList.add("just-sold");
+    }
 
     const img = document.createElement("img");
-    img.src = `https://a.espncdn.com/i/teamlogos/nfl/500/${k}.png`;
-    img.alt = label;
+    img.src = `https://a.espncdn.com/i/teamlogos/nfl/500/${t}.png`;
+
     d.appendChild(img);
 
-    if(buyer && buyer !== "Sold"){
-      const badge = document.createElement("div");
-      badge.className = "team-username";
-      badge.textContent = buyer;
-      d.appendChild(badge);
+    if(sold){
+      count++;
+      const u = document.createElement("div");
+      u.className="team-username";
+      u.innerText = sold.buyer;
+      d.appendChild(u);
     }
 
     g.appendChild(d);
   });
 
-  const soldCount = Object.keys(state.soldTeams || {}).length;
-  if (soldCount !== lastSoldCount) {
-    bumpCounter();
-    lastSoldCount = soldCount;
-  }
-  updateTop();
-  updateTicker();
+  document.getElementById("count").innerText = count + "/32";
+
+  prev = {...data};
 }
 
-try {
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
-  onValue(ref(db, STATE_PATH), (snapshot) => {
-    const value = snapshot.val() || {};
-    const merged = { ...stateDefaults, ...value };
-    const serialized = JSON.stringify(merged);
-    if (serialized !== lastSerialized) {
-      const currentSoldKeys = new Set(Object.keys(merged.soldTeams || {}));
-      const newlySoldKeys = new Set([...currentSoldKeys].filter(k => !previousSoldKeys.has(k)));
+onValue(ref(db,"overlayState/main"), snap=>{
+  const s = snap.val() || {};
 
-      state = merged;
-      lastSerialized = serialized;
-      render(newlySoldKeys);
+  document.getElementById("title").innerText = s.title || "BREAK";
 
-      if (!!state.recapMode && !lastRecapMode) {
-        showRecapSplash();
-      }
-      lastRecapMode = !!state.recapMode;
-      previousSoldKeys = currentSoldKeys;
-    }
-  });
-} catch (err) {
-  console.error(err);
-  document.body.insertAdjacentHTML("beforeend", '<div class="status-note">Firebase not configured</div>');
-  render();
-}
+  render(s.soldTeams);
 
-window.addEventListener("resize", fitTitle);
+  document.getElementById("recap").classList.toggle("show", s.recapMode);
+});
 </script>
+
 </body>
 </html>
-
