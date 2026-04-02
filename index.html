@@ -443,11 +443,13 @@ function render(sold, chasers){
 
   TEAMS.forEach(([teamKey, teamLabel]) => {
     const d = document.createElement("div");
-    const data = sold?.[teamKey];
+    const assignedData = sold?.[teamKey];
+    const chaserAssigned = !!(chaserMap[teamLabel.toLowerCase()]?.length);
+    const buyer = assignedData ? assignedData.buyer : "";
 
-    d.className = "team" + (data ? " sold" : "");
+    d.className = "team" + ((assignedData || chaserAssigned) ? " sold" : "");
 
-    if (data && !prevSold[teamKey]) {
+    if (assignedData && !prevSold[teamKey]) {
       d.classList.add("just-sold");
       hadNewSale = true;
     }
@@ -475,11 +477,11 @@ function render(sold, chasers){
       d.appendChild(badgeWrap);
     }
 
-    if (data) {
+    if (buyer) {
       count++;
       const tag = document.createElement("div");
       tag.className = "team-username";
-      tag.textContent = data.buyer;
+      tag.textContent = buyer;
       d.appendChild(tag);
     }
 
