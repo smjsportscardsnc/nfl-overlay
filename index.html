@@ -4,355 +4,299 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=1080, initial-scale=1.0" />
-<title>SMJ Overlay</title>
-
+<title>SMJ Break Board</title>
 <style>
 :root{
-  --bg1: rgba(5,10,22,.75);
-  --bg2: rgba(7,18,38,.70);
-  --line: rgba(255,255,255,.14);
+  --bg:#060b14;
+  --panel:#0b1322;
+  --panel2:#101a2c;
+  --line:rgba(255,255,255,.18);
   --text:#f5f7fb;
-  --muted:#b8c2d9;
-  --accent1:#61b8ff;
-  --accent2:#1d58d8;
+  --muted:#c6d0e4;
+  --red1:#e53935;
+  --red2:#9e1414;
 }
-
 html,body{
   margin:0;
   padding:0;
   width:1080px;
-  height:620px;
+  height:430px;
   overflow:hidden;
   font-family:Arial, sans-serif;
   background:transparent;
   color:var(--text);
 }
-
 .overlay{
-  width:100%;
-  height:100%;
-  display:grid;
-  grid-template-rows:65px 1fr 36px;
-  gap:4px;
-  padding:4px;
+  width:1080px;
+  height:430px;
   box-sizing:border-box;
+  padding:4px;
+  display:grid;
+  grid-template-rows:50px 1fr 34px;
+  gap:4px;
   position:relative;
 }
-
-/* Background logo watermark */
-.overlay::before{
+.bar{
+  background:linear-gradient(180deg,rgba(15,22,36,.94),rgba(5,8,14,.96));
+  border:1px solid rgba(255,255,255,.16);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05);
+  overflow:hidden;
+}
+.title-bar{
+  display:grid;
+  grid-template-columns: 1fr 170px;
+  align-items:center;
+  padding:0 14px;
+}
+#title{
+  text-align:center;
+  font-weight:1000;
+  font-size:30px;
+  letter-spacing:.7px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.alive-box{
+  display:grid;
+  grid-template-columns: 1fr auto;
+  align-items:center;
+  gap:10px;
+  background:linear-gradient(180deg, rgba(229,57,53,.95), rgba(158,20,20,.95));
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:4px;
+  padding:6px 10px;
+}
+.alive-label{
+  font-size:11px;
+  font-weight:1000;
+  text-transform:uppercase;
+  letter-spacing:.8px;
+}
+.alive-value{
+  font-size:20px;
+  font-weight:1000;
+}
+.board{
+  position:relative;
+  padding:4px;
+  display:grid;
+  grid-template-rows: repeat(4, 1fr);
+  gap:4px;
+  background:
+    radial-gradient(circle at center, rgba(255,255,255,.06), transparent 38%),
+    linear-gradient(180deg,rgba(12,17,28,.95),rgba(4,6,10,.98));
+}
+.board::before{
   content:"";
   position:absolute;
   inset:0;
-  background-image:url("./logo.png");
-  background-repeat:no-repeat;
-  background-position:center;
-  background-size:55%;
-  opacity:0.18;
-  filter:blur(0.8px) brightness(1.1) contrast(1.08);
+  background:url("./logo.png") center center no-repeat;
+  background-size:34%;
+  opacity:.08;
   pointer-events:none;
-  z-index:0;
-  transform-origin:center center;
 }
-
-.overlay.logo-pulse::before{
-  animation:logoPulse .7s ease-out;
-}
-
-@keyframes logoPulse{
-  0%{transform:scale(1); opacity:.18;}
-  40%{transform:scale(1.03); opacity:.24;}
-  100%{transform:scale(1); opacity:.18;}
-}
-
-.overlay > *{
+.team-row{
+  display:grid;
+  gap:4px;
   position:relative;
   z-index:1;
 }
-
-.header,.team-wrap,.ticker{
-  background:linear-gradient(180deg,var(--bg2),var(--bg1));
-  border-radius:16px;
-  border:1px solid var(--line);
-  overflow:hidden;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.05),
-    0 6px 18px rgba(0,0,0,.18);
+.team-row.full{
+  grid-template-columns: repeat(8, 1fr);
 }
-
-.header{
-  display:grid;
-  grid-template-columns:1fr 190px;
-  align-items:center;
-  padding:6px 12px;
-  min-width:0;
-  background:
-    linear-gradient(90deg, rgba(97,184,255,.10), transparent 28%, transparent 72%, rgba(29,88,216,.10)),
-    linear-gradient(180deg,var(--bg2),var(--bg1));
+.team-row.middle{
+  grid-template-columns: repeat(4, 1fr) 320px repeat(4, 1fr);
 }
-
-.header::after{
-  content:"";
-  position:absolute;
-  left:12px;
-  right:12px;
-  bottom:0;
-  height:1px;
-  background:linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent);
-}
-
-#title{
-  min-width:0;
+.center-logo{
   display:flex;
   align-items:center;
   justify-content:center;
-  overflow:hidden;
-  text-align:center;
-  font-size:28px;
-  font-weight:1000;
-  line-height:1;
-  white-space:nowrap;
-  letter-spacing:.8px;
-  text-shadow:0 1px 8px rgba(0,0,0,.35);
+  border:1px solid rgba(255,255,255,.14);
+  background:linear-gradient(180deg, rgba(10,15,24,.92), rgba(4,6,10,.95));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.04), 0 8px 20px rgba(0,0,0,.22);
 }
-
-.counter{
-  display:flex;
-  justify-content:center;
-  align-items:center;
+.center-logo img{
+  width:78%;
+  height:78%;
+  object-fit:contain;
+  filter:drop-shadow(0 4px 10px rgba(0,0,0,.28));
 }
-
-.counter-box{
-  min-width:150px;
-  padding:6px 10px;
-  border-radius:12px;
-  background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
-  border:1px solid rgba(255,255,255,.12);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
-  text-align:center;
-}
-
-.counter-label{
-  font-size:10px;
-  font-weight:800;
-  letter-spacing:1px;
-  color:var(--muted);
-  text-transform:uppercase;
-}
-
-.counter-value{
-  margin-top:2px;
-  font-size:24px;
-  font-weight:bold;
-  line-height:1;
-}
-
-.counter-box.bump{
-  animation:counterBump .35s ease-out;
-}
-
-@keyframes counterBump{
-  0%{transform:scale(.92);}
-  60%{transform:scale(1.08);}
-  100%{transform:scale(1);}
-}
-
-.team-wrap{
-  padding:6px;
-  box-sizing:border-box;
-}
-
-.teams-grid{
-  display:grid;
-  grid-template-columns:repeat(8,1fr);
-  grid-template-rows:repeat(4,1fr);
-  gap:5px;
-  height:100%;
-}
-
 .team{
-  background:rgba(255,255,255,.05);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  border-radius:10px;
   position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#05080f;
+  border:1px solid rgba(255,255,255,.18);
   overflow:hidden;
-  border:1px solid rgba(255,255,255,.06);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.03);
 }
-
 .team img{
   width:66%;
   height:66%;
   object-fit:contain;
-  display:block;
-  filter:drop-shadow(0 2px 5px rgba(0,0,0,.24));
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,.24));
 }
-
 .team.sold img{
-  filter:grayscale(100%);
-  opacity:.6;
+  filter:grayscale(100%) brightness(.5);
+  opacity:.75;
 }
-
-.team.just-sold{
-  animation:pop .45s ease;
-}
-
-@keyframes pop{
-  0%{transform:scale(.92)}
-  50%{transform:scale(1.06)}
-  100%{transform:scale(1)}
-}
-
-.team-code{
-  position:absolute;
-  top:4px;
-  left:6px;
-  font-size:10px;
-  font-weight:900;
-  letter-spacing:.4px;
-  color:var(--muted);
-  text-shadow:0 1px 3px rgba(0,0,0,.55);
-}
-
-.team-username{
-  position:absolute;
-  bottom:3px;
-  left:50%;
-  transform:translateX(-50%);
-  font-size:9px;
-  font-weight:900;
-  background:rgba(0,0,0,.82);
-  color:#fff;
-  padding:2px 6px;
-  border-radius:6px;
-  max-width:92%;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  border:1px solid rgba(255,255,255,.08);
-}
-
 .team.sold::after{
   content:"✕";
   position:absolute;
   top:50%;
   left:50%;
   transform:translate(-50%,-56%);
-  font-size:40px;
+  font-size:32px;
   font-weight:1000;
-  color:red;
-  text-shadow:0 0 12px rgba(255,0,0,.88);
+  color:#ff2f2f;
+  text-shadow:0 0 12px rgba(255,0,0,.85);
   pointer-events:none;
 }
-
-.chaser-badges{
-  position:absolute;
-  top:4px;
-  right:4px;
-  display:flex;
-  gap:3px;
-  flex-wrap:wrap;
-  justify-content:flex-end;
-  max-width:42px;
+.team.just-sold{
+  animation:soldPop .45s ease-out;
 }
-
-.chaser-badge{
-  min-width:16px;
-  height:16px;
-  padding:0 4px;
-  border-radius:999px;
-  background:linear-gradient(180deg, rgba(97,184,255,.95), rgba(29,88,216,.95));
-  color:#fff;
+@keyframes soldPop{
+  0%{transform:scale(.92)}
+  55%{transform:scale(1.06)}
+  100%{transform:scale(1)}
+}
+.team-code{
+  position:absolute;
+  top:2px;
+  left:4px;
   font-size:9px;
   font-weight:1000;
-  line-height:16px;
+  color:var(--muted);
+  letter-spacing:.4px;
+}
+.team-username{
+  position:absolute;
+  bottom:2px;
+  left:50%;
+  transform:translateX(-50%);
+  max-width:92%;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  font-size:8px;
+  font-weight:1000;
+  background:rgba(0,0,0,.84);
+  color:#fff;
+  padding:1px 5px;
+  border-radius:4px;
+  border:1px solid rgba(255,255,255,.08);
+}
+.chaser-badges{
+  position:absolute;
+  top:2px;
+  right:2px;
+  display:flex;
+  gap:2px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+  max-width:34px;
+}
+.chaser-badge{
+  min-width:14px;
+  height:14px;
+  padding:0 3px;
+  border-radius:999px;
+  background:linear-gradient(180deg,#61b8ff,#1d58d8);
+  color:#fff;
+  font-size:8px;
+  font-weight:1000;
+  line-height:14px;
   text-align:center;
   box-shadow:0 1px 4px rgba(0,0,0,.28);
 }
-
 .ticker{
-  display:flex;
+  display:grid;
+  grid-template-columns: 1fr 175px;
   align-items:center;
-  overflow:hidden;
   padding:0 10px;
-  font-size:14px;
-  background:
-    linear-gradient(90deg, rgba(97,184,255,.08), transparent 25%, transparent 75%, rgba(29,88,216,.08)),
-    linear-gradient(180deg,var(--bg2),var(--bg1));
 }
-
+.bottom-note{
+  display:grid;
+  grid-template-columns: auto 1fr;
+  align-items:center;
+  gap:10px;
+}
+.live-pill{
+  color:#fff;
+  font-size:11px;
+  font-weight:1000;
+  letter-spacing:.8px;
+  text-transform:uppercase;
+}
 #tickerText{
   white-space:nowrap;
   display:inline-block;
-  animation:ticker 25s linear infinite;
-  font-weight:900;
-  text-shadow:0 1px 6px rgba(0,0,0,.25);
+  animation:ticker 24s linear infinite;
+  font-size:12px;
+  font-weight:1000;
 }
-
 @keyframes ticker{
   from{transform:translateX(100%)}
   to{transform:translateX(-100%)}
 }
-
 .recap{
   position:absolute;
   inset:0;
   display:none;
   justify-content:center;
   align-items:center;
-  z-index:5;
+  z-index:10;
   pointer-events:none;
 }
-
 .recap.show{
   display:flex;
-  animation:fade .5s;
+  animation:fade .45s;
 }
-
 .recap-card{
-  padding:20px 28px;
-  border-radius:18px;
-  background:linear-gradient(180deg, rgba(15,30,58,.96), rgba(7,18,38,.96));
-  border:1px solid rgba(255,255,255,.14);
-  box-shadow:0 18px 40px rgba(0,0,0,.35);
-  font-size:40px;
+  padding:16px 24px;
+  border-radius:16px;
+  background:linear-gradient(180deg, rgba(15,30,58,.97), rgba(7,18,38,.97));
+  border:1px solid rgba(255,255,255,.16);
+  box-shadow:0 18px 40px rgba(0,0,0,.38);
+  font-size:32px;
   font-weight:1000;
   letter-spacing:1px;
 }
-
 @keyframes fade{
-  from{opacity:0; transform:translateY(-16px) scale(.95)}
+  from{opacity:0; transform:translateY(-14px) scale(.96)}
   to{opacity:1; transform:translateY(0) scale(1)}
 }
 </style>
 </head>
 <body>
 <div class="overlay" id="overlay">
-
-  <div class="header">
+  <div class="bar title-bar">
     <div id="title">BREAK</div>
-    <div class="counter">
-      <div class="counter-box" id="counterBox">
-        <div class="counter-label">Teams Sold</div>
-        <div class="counter-value" id="count">0/32</div>
-      </div>
+    <div class="alive-box">
+      <div class="alive-label">Teams Alive</div>
+      <div class="alive-value" id="count">32</div>
     </div>
   </div>
 
-  <div class="team-wrap">
-    <div class="teams-grid" id="grid"></div>
+  <div class="bar board">
+    <div class="team-row full" id="row1"></div>
+    <div class="team-row middle" id="row2"></div>
+    <div class="team-row middle" id="row3"></div>
+    <div class="team-row full" id="row4"></div>
   </div>
 
-  <div class="ticker">
-    <div id="tickerText">Welcome to SMJ Sports Cards & Collectibles!</div>
+  <div class="bar ticker">
+    <div class="bottom-note">
+      <div class="live-pill">LIVE</div>
+      <div id="tickerText">Welcome to SMJ Sports Cards & Collectibles!</div>
+    </div>
+    <div></div>
   </div>
 
   <div class="recap" id="recap">
     <div class="recap-card">RECAP MODE</div>
   </div>
-
 </div>
 
 <script type="module">
@@ -373,49 +317,40 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-const TEAMS = [
-  ['ari','ARI'],['atl','ATL'],['bal','BAL'],['buf','BUF'],
-  ['car','CAR'],['chi','CHI'],['cin','CIN'],['cle','CLE'],
-  ['dal','DAL'],['den','DEN'],['det','DET'],['gb','GB'],
-  ['hou','HOU'],['ind','IND'],['jax','JAX'],['kc','KC'],
-  ['lv','LV'],['lac','LAC'],['lar','LAR'],['mia','MIA'],
-  ['min','MIN'],['ne','NE'],['no','NO'],['nyg','NYG'],
-  ['nyj','NYJ'],['phi','PHI'],['pit','PIT'],['sea','SEA'],
-  ['sf','SF'],['tb','TB'],['ten','TEN'],['was','WAS']
-];
+const BOARD_ROWS = {
+  row1: ['lv','lac','lar','no','nyg','cle','jax','chi'],
+  row2: ['nyj','phi','pit','mia', 'CENTER', 'ind','hou','atl'],
+  row3: ['min','ne','sf','sea', 'CENTER', 'bal','dal','det'],
+  row4: ['tb','ten','was','kc','cin','buf','den','gb']
+};
 
 let prevSold = {};
 let lastRecapMode = false;
 let recapTimer = null;
 
-function pulseLogo(){
-  const overlay = document.getElementById("overlay");
-  overlay.classList.remove("logo-pulse");
-  void overlay.offsetWidth;
-  overlay.classList.add("logo-pulse");
-}
-
-function bumpCounter(){
-  const box = document.getElementById("counterBox");
-  box.classList.remove("bump");
-  void box.offsetWidth;
-  box.classList.add("bump");
-}
-
-function buildAssignmentTicker(soldTeams){
-  const entries = TEAMS
-    .filter(([key]) => soldTeams?.[key])
-    .map(([key,label]) => `${label}: ${soldTeams[key].buyer}`);
-
+function buildTicker(soldTeams){
+  const all = Object.entries(soldTeams || {}).map(([key, info]) => {
+    const label = key.toUpperCase();
+    const buyer = typeof info === "string" ? info : info.buyer;
+    return `${label}: ${buyer}`;
+  });
   const welcome = "Welcome to SMJ Sports Cards & Collectibles!";
-  if (!entries.length) return welcome;
-  return entries.join(" • ") + " • " + welcome;
+  return all.length ? all.join(" • ") + " • " + welcome : welcome;
+}
+
+function showRecapSplash(){
+  const recap = document.getElementById("recap");
+  recap.classList.remove("show");
+  void recap.offsetWidth;
+  recap.classList.add("show");
+  if (recapTimer) clearTimeout(recapTimer);
+  recapTimer = setTimeout(() => recap.classList.remove("show"), 1400);
 }
 
 function fitTitle(text){
   const el = document.getElementById("title");
   el.textContent = text || "BREAK";
-  let size = 28;
+  let size = 30;
   el.style.fontSize = size + "px";
   while (el.scrollWidth > el.clientWidth && size > 18) {
     size -= 1;
@@ -434,80 +369,76 @@ function getChaserMap(chasers){
   return map;
 }
 
-function render(sold, chasers){
-  const grid = document.getElementById("grid");
-  grid.innerHTML = "";
-  let count = 0;
-  let hadNewSale = false;
-  const chaserMap = getChaserMap(chasers);
-
-  TEAMS.forEach(([teamKey, teamLabel]) => {
-    const d = document.createElement("div");
-    const assignedData = sold?.[teamKey];
-    const chaserAssigned = !!(chaserMap[teamLabel.toLowerCase()]?.length);
-    const buyer = assignedData ? assignedData.buyer : "";
-
-    d.className = "team" + ((assignedData || chaserAssigned) ? " sold" : "");
-
-    if (assignedData && !prevSold[teamKey]) {
-      d.classList.add("just-sold");
-      hadNewSale = true;
-    }
-
-    const code = document.createElement("div");
-    code.className = "team-code";
-    code.textContent = teamLabel;
-    d.appendChild(code);
-
-    const img = document.createElement("img");
-    img.src = `https://a.espncdn.com/i/teamlogos/nfl/500/${teamKey}.png`;
-    img.alt = teamLabel;
-    d.appendChild(img);
-
-    const badges = chaserMap[teamLabel.toLowerCase()] || [];
-    if (badges.length) {
-      const badgeWrap = document.createElement("div");
-      badgeWrap.className = "chaser-badges";
-      badges.forEach(spot => {
-        const badge = document.createElement("div");
-        badge.className = "chaser-badge";
-        badge.textContent = spot;
-        badgeWrap.appendChild(badge);
-      });
-      d.appendChild(badgeWrap);
-    }
-
-    if (buyer) {
-      count++;
-      const tag = document.createElement("div");
-      tag.className = "team-username";
-      tag.textContent = buyer;
-      d.appendChild(tag);
-    }
-
-    grid.appendChild(d);
-  });
-
-  document.getElementById("count").textContent = count + "/32";
-
-  if (hadNewSale) {
-    pulseLogo();
-    bumpCounter();
+function makeTeamCell(teamKey, soldTeams, chasers){
+  const wrap = document.createElement("div");
+  if (teamKey === 'CENTER') {
+    wrap.className = "center-logo";
+    wrap.innerHTML = '<img src="./logo.png" alt="SMJ Logo">';
+    return wrap;
   }
 
-  prevSold = { ...(sold || {}) };
+  const label = teamKey.toUpperCase();
+  const soldInfo = soldTeams?.[teamKey];
+  const chaserMap = getChaserMap(chasers);
+  const chaserAssigned = !!(chaserMap[label.toLowerCase()]?.length);
+  const buyer = soldInfo ? (typeof soldInfo === "string" ? soldInfo : soldInfo.buyer) : "";
+
+  wrap.className = "team" + ((soldInfo || chaserAssigned) ? " sold" : "");
+  if (soldInfo && !prevSold[teamKey]) wrap.classList.add("just-sold");
+
+  const code = document.createElement("div");
+  code.className = "team-code";
+  code.textContent = label;
+  wrap.appendChild(code);
+
+  const img = document.createElement("img");
+  img.src = `https://a.espncdn.com/i/teamlogos/nfl/500/${teamKey}.png`;
+  img.alt = label;
+  wrap.appendChild(img);
+
+  const badges = chaserMap[label.toLowerCase()] || [];
+  if (badges.length) {
+    const badgeWrap = document.createElement("div");
+    badgeWrap.className = "chaser-badges";
+    badges.forEach(spot => {
+      const badge = document.createElement("div");
+      badge.className = "chaser-badge";
+      badge.textContent = spot;
+      badgeWrap.appendChild(badge);
+    });
+    wrap.appendChild(badgeWrap);
+  }
+
+  if (buyer) {
+    const tag = document.createElement("div");
+    tag.className = "team-username";
+    tag.textContent = buyer;
+    wrap.appendChild(tag);
+  }
+
+  return wrap;
 }
 
-function showRecapSplash(){
-  const recap = document.getElementById("recap");
-  recap.classList.remove("show");
-  void recap.offsetWidth;
-  recap.classList.add("show");
+function renderBoard(soldTeams, chasers){
+  let assignedCount = 0;
 
-  if (recapTimer) clearTimeout(recapTimer);
-  recapTimer = setTimeout(() => {
-    recap.classList.remove("show");
-  }, 1400);
+  const chaserMap = getChaserMap(chasers);
+  Object.entries(BOARD_ROWS).forEach(([rowId, teams]) => {
+    const rowEl = document.getElementById(rowId);
+    rowEl.innerHTML = "";
+    teams.forEach(teamKey => {
+      rowEl.appendChild(makeTeamCell(teamKey, soldTeams, chasers));
+      if (teamKey !== "CENTER") {
+        const soldInfo = soldTeams?.[teamKey];
+        const label = teamKey.toUpperCase();
+        const chaserAssigned = !!(chaserMap[label.toLowerCase()]?.length);
+        if (soldInfo || chaserAssigned) assignedCount += 1;
+      }
+    });
+  });
+
+  document.getElementById("count").textContent = String(32 - assignedCount);
+  prevSold = { ...(soldTeams || {}) };
 }
 
 onValue(ref(db, "overlayState/main"), snap => {
@@ -516,18 +447,17 @@ onValue(ref(db, "overlayState/main"), snap => {
   const chasers = s.chasers || {};
 
   fitTitle(s.title || "BREAK");
-  render(soldTeams, chasers);
+  renderBoard(soldTeams, chasers);
 
   document.getElementById("tickerText").textContent =
     s.tickerMode === "default"
       ? (s.defaultTicker || "Welcome to SMJ Sports Cards & Collectibles!")
-      : buildAssignmentTicker(soldTeams);
+      : buildTicker(soldTeams);
 
-  if (s.recapMode && !lastRecapMode) {
-    showRecapSplash();
-  }
+  if (s.recapMode && !lastRecapMode) showRecapSplash();
   lastRecapMode = !!s.recapMode;
 });
 </script>
 </body>
 </html>
+
