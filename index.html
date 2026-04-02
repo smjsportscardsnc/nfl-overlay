@@ -20,7 +20,7 @@ html,body{
   margin:0;
   padding:0;
   width:1080px;
-  height:430px;
+  height:360px;
   overflow:hidden;
   font-family:Arial, sans-serif;
   background:transparent;
@@ -28,12 +28,12 @@ html,body{
 }
 .overlay{
   width:1080px;
-  height:430px;
+  height:360px;
   box-sizing:border-box;
   padding:4px;
   display:grid;
-  grid-template-rows:50px 1fr 34px;
-  gap:4px;
+  grid-template-rows:42px 1fr 28px;
+  gap:2px;
   position:relative;
 }
 .bar{
@@ -46,12 +46,12 @@ html,body{
   display:grid;
   grid-template-columns: 1fr 170px;
   align-items:center;
-  padding:0 14px;
+  padding:0 12px;
 }
 #title{
   text-align:center;
   font-weight:1000;
-  font-size:30px;
+  font-size:28px;
   letter-spacing:.7px;
   white-space:nowrap;
   overflow:hidden;
@@ -65,24 +65,24 @@ html,body{
   background:linear-gradient(180deg, rgba(229,57,53,.95), rgba(158,20,20,.95));
   border:1px solid rgba(255,255,255,.18);
   border-radius:4px;
-  padding:6px 10px;
+  padding:4px 10px;
 }
 .alive-label{
-  font-size:11px;
+  font-size:10px;
   font-weight:1000;
   text-transform:uppercase;
   letter-spacing:.8px;
 }
 .alive-value{
-  font-size:20px;
+  font-size:18px;
   font-weight:1000;
 }
 .board{
   position:relative;
-  padding:4px;
+  padding:2px;
   display:grid;
-  grid-template-rows: repeat(4, 1fr);
-  gap:4px;
+  grid-template-rows: repeat(4, minmax(0, 1fr));
+  gap:2px;
   background:
     radial-gradient(circle at center, rgba(255,255,255,.06), transparent 38%),
     linear-gradient(180deg,rgba(12,17,28,.95),rgba(4,6,10,.98));
@@ -92,13 +92,13 @@ html,body{
   position:absolute;
   inset:0;
   background:url("./logo.png") center center no-repeat;
-  background-size:34%;
+  background-size:30%;
   opacity:.08;
   pointer-events:none;
 }
 .team-row{
   display:grid;
-  gap:4px;
+  gap:2px;
   position:relative;
   z-index:1;
 }
@@ -106,7 +106,7 @@ html,body{
   grid-template-columns: repeat(8, 1fr);
 }
 .team-row.middle{
-  grid-template-columns: repeat(4, 1fr) 320px repeat(4, 1fr);
+  grid-template-columns: repeat(4, 1fr) 240px repeat(4, 1fr);
 }
 .center-logo{
   display:flex;
@@ -117,8 +117,8 @@ html,body{
   box-shadow: inset 0 1px 0 rgba(255,255,255,.04), 0 8px 20px rgba(0,0,0,.22);
 }
 .center-logo img{
-  width:78%;
-  height:78%;
+  width:60%;
+  height:60%;
   object-fit:contain;
   filter:drop-shadow(0 4px 10px rgba(0,0,0,.28));
 }
@@ -130,10 +130,12 @@ html,body{
   background:#05080f;
   border:1px solid rgba(255,255,255,.18);
   overflow:hidden;
+  padding:2px;
+  box-shadow: inset 0 0 6px rgba(255,255,255,.05);
 }
 .team img{
-  width:66%;
-  height:66%;
+  width:60%;
+  height:60%;
   object-fit:contain;
   filter:drop-shadow(0 2px 4px rgba(0,0,0,.24));
 }
@@ -147,7 +149,7 @@ html,body{
   top:50%;
   left:50%;
   transform:translate(-50%,-56%);
-  font-size:32px;
+  font-size:28px;
   font-weight:1000;
   color:#ff2f2f;
   text-shadow:0 0 12px rgba(255,0,0,.85);
@@ -165,7 +167,7 @@ html,body{
   position:absolute;
   top:2px;
   left:4px;
-  font-size:9px;
+  font-size:8px;
   font-weight:1000;
   color:var(--muted);
   letter-spacing:.4px;
@@ -179,11 +181,11 @@ html,body{
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
-  font-size:8px;
+  font-size:7px;
   font-weight:1000;
   background:rgba(0,0,0,.84);
   color:#fff;
-  padding:1px 5px;
+  padding:1px 4px;
   border-radius:4px;
   border:1px solid rgba(255,255,255,.08);
 }
@@ -198,15 +200,15 @@ html,body{
   max-width:34px;
 }
 .chaser-badge{
-  min-width:14px;
-  height:14px;
+  min-width:13px;
+  height:13px;
   padding:0 3px;
   border-radius:999px;
   background:linear-gradient(180deg,#61b8ff,#1d58d8);
   color:#fff;
-  font-size:8px;
+  font-size:7px;
   font-weight:1000;
-  line-height:14px;
+  line-height:13px;
   text-align:center;
   box-shadow:0 1px 4px rgba(0,0,0,.28);
 }
@@ -214,17 +216,17 @@ html,body{
   display:grid;
   grid-template-columns: 1fr 175px;
   align-items:center;
-  padding:0 10px;
+  padding:0 8px;
 }
 .bottom-note{
   display:grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: auto auto;
   align-items:center;
-  gap:10px;
+  gap:8px;
 }
 .live-pill{
   color:#fff;
-  font-size:11px;
+  font-size:10px;
   font-weight:1000;
   letter-spacing:.8px;
   text-transform:uppercase;
@@ -233,7 +235,7 @@ html,body{
   white-space:nowrap;
   display:inline-block;
   animation:ticker 24s linear infinite;
-  font-size:12px;
+  font-size:11px;
   font-weight:1000;
 }
 @keyframes ticker{
@@ -350,7 +352,7 @@ function showRecapSplash(){
 function fitTitle(text){
   const el = document.getElementById("title");
   el.textContent = text || "BREAK";
-  let size = 30;
+  let size = 28;
   el.style.fontSize = size + "px";
   while (el.scrollWidth > el.clientWidth && size > 18) {
     size -= 1;
@@ -421,8 +423,8 @@ function makeTeamCell(teamKey, soldTeams, chasers){
 
 function renderBoard(soldTeams, chasers){
   let assignedCount = 0;
-
   const chaserMap = getChaserMap(chasers);
+
   Object.entries(BOARD_ROWS).forEach(([rowId, teams]) => {
     const rowEl = document.getElementById(rowId);
     rowEl.innerHTML = "";
@@ -460,4 +462,3 @@ onValue(ref(db, "overlayState/main"), snap => {
 </script>
 </body>
 </html>
-
