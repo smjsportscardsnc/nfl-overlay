@@ -1,133 +1,267 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>SMJ Overlay Control</title>
-
 <style>
-body {
+:root{
+  --bg:#081221;
+  --panel:#10203a;
+  --panel2:#132847;
+  --line:rgba(255,255,255,.12);
+  --text:#f5f7fb;
+  --muted:#b8c2d9;
+}
+*{box-sizing:border-box}
+body{
   margin:0;
-  font-family: Arial, sans-serif;
-  background:#081221;
-  color:white;
+  font-family:Arial, sans-serif;
+  background:linear-gradient(180deg,#081221,#0d1b30);
+  color:var(--text);
 }
-.wrap {
-  max-width:1000px;
-  margin:auto;
-  padding:16px;
-}
-h1 { margin-bottom:10px; }
-
-.group {
-  background:#132847;
+.wrap{max-width:1100px;margin:0 auto;padding:18px;}
+h1{margin:0 0 14px;font-size:26px;}
+.group{
+  background:linear-gradient(180deg,var(--panel2),var(--panel));
+  border:1px solid var(--line);
+  border-radius:16px;
   padding:14px;
-  border-radius:12px;
   margin-bottom:14px;
 }
-
-input, button {
-  padding:10px;
-  border-radius:8px;
-  border:none;
+label{
+  display:block;
+  font-size:12px;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin-bottom:6px;
+  letter-spacing:1px;
 }
-
-button {
-  background:#1d58d8;
-  color:white;
-  font-weight:bold;
+.row{display:flex;gap:10px;flex-wrap:wrap;}
+input,select,button{font:inherit;}
+input,select{
+  width:100%;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.12);
+  color:var(--text);
+  padding:12px;
+  border-radius:12px;
+  min-width:0;
+}
+button{
+  border:0;
+  border-radius:12px;
+  padding:12px 14px;
+  background:linear-gradient(90deg,#61b8ff,#1d58d8);
+  color:#fff;
+  font-weight:900;
   cursor:pointer;
 }
-
-button.good { background:#2bb673; }
-button.warn { background:#ff6b6b; }
-
-.team-grid {
+button.secondary{
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.08);
+}
+button.good{
+  background:linear-gradient(90deg,#2bb673,#43d17a);
+}
+button.warn{
+  background:linear-gradient(90deg,#ff6b6b,#ff8e53);
+}
+button.base-yes{
+  background:linear-gradient(90deg,#2bb673,#43d17a);
+}
+button.base-no{
+  background:linear-gradient(90deg,#ff6b6b,#ff8e53);
+}
+.half{flex:1 1 280px}
+.third{flex:1 1 180px}
+.note{font-size:13px;color:var(--muted);line-height:1.45;}
+.status{font-size:13px;color:var(--muted);margin-top:10px;}
+.team-picker{
   display:grid;
-  grid-template-columns:repeat(8,1fr);
+  grid-template-columns:repeat(8,minmax(0,1fr));
   gap:8px;
 }
-
-.team {
-  background:#1a335a;
-  border-radius:10px;
-  padding:8px;
-  text-align:center;
-  cursor:pointer;
+.team-tile{
   position:relative;
+  border:1px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.05);
+  border-radius:12px;
+  padding:8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:68px;
+  cursor:pointer;
 }
-
-.team.selected { outline:2px solid #61b8ff; }
-
-.team img {
-  width:40px;
+.team-tile.selected{
+  border-color:#61b8ff;
+  box-shadow:0 0 0 1px rgba(97,184,255,.5), 0 0 14px rgba(97,184,255,.2);
 }
-
-.team span {
+.team-tile.assigned{
+  border-color:rgba(255,255,255,.18);
+}
+.team-tile img{
+  width:42px;height:42px;object-fit:contain;
+}
+.team-tile .code{
+  position:absolute;top:5px;left:7px;
+  font-size:10px;font-weight:1000;letter-spacing:.4px;color:var(--muted);
+}
+.team-tile .buyer{
+  position:absolute;bottom:4px;left:50%;
+  transform:translateX(-50%);
+  max-width:90%;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  font-size:10px;font-weight:1000;
+  background:rgba(4,10,22,.9);
+  padding:2px 6px;border-radius:999px;
+}
+.table{width:100%;border-collapse:collapse;font-size:14px;}
+.table th,.table td{
+  border-bottom:1px solid rgba(255,255,255,.08);
+  padding:8px 6px;text-align:left;
+  vertical-align:middle;
+}
+.table th{color:var(--muted); font-size:12px; text-transform:uppercase;}
+.small-btn{
+  padding:8px 10px;
+  font-size:12px;
+  border-radius:10px;
+}
+.recap-only .non-recap{
+  display:none;
+}
+.recap-banner{
+  display:none;
+  margin-top:10px;
+  font-size:13px;
+  color:#ffb347;
+  font-weight:1000;
+  letter-spacing:.8px;
+}
+.recap-only .recap-banner{
   display:block;
-  font-size:10px;
 }
-
-.table {
-  width:100%;
-  border-collapse:collapse;
+.chaser-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;
 }
-
-.table td {
-  padding:6px;
-  border-bottom:1px solid rgba(255,255,255,0.1);
+.chaser-card{
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.04);
+  border-radius:12px;
+  padding:10px;
+}
+.chaser-title{
+  font-size:13px;
+  font-weight:1000;
+  letter-spacing:.6px;
+  margin-bottom:8px;
+  color:#fff;
+}
+.chaser-actions{
+  display:flex;
+  gap:6px;
+  margin-top:8px;
+}
+@media (max-width: 900px){
+  .team-picker{grid-template-columns:repeat(4,minmax(0,1fr));}
+  .chaser-grid{grid-template-columns:1fr;}
 }
 </style>
 </head>
-
 <body>
-<div class="wrap">
+<div class="wrap" id="appWrap">
+  <h1>SMJ Overlay Control</h1>
 
-<h1>SMJ Overlay Control</h1>
+  <div class="group">
+    <div class="note">Use this page on your tablet. It controls the overlay in OBS through Firebase.</div>
+    <div class="status" id="connectionStatus">Not connected yet.</div>
+    <div class="recap-banner">RECAP MODE ENABLED</div>
+  </div>
 
-<div class="group">
-  <div id="status">Connecting...</div>
-</div>
+  <div class="group">
+    <label>Overlay Title</label>
+    <div class="row">
+      <input id="titleInput" class="half" placeholder="NFL Break Night">
+      <button onclick="setTitle()">Set Title</button>
+    </div>
+  </div>
 
-<div class="group">
-  <input id="titleInput" placeholder="Break Title">
-  <button onclick="setTitle()">Set Title</button>
-</div>
+  <div class="group">
+    <label>Click A Team To Select It</label>
+    <div class="team-picker" id="teamPicker"></div>
+    <div class="row" style="margin-top:10px;">
+      <input id="buyerInput" class="half" placeholder="Whatnot username">
+      <button class="good" onclick="assignBuyer()">Assign Selected Team</button>
+      <button class="secondary" onclick="clearSelectedTeam()">Clear Selected Team</button>
+    </div>
+    <div class="note" style="margin-top:10px;">Base cards default to <strong>No</strong>. Use recap mode during shipping to review and bulk update.</div>
+  </div>
 
-<div class="group">
-  <div class="team-grid" id="teams"></div>
+  <div class="group">
+    <label>Chaser Team Tracker</label>
+    <div class="note" style="margin-bottom:10px;">Track your 9 chaser spots separately here. For each spot, enter the winner and the team they ended up with.</div>
+    <div class="chaser-grid" id="chaserGrid"></div>
+  </div>
 
-  <input id="buyerInput" placeholder="Buyer username">
-  <button class="good" onclick="assignTeam()">Assign</button>
-  <button onclick="clearTeam()">Clear</button>
-</div>
+  <div class="group non-recap">
+    <label>Ticker</label>
+    <div class="row">
+      <input id="tickerInput" class="half" placeholder="Custom ticker text">
+      <button onclick="setTicker()">Set Custom</button>
+      <button class="secondary" onclick="toggleAssignmentTicker()">Toggle Assignment Ticker</button>
+    </div>
+  </div>
 
-<div class="group">
-  <button onclick="toggleRecap()">Toggle Recap Mode</button>
-  <button onclick="setAllBase('Yes')">All Base YES</button>
-  <button onclick="setAllBase('No')">All Base NO</button>
-</div>
+  <div class="group">
+    <label>Recap & Bulk Tools</label>
+    <div class="row">
+      <button class="secondary third" onclick="toggleRecapMode()">Toggle Recap Mode</button>
+      <button class="good third" onclick="setAllBase('Yes')">Set All Base = Yes</button>
+      <button class="warn third" onclick="setAllBase('No')">Set All Base = No</button>
+    </div>
+  </div>
 
-<div class="group">
-  <button class="warn" onclick="resetAll()">New Break Reset</button>
-</div>
+  <div class="group">
+    <label>Break Reset</label>
+    <div class="row">
+      <button class="warn half" onclick="clearOverlayForNewBreak()">Clear Overlay For New Break</button>
+    </div>
+  </div>
 
-<div class="group">
-  <table class="table">
-    <tbody id="table"></tbody>
-  </table>
-
-  <button class="good" onclick="downloadXLS()">Download XLSX</button>
-</div>
-
+  <div class="group">
+    <label>Assignments</label>
+    <div style="overflow:auto">
+      <table class="table">
+        <thead>
+          <tr><th>Team</th><th>Buyer</th><th>Base Cards</th><th>Actions</th></tr>
+        </thead>
+        <tbody id="assignmentsBody"></tbody>
+      </table>
+    </div>
+    <div class="row" style="margin-top:10px;">
+      <button class="good half" onclick="downloadAssignmentsXLSX()">Download Assignment XLSX</button>
+    </div>
+  </div>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-import { getDatabase, ref, onValue, update, set } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
+import { getDatabase, ref, onValue, set, update } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
 import * as XLSX from "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/+esm";
 
-const config = {
+const TEAM_DATA = [
+  ['ari','ARI'],['atl','ATL'],['bal','BAL'],['buf','BUF'],['car','CAR'],['chi','CHI'],['cin','CIN'],['cle','CLE'],
+  ['dal','DAL'],['den','DEN'],['det','DET'],['gb','GB'],['hou','HOU'],['ind','IND'],['jax','JAX'],['kc','KC'],
+  ['lv','LV'],['lac','LAC'],['lar','LAR'],['mia','MIA'],['min','MIN'],['ne','NE'],['no','NO'],['nyg','NYG'],
+  ['nyj','NYJ'],['phi','PHI'],['pit','PIT'],['sea','SEA'],['sf','SF'],['tb','TB'],['ten','TEN'],['was','WAS']
+];
+
+const firebaseConfig = {
   apiKey: "AIzaSyAP5JIYtql-4YB-wAgNT2Urja4DUOFoRws",
   authDomain: "smj-overlay.firebaseapp.com",
   databaseURL: "https://smj-overlay-default-rtdb.firebaseio.com",
@@ -138,141 +272,328 @@ const config = {
   measurementId: "G-511F87E4GE"
 };
 
-const app = initializeApp(config);
+const STATE_PATH = "overlayState/main";
+const defaults = {
+  title: "NFL BREAK NIGHT",
+  soldTeams: {},
+  tickerMode: "assignments",
+  defaultTicker: "Welcome to SMJ Sports Cards & Collectibles!",
+  recapMode: false,
+  chasers: {
+    "1": { winner: "", team: "" },
+    "2": { winner: "", team: "" },
+    "3": { winner: "", team: "" },
+    "4": { winner: "", team: "" },
+    "5": { winner: "", team: "" },
+    "6": { winner: "", team: "" },
+    "7": { winner: "", team: "" },
+    "8": { winner: "", team: "" },
+    "9": { winner: "", team: "" }
+  }
+};
+
+const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+let state = structuredClone(defaults);
+let selectedTeam = "";
 
-const PATH = "overlayState/main";
+function safeTitleFile(){
+  return (state.title || "break")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g,"_")
+    .replace(/^_|_$/g,"");
+}
 
-const TEAMS = [
-['ari','ARI'],['atl','ATL'],['bal','BAL'],['buf','BUF'],['car','CAR'],['chi','CHI'],['cin','CIN'],['cle','CLE'],
-['dal','DAL'],['den','DEN'],['det','DET'],['gb','GB'],['hou','HOU'],['ind','IND'],['jax','JAX'],['kc','KC'],
-['lv','LV'],['lac','LAC'],['lar','LAR'],['mia','MIA'],['min','MIN'],['ne','NE'],['no','NO'],['nyg','NYG'],
-['nyj','NYJ'],['phi','PHI'],['pit','PIT'],['sea','SEA'],['sf','SF'],['tb','TB'],['ten','TEN'],['was','WAS']
-];
+function renderInputs(){
+  document.getElementById("titleInput").value = state.title || "";
+  document.getElementById("appWrap").classList.toggle("recap-only", !!state.recapMode);
+}
 
-let state = { soldTeams:{} };
-let selected = null;
+function renderTeamPicker(){
+  const picker = document.getElementById("teamPicker");
+  picker.innerHTML = "";
+  TEAM_DATA.forEach(([k,label]) => {
+    const info = state.soldTeams?.[k];
+    const buyer = !info ? "" : (typeof info === "string" ? info : info.buyer);
 
-/* ---------- UI ---------- */
+    const tile = document.createElement("button");
+    tile.type = "button";
+    tile.className = "team-tile" + (selectedTeam === k ? " selected" : "") + (info ? " assigned" : "");
+    tile.onclick = () => {
+      selectedTeam = k;
+      renderTeamPicker();
+    };
 
-function renderTeams(){
-  const el = document.getElementById("teams");
-  el.innerHTML = "";
-
-  TEAMS.forEach(([k,label])=>{
-    const t = document.createElement("div");
-    t.className = "team" + (selected===k?" selected":"");
+    const code = document.createElement("div");
+    code.className = "code";
+    code.textContent = label;
 
     const img = document.createElement("img");
     img.src = `https://a.espncdn.com/i/teamlogos/nfl/500/${k}.png`;
+    img.alt = label;
 
-    const txt = document.createElement("span");
-    txt.innerText = label;
+    tile.appendChild(code);
+    tile.appendChild(img);
 
-    t.appendChild(img);
-    t.appendChild(txt);
+    if(buyer && buyer !== "Sold"){
+      const buyerTag = document.createElement("div");
+      buyerTag.className = "buyer";
+      buyerTag.textContent = buyer;
+      tile.appendChild(buyerTag);
+    }
 
-    t.onclick = ()=>{
-      selected = k;
-      renderTeams();
-    };
-
-    el.appendChild(t);
+    picker.appendChild(tile);
   });
 }
 
-function renderTable(){
-  const tb = document.getElementById("table");
-  tb.innerHTML="";
+function renderAssignments(){
+  const tbody = document.getElementById("assignmentsBody");
+  tbody.innerHTML = "";
+  TEAM_DATA.forEach(([k,label]) => {
+    const info = state.soldTeams?.[k];
+    if(!info) return;
+    const buyer = typeof info === "string" ? info : info.buyer;
+    const baseCards = typeof info === "string" ? "No" : info.baseCards;
 
-  Object.entries(state.soldTeams || {}).forEach(([k,v])=>{
     const tr = document.createElement("tr");
 
-    tr.innerHTML = `
-      <td>${k.toUpperCase()}</td>
-      <td>${v.buyer}</td>
-      <td>${v.baseCards}</td>
-    `;
+    const teamTd = document.createElement("td");
+    teamTd.textContent = label;
 
-    tb.appendChild(tr);
+    const buyerTd = document.createElement("td");
+    buyerTd.textContent = buyer;
+
+    const baseTd = document.createElement("td");
+    const baseBtn = document.createElement("button");
+    baseBtn.className = "small-btn " + (baseCards === "Yes" ? "base-yes" : "base-no");
+    baseBtn.textContent = baseCards;
+    baseBtn.onclick = () => toggleBase(k);
+    baseTd.appendChild(baseBtn);
+
+    const actionsTd = document.createElement("td");
+    const removeBtn = document.createElement("button");
+    removeBtn.className = "small-btn secondary";
+    removeBtn.textContent = "Remove";
+    removeBtn.onclick = () => removeTeam(k);
+    actionsTd.appendChild(removeBtn);
+
+    tr.appendChild(teamTd);
+    tr.appendChild(buyerTd);
+    tr.appendChild(baseTd);
+    tr.appendChild(actionsTd);
+    tbody.appendChild(tr);
   });
 }
 
-/* ---------- ACTIONS ---------- */
+function renderChasers(){
+  const grid = document.getElementById("chaserGrid");
+  grid.innerHTML = "";
+  for(let i=1;i<=9;i++){
+    const spot = String(i);
+    const info = state.chasers?.[spot] || { winner:"", team:"" };
 
-window.setTitle = async ()=>{
-  const v = document.getElementById("titleInput").value;
-  await update(ref(db, PATH), { title:v });
+    const card = document.createElement("div");
+    card.className = "chaser-card";
+
+    const title = document.createElement("div");
+    title.className = "chaser-title";
+    title.textContent = `Chaser ${spot}`;
+
+    const winnerLabel = document.createElement("label");
+    winnerLabel.textContent = "Winner";
+    const winnerInput = document.createElement("input");
+    winnerInput.value = info.winner || "";
+    winnerInput.placeholder = "Winner username";
+    winnerInput.onchange = () => saveChaserField(spot, "winner", winnerInput.value);
+
+    const teamLabel = document.createElement("label");
+    teamLabel.textContent = "Team";
+    const teamSelect = document.createElement("select");
+
+    const blank = document.createElement("option");
+    blank.value = "";
+    blank.textContent = "Select team";
+    teamSelect.appendChild(blank);
+
+    TEAM_DATA.forEach(([key,label]) => {
+      const opt = document.createElement("option");
+      opt.value = label;
+      opt.textContent = label;
+      if(info.team === label) opt.selected = true;
+      teamSelect.appendChild(opt);
+    });
+    teamSelect.onchange = () => saveChaserField(spot, "team", teamSelect.value);
+
+    const actions = document.createElement("div");
+    actions.className = "chaser-actions";
+
+    const assignSelectedBtn = document.createElement("button");
+    assignSelectedBtn.className = "small-btn secondary";
+    assignSelectedBtn.textContent = "Use Selected Team";
+    assignSelectedBtn.onclick = () => {
+      if(!selectedTeam) return;
+      const selectedLabel = TEAM_DATA.find(([k]) => k === selectedTeam)?.[1] || "";
+      teamSelect.value = selectedLabel;
+      saveChaserField(spot, "team", selectedLabel);
+    };
+
+    const clearBtn = document.createElement("button");
+    clearBtn.className = "small-btn warn";
+    clearBtn.textContent = "Clear";
+    clearBtn.onclick = () => clearChaser(spot);
+
+    actions.appendChild(assignSelectedBtn);
+    actions.appendChild(clearBtn);
+
+    card.appendChild(title);
+    card.appendChild(winnerLabel);
+    card.appendChild(winnerInput);
+    card.appendChild(teamLabel);
+    card.appendChild(teamSelect);
+    card.appendChild(actions);
+    grid.appendChild(card);
+  }
+}
+
+async function saveChaserField(spot, field, value){
+  const nextChasers = { ...(state.chasers || {}) };
+  nextChasers[spot] = {
+    winner: nextChasers[spot]?.winner || "",
+    team: nextChasers[spot]?.team || "",
+    [field]: value
+  };
+  await update(ref(db, STATE_PATH), { chasers: nextChasers });
+}
+
+window.clearChaser = async function(spot){
+  const nextChasers = { ...(state.chasers || {}) };
+  nextChasers[spot] = { winner: "", team: "" };
+  await update(ref(db, STATE_PATH), { chasers: nextChasers });
 };
 
-window.assignTeam = async ()=>{
-  const buyer = document.getElementById("buyerInput").value;
-  if(!selected || !buyer) return;
-
-  const next = {...state.soldTeams};
-  next[selected] = { buyer, baseCards:"No" };
-
-  await update(ref(db, PATH), { soldTeams:next });
+window.setTitle = async function(){
+  const v = document.getElementById("titleInput").value.trim();
+  if(!v) return;
+  await update(ref(db, STATE_PATH), { title: v.toUpperCase() });
 };
 
-window.clearTeam = async ()=>{
-  if(!selected) return;
-
-  const next = {...state.soldTeams};
-  delete next[selected];
-
-  await update(ref(db, PATH), { soldTeams:next });
+window.assignBuyer = async function(){
+  const team = selectedTeam;
+  const buyer = document.getElementById("buyerInput").value.trim();
+  if(!team || !buyer) return;
+  const nextSold = { ...(state.soldTeams || {}) };
+  nextSold[team] = { buyer, baseCards: "No" };
+  await update(ref(db, STATE_PATH), { soldTeams: nextSold });
+  document.getElementById("buyerInput").value = "";
 };
 
-window.toggleRecap = async ()=>{
-  await update(ref(db, PATH), { recapMode: !state.recapMode });
+window.clearSelectedTeam = async function(){
+  const team = selectedTeam;
+  if(!team) return;
+  const nextSold = { ...(state.soldTeams || {}) };
+  delete nextSold[team];
+  await update(ref(db, STATE_PATH), { soldTeams: nextSold });
 };
 
-window.setAllBase = async (val)=>{
-  const next = {...state.soldTeams};
+window.toggleBase = async function(team){
+  const nextSold = { ...(state.soldTeams || {}) };
+  const info = nextSold[team];
+  if(!info) return;
+  if(typeof info === "string"){
+    nextSold[team] = { buyer: info, baseCards: "Yes" };
+  } else {
+    nextSold[team] = { ...info, baseCards: info.baseCards === "Yes" ? "No" : "Yes" };
+  }
+  await update(ref(db, STATE_PATH), { soldTeams: nextSold });
+};
 
-  Object.keys(next).forEach(k=>{
-    next[k].baseCards = val;
+window.removeTeam = async function(team){
+  const nextSold = { ...(state.soldTeams || {}) };
+  delete nextSold[team];
+  await update(ref(db, STATE_PATH), { soldTeams: nextSold });
+};
+
+window.setTicker = async function(){
+  const v = document.getElementById("tickerInput").value.trim();
+  if(!v) return;
+  await update(ref(db, STATE_PATH), { defaultTicker: v, tickerMode: "default" });
+};
+
+window.toggleAssignmentTicker = async function(){
+  const nextMode = state.tickerMode === "assignments" ? "default" : "assignments";
+  await update(ref(db, STATE_PATH), { tickerMode: nextMode });
+};
+
+window.toggleRecapMode = async function(){
+  await update(ref(db, STATE_PATH), { recapMode: !state.recapMode });
+};
+
+window.setAllBase = async function(value){
+  const nextSold = { ...(state.soldTeams || {}) };
+  Object.keys(nextSold).forEach(team => {
+    const info = nextSold[team];
+    if(typeof info === "string"){
+      nextSold[team] = { buyer: info, baseCards: value };
+    } else {
+      nextSold[team] = { ...info, baseCards: value };
+    }
   });
-
-  await update(ref(db, PATH), { soldTeams:next });
+  await update(ref(db, STATE_PATH), { soldTeams: nextSold });
 };
 
-window.resetAll = async ()=>{
-  await set(ref(db, PATH), {
-    title:"NEW BREAK",
-    soldTeams:{},
-    recapMode:false
+window.clearOverlayForNewBreak = async function(){
+  const keepTitle = document.getElementById("titleInput").value.trim() || "NFL BREAK NIGHT";
+  await set(ref(db, STATE_PATH), {
+    ...defaults,
+    title: keepTitle.toUpperCase()
   });
+  document.getElementById("buyerInput").value = "";
+  document.getElementById("tickerInput").value = "";
+  selectedTeam = "";
 };
 
-window.downloadXLS = ()=>{
+window.downloadAssignmentsXLSX = function(){
   const rows = [];
-
   rows.push([state.title || "BREAK"]);
   rows.push([]);
-  rows.push(["Team","Buyer","Base"]);
-
-  Object.entries(state.soldTeams).forEach(([k,v])=>{
-    rows.push([k.toUpperCase(), v.buyer, v.baseCards]);
+  rows.push(["TEAM","BUYER USERNAME","WANTS BASE CARDS"]);
+  TEAM_DATA.forEach(([k,label]) => {
+    const info = state.soldTeams?.[k];
+    if(!info) return;
+    const buyer = typeof info === "string" ? info : info.buyer;
+    const baseCards = typeof info === "string" ? "No" : info.baseCards;
+    rows.push([label, buyer, baseCards]);
   });
+
+  rows.push([]);
+  rows.push(["CHASER SPOT","WINNER","TEAM"]);
+  for(let i=1;i<=9;i++){
+    const spot = String(i);
+    const info = state.chasers?.[spot] || { winner:"", team:"" };
+    rows.push([`Chaser ${spot}`, info.winner || "", info.team || ""]);
+  }
 
   const ws = XLSX.utils.aoa_to_sheet(rows);
   const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Break");
-
-  XLSX.writeFile(wb, "break.xlsx");
+  XLSX.utils.book_append_sheet(wb, ws, "Assignments");
+  XLSX.writeFile(wb, `${safeTitleFile()}_assignments.xlsx`);
 };
 
-/* ---------- FIREBASE ---------- */
-
-onValue(ref(db, PATH), snap=>{
-  state = snap.val() || { soldTeams:{} };
-
-  document.getElementById("status").innerText = "Connected";
-
-  renderTeams();
-  renderTable();
+const stateRef = ref(db, STATE_PATH);
+onValue(stateRef, async (snap) => {
+  const val = snap.val();
+  if (val === null) {
+    await set(stateRef, defaults);
+    return;
+  }
+  state = { ...defaults, ...val };
+  document.getElementById("connectionStatus").textContent = "Connected.";
+  renderInputs();
+  renderTeamPicker();
+  renderAssignments();
+  renderChasers();
+}, () => {
+  document.getElementById("connectionStatus").textContent = "Connection error.";
 });
 </script>
 </body>
