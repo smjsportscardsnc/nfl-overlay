@@ -6,14 +6,8 @@
 <title>SMJ Break Board</title>
 <style>
 :root{
-  --bg:#060b14;
-  --panel:#0b1322;
-  --panel2:#101a2c;
-  --line:rgba(255,255,255,.18);
   --text:#f5f7fb;
   --muted:#c6d0e4;
-  --red1:#e53935;
-  --red2:#9e1414;
 }
 html,body{
   margin:0;
@@ -81,7 +75,8 @@ html,body{
   position:relative;
   padding:2px;
   display:grid;
-  grid-template-rows:repeat(4, minmax(0, 1fr));
+  grid-template-columns:repeat(8, 1fr);
+  grid-template-rows:repeat(4, 1fr);
   gap:2px;
   background:
     radial-gradient(circle at center, rgba(255,255,255,.06), transparent 38%),
@@ -97,28 +92,10 @@ html,body{
   pointer-events:none;
 }
 
-.team-row{
-  display:grid;
-  gap:2px;
-  position:relative;
-  z-index:1;
-}
-.team-row.full{
-  grid-template-columns:repeat(8, 1fr);
-}
-
-/* Wider centered logo block like your example */
-.team-row.middle-top,
-.team-row.middle-bottom{
-  grid-template-columns:repeat(3, 1fr) 2.4fr repeat(4, 1fr);
-}
-.team-row.middle-bottom{
-  grid-template-columns:repeat(4, 1fr) 2.4fr repeat(3, 1fr);
-}
-
 .team,
 .center-logo{
   position:relative;
+  z-index:1;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -128,6 +105,7 @@ html,body{
   padding:2px;
   box-shadow:inset 0 0 6px rgba(255,255,255,.05);
 }
+
 .team img{
   width:60%;
   height:60%;
@@ -157,19 +135,6 @@ html,body{
   0%{transform:scale(.92)}
   55%{transform:scale(1.06)}
   100%{transform:scale(1)}
-}
-
-.center-logo{
-  background:
-    radial-gradient(circle at center, rgba(255,255,255,.08), transparent 52%),
-    linear-gradient(180deg, rgba(10,15,24,.94), rgba(4,6,10,.97));
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.04), 0 8px 20px rgba(0,0,0,.22);
-}
-.center-logo img{
-  width:72%;
-  height:72%;
-  object-fit:contain;
-  filter:drop-shadow(0 4px 10px rgba(0,0,0,.28));
 }
 
 .team-code{
@@ -220,6 +185,23 @@ html,body{
   line-height:13px;
   text-align:center;
   box-shadow:0 1px 4px rgba(0,0,0,.28);
+}
+
+.center-logo{
+  grid-column:4 / span 2;
+  grid-row:2 / span 2;
+  background:
+    radial-gradient(circle at center, rgba(255,255,255,.08), transparent 52%),
+    linear-gradient(180deg, rgba(10,15,24,.94), rgba(4,6,10,.97));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.04),
+    0 8px 20px rgba(0,0,0,.22);
+}
+.center-logo img{
+  width:68%;
+  height:68%;
+  object-fit:contain;
+  filter:drop-shadow(0 4px 10px rgba(0,0,0,.28));
 }
 
 .ticker{
@@ -292,12 +274,7 @@ html,body{
     </div>
   </div>
 
-  <div class="bar board">
-    <div class="team-row full" id="row1"></div>
-    <div class="team-row middle-top" id="row2"></div>
-    <div class="team-row middle-bottom" id="row3"></div>
-    <div class="team-row full" id="row4"></div>
-  </div>
+  <div class="bar board" id="board"></div>
 
   <div class="bar ticker">
     <div class="bottom-note">
@@ -330,17 +307,39 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-const BOARD_ROWS = {
-  row1: ['lv','lac','lar','no','nyg','cle','jax','chi'],
+const TEAM_POSITIONS = [
+  { key:'lv',  col:1, row:1 },
+  { key:'lac', col:2, row:1 },
+  { key:'lar', col:3, row:1 },
+  { key:'no',  col:4, row:1 },
+  { key:'nyg', col:5, row:1 },
+  { key:'cle', col:6, row:1 },
+  { key:'jax', col:7, row:1 },
+  { key:'chi', col:8, row:1 },
 
-  /* 3 left + wide center + 4 right */
-  row2: ['nyj','phi','pit','CENTER','ind','hou','atl','ari'],
+  { key:'nyj', col:1, row:2 },
+  { key:'phi', col:2, row:2 },
+  { key:'pit', col:3, row:2 },
+  { key:'ind', col:6, row:2 },
+  { key:'hou', col:7, row:2 },
+  { key:'atl', col:8, row:2 },
 
-  /* 4 left + wide center + 3 right */
-  row3: ['mia','min','ne','sf','CENTER','bal','dal','det'],
+  { key:'mia', col:1, row:3 },
+  { key:'min', col:2, row:3 },
+  { key:'ne',  col:3, row:3 },
+  { key:'bal', col:6, row:3 },
+  { key:'dal', col:7, row:3 },
+  { key:'det', col:8, row:3 },
 
-  row4: ['sea','tb','ten','was','kc','cin','buf','den']
-};
+  { key:'sea', col:1, row:4 },
+  { key:'tb',  col:2, row:4 },
+  { key:'ten', col:3, row:4 },
+  { key:'was', col:4, row:4 },
+  { key:'kc',  col:5, row:4 },
+  { key:'cin', col:6, row:4 },
+  { key:'buf', col:7, row:4 },
+  { key:'den', col:8, row:4 }
+];
 
 let prevSold = {};
 let lastRecapMode = false;
@@ -388,13 +387,6 @@ function getChaserMap(chasers){
 }
 
 function makeTeamCell(teamKey, soldTeams, chasers){
-  if (teamKey === 'CENTER') {
-    const wrap = document.createElement("div");
-    wrap.className = "center-logo";
-    wrap.innerHTML = '<img src="./logo.png" alt="SMJ Logo">';
-    return wrap;
-  }
-
   const wrap = document.createElement("div");
   const label = teamKey.toUpperCase();
   const soldInfo = soldTeams?.[teamKey];
@@ -438,25 +430,33 @@ function makeTeamCell(teamKey, soldTeams, chasers){
   return wrap;
 }
 
+function makeCenterLogo(){
+  const wrap = document.createElement("div");
+  wrap.className = "center-logo";
+  wrap.innerHTML = '<img src="./logo.png" alt="SMJ Logo">';
+  return wrap;
+}
+
 function renderBoard(soldTeams, chasers){
-  let assignedCount = 0;
+  const board = document.getElementById("board");
+  board.innerHTML = "";
+
   const chaserMap = getChaserMap(chasers);
+  let assignedCount = 0;
 
-  Object.entries(BOARD_ROWS).forEach(([rowId, teams]) => {
-    const rowEl = document.getElementById(rowId);
-    rowEl.innerHTML = "";
+  TEAM_POSITIONS.forEach(item => {
+    const cell = makeTeamCell(item.key, soldTeams, chasers);
+    cell.style.gridColumn = String(item.col);
+    cell.style.gridRow = String(item.row);
+    board.appendChild(cell);
 
-    teams.forEach(teamKey => {
-      rowEl.appendChild(makeTeamCell(teamKey, soldTeams, chasers));
-
-      if (teamKey !== "CENTER") {
-        const soldInfo = soldTeams?.[teamKey];
-        const label = teamKey.toUpperCase();
-        const chaserAssigned = !!(chaserMap[label.toLowerCase()]?.length);
-        if (soldInfo || chaserAssigned) assignedCount += 1;
-      }
-    });
+    const soldInfo = soldTeams?.[item.key];
+    const label = item.key.toUpperCase();
+    const chaserAssigned = !!(chaserMap[label.toLowerCase()]?.length);
+    if (soldInfo || chaserAssigned) assignedCount += 1;
   });
+
+  board.appendChild(makeCenterLogo());
 
   document.getElementById("count").textContent = String(32 - assignedCount);
   prevSold = { ...(soldTeams || {}) };
