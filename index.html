@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,7 +15,6 @@
   --muted:#b8c2d9;
   --accent1:#61b8ff;
   --accent2:#1d58d8;
-  --panelGlow: rgba(97,184,255,.10);
 }
 
 html,body{
@@ -234,6 +234,44 @@ html,body{
   border:1px solid rgba(255,255,255,.08);
 }
 
+.team.sold::after{
+  content:"✕";
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-56%);
+  font-size:40px;
+  font-weight:1000;
+  color:red;
+  text-shadow:0 0 12px rgba(255,0,0,.88);
+  pointer-events:none;
+}
+
+.chaser-badges{
+  position:absolute;
+  top:4px;
+  right:4px;
+  display:flex;
+  gap:3px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+  max-width:42px;
+}
+
+.chaser-badge{
+  min-width:16px;
+  height:16px;
+  padding:0 4px;
+  border-radius:999px;
+  background:linear-gradient(180deg, rgba(97,184,255,.95), rgba(29,88,216,.95));
+  color:#fff;
+  font-size:9px;
+  font-weight:1000;
+  line-height:16px;
+  text-align:center;
+  box-shadow:0 1px 4px rgba(0,0,0,.28);
+}
+
 .ticker{
   display:flex;
   align-items:center;
@@ -258,7 +296,6 @@ html,body{
   to{transform:translateX(-100%)}
 }
 
-/* Recap splash */
 .recap{
   position:absolute;
   inset:0;
@@ -291,9 +328,7 @@ html,body{
 }
 </style>
 </head>
-
 <body>
-
 <div class="overlay" id="overlay">
 
   <div class="header">
@@ -388,11 +423,23 @@ function fitTitle(text){
   }
 }
 
-function render(sold){
+function getChaserMap(chasers){
+  const map = {};
+  Object.entries(chasers || {}).forEach(([spot, info]) => {
+    if (!info || !info.team) return;
+    const key = info.team.toLowerCase();
+    if (!map[key]) map[key] = [];
+    map[key].push(spot);
+  });
+  return map;
+}
+
+function render(sold, chasers){
   const grid = document.getElementById("grid");
   grid.innerHTML = "";
   let count = 0;
   let hadNewSale = false;
+  const chaserMap = getChaserMap(chasers);
 
   TEAMS.forEach(([teamKey, teamLabel]) => {
     const d = document.createElement("div");
@@ -414,6 +461,19 @@ function render(sold){
     img.src = `https://a.espncdn.com/i/teamlogos/nfl/500/${teamKey}.png`;
     img.alt = teamLabel;
     d.appendChild(img);
+
+    const badges = chaserMap[teamLabel.toLowerCase()] || [];
+    if (badges.length) {
+      const badgeWrap = document.createElement("div");
+      badgeWrap.className = "chaser-badges";
+      badges.forEach(spot => {
+        const badge = document.createElement("div");
+        badge.className = "chaser-badge";
+        badge.textContent = spot;
+        badgeWrap.appendChild(badge);
+      });
+      d.appendChild(badgeWrap);
+    }
 
     if (data) {
       count++;
@@ -451,9 +511,10 @@ function showRecapSplash(){
 onValue(ref(db, "overlayState/main"), snap => {
   const s = snap.val() || {};
   const soldTeams = s.soldTeams || {};
+  const chasers = s.chasers || {};
 
   fitTitle(s.title || "BREAK");
-  render(soldTeams);
+  render(soldTeams, chasers);
 
   document.getElementById("tickerText").textContent =
     s.tickerMode === "default"
@@ -466,6 +527,5 @@ onValue(ref(db, "overlayState/main"), snap => {
   lastRecapMode = !!s.recapMode;
 });
 </script>
-
 </body>
 </html>
