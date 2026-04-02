@@ -16,8 +16,9 @@
 
 html,body{
   margin:0;
+  padding:0;
   width:1080px;
-  height:720px;
+  height:620px;
   overflow:hidden;
   font-family:Arial, sans-serif;
   background:transparent;
@@ -28,47 +29,59 @@ html,body{
   width:100%;
   height:100%;
   display:grid;
-  grid-template-rows:90px 1fr 48px;
-  gap:6px;
-  padding:6px;
+  grid-template-rows:65px 1fr 36px;
+  gap:4px;
+  padding:4px;
+  box-sizing:border-box;
   position:relative;
 }
 
-/* 🔥 BACKGROUND LOGO */
+/* Background logo watermark */
 .overlay::before{
   content:"";
   position:absolute;
   inset:0;
-
   background-image:url("./logo.png");
   background-repeat:no-repeat;
   background-position:center;
-  background-size:55%;
-
-  opacity:0.05;
-  filter:blur(1.5px) brightness(0.9);
-
+  background-size:50%;
+  opacity:0.12;
+  filter:blur(1px) brightness(1);
   pointer-events:none;
   z-index:0;
+}
+
+.overlay > *{
+  position:relative;
+  z-index:1;
 }
 
 .header,.team-wrap,.ticker{
   background:linear-gradient(180deg,var(--bg2),var(--bg1));
   border-radius:16px;
   border:1px solid var(--line);
+  overflow:hidden;
 }
 
 .header{
   display:grid;
-  grid-template-columns:1fr 200px;
+  grid-template-columns:1fr 180px;
   align-items:center;
-  padding:10px;
+  padding:6px 10px;
+  min-width:0;
 }
 
 #title{
+  min-width:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
   text-align:center;
-  font-size:34px;
+  font-size:28px;
   font-weight:1000;
+  line-height:1;
+  white-space:nowrap;
 }
 
 .counter{
@@ -76,15 +89,21 @@ html,body{
 }
 
 .counter .value{
-  font-size:28px;
+  font-size:24px;
   font-weight:bold;
+  line-height:1;
+}
+
+.team-wrap{
+  padding:6px;
+  box-sizing:border-box;
 }
 
 .teams-grid{
   display:grid;
   grid-template-columns:repeat(8,1fr);
   grid-template-rows:repeat(4,1fr);
-  gap:6px;
+  gap:5px;
   height:100%;
 }
 
@@ -95,10 +114,14 @@ html,body{
   align-items:center;
   border-radius:10px;
   position:relative;
+  overflow:hidden;
 }
 
 .team img{
-  width:70%;
+  width:66%;
+  height:66%;
+  object-fit:contain;
+  display:block;
 }
 
 .team.sold img{
@@ -111,30 +134,52 @@ html,body{
 }
 
 @keyframes pop{
-  0%{transform:scale(.9)}
-  50%{transform:scale(1.1)}
+  0%{transform:scale(.92)}
+  50%{transform:scale(1.06)}
   100%{transform:scale(1)}
+}
+
+.team-code{
+  position:absolute;
+  top:4px;
+  left:6px;
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.4px;
+  color:var(--muted);
+  text-shadow:0 1px 3px rgba(0,0,0,.55);
 }
 
 .team-username{
   position:absolute;
   bottom:3px;
-  font-size:10px;
-  background:black;
+  left:50%;
+  transform:translateX(-50%);
+  font-size:9px;
+  font-weight:900;
+  background:rgba(0,0,0,.86);
+  color:#fff;
   padding:2px 6px;
   border-radius:6px;
+  max-width:92%;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 
 .ticker{
   display:flex;
   align-items:center;
   overflow:hidden;
-  padding-left:10px;
+  padding:0 8px;
+  font-size:14px;
 }
 
 #tickerText{
   white-space:nowrap;
+  display:inline-block;
   animation:ticker 25s linear infinite;
+  font-weight:900;
 }
 
 @keyframes ticker{
@@ -142,15 +187,15 @@ html,body{
   to{transform:translateX(-100%)}
 }
 
-/* 🎬 RECAP */
+/* Recap splash */
 .recap{
   position:absolute;
   inset:0;
   display:none;
   justify-content:center;
   align-items:center;
-  font-size:50px;
-  font-weight:bold;
+  z-index:5;
+  pointer-events:none;
 }
 
 .recap.show{
@@ -158,9 +203,20 @@ html,body{
   animation:fade .5s;
 }
 
+.recap-card{
+  padding:20px 28px;
+  border-radius:18px;
+  background:linear-gradient(180deg, rgba(15,30,58,.96), rgba(7,18,38,.96));
+  border:1px solid rgba(255,255,255,.14);
+  box-shadow:0 18px 40px rgba(0,0,0,.35);
+  font-size:40px;
+  font-weight:1000;
+  letter-spacing:1px;
+}
+
 @keyframes fade{
-  from{opacity:0}
-  to{opacity:1}
+  from{opacity:0; transform:translateY(-16px) scale(.95)}
+  to{opacity:1; transform:translateY(0) scale(1)}
 }
 </style>
 </head>
@@ -184,7 +240,9 @@ html,body{
     <div id="tickerText">Welcome to SMJ Sports Cards & Collectibles!</div>
   </div>
 
-  <div class="recap" id="recap">RECAP MODE</div>
+  <div class="recap" id="recap">
+    <div class="recap-card">RECAP MODE</div>
+  </div>
 
 </div>
 
@@ -192,7 +250,6 @@ html,body{
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
 
-/* 🔥 PASTE YOUR FIREBASE CONFIG HERE */
 const firebaseConfig = {
   apiKey: "AIzaSyAP5JIYtql-4YB-wAgNT2Urja4DUOFoRws",
   authDomain: "smj-overlay.firebaseapp.com",
@@ -208,58 +265,109 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 const TEAMS = [
-'ari','atl','bal','buf','car','chi','cin','cle',
-'dal','den','det','gb','hou','ind','jax','kc',
-'lv','lac','lar','mia','min','ne','no','nyg',
-'nyj','phi','pit','sea','sf','tb','ten','was'
+  ['ari','ARI'],['atl','ATL'],['bal','BAL'],['buf','BUF'],
+  ['car','CAR'],['chi','CHI'],['cin','CIN'],['cle','CLE'],
+  ['dal','DAL'],['den','DEN'],['det','DET'],['gb','GB'],
+  ['hou','HOU'],['ind','IND'],['jax','JAX'],['kc','KC'],
+  ['lv','LV'],['lac','LAC'],['lar','LAR'],['mia','MIA'],
+  ['min','MIN'],['ne','NE'],['no','NO'],['nyg','NYG'],
+  ['nyj','NYJ'],['phi','PHI'],['pit','PIT'],['sea','SEA'],
+  ['sf','SF'],['tb','TB'],['ten','TEN'],['was','WAS']
 ];
 
-let prev = {};
+let prevSold = {};
+let lastRecapMode = false;
+let recapTimer = null;
+
+function buildAssignmentTicker(soldTeams){
+  const entries = TEAMS
+    .filter(([key]) => soldTeams?.[key])
+    .map(([key,label]) => `${label}: ${soldTeams[key].buyer}`);
+
+  const welcome = "Welcome to SMJ Sports Cards & Collectibles!";
+  if (!entries.length) return welcome;
+  return entries.join(" • ") + " • " + welcome;
+}
+
+function fitTitle(text){
+  const el = document.getElementById("title");
+  el.textContent = text || "BREAK";
+  let size = 28;
+  el.style.fontSize = size + "px";
+  while (el.scrollWidth > el.clientWidth && size > 18) {
+    size -= 1;
+    el.style.fontSize = size + "px";
+  }
+}
 
 function render(sold){
   const grid = document.getElementById("grid");
-  grid.innerHTML="";
+  grid.innerHTML = "";
   let count = 0;
 
-  TEAMS.forEach(t=>{
+  TEAMS.forEach(([teamKey, teamLabel]) => {
     const d = document.createElement("div");
-    const data = sold?.[t];
+    const data = sold?.[teamKey];
 
-    d.className = "team" + (data?" sold":"");
+    d.className = "team" + (data ? " sold" : "");
 
-    if(data && !prev[t]){
+    if (data && !prevSold[teamKey]) {
       d.classList.add("just-sold");
     }
 
-    const img = document.createElement("img");
-    img.src = `https://a.espncdn.com/i/teamlogos/nfl/500/${t}.png`;
+    const code = document.createElement("div");
+    code.className = "team-code";
+    code.textContent = teamLabel;
+    d.appendChild(code);
 
+    const img = document.createElement("img");
+    img.src = `https://a.espncdn.com/i/teamlogos/nfl/500/${teamKey}.png`;
+    img.alt = teamLabel;
     d.appendChild(img);
 
-    if(data){
+    if (data) {
       count++;
       const tag = document.createElement("div");
       tag.className = "team-username";
-      tag.innerText = data.buyer;
+      tag.textContent = data.buyer;
       d.appendChild(tag);
     }
 
     grid.appendChild(d);
   });
 
-  document.getElementById("count").innerText = count + "/32";
-  prev = {...sold};
+  document.getElementById("count").textContent = count + "/32";
+  prevSold = { ...(sold || {}) };
 }
 
-onValue(ref(db,"overlayState/main"), snap=>{
+function showRecapSplash(){
+  const recap = document.getElementById("recap");
+  recap.classList.remove("show");
+  void recap.offsetWidth;
+  recap.classList.add("show");
+
+  if (recapTimer) clearTimeout(recapTimer);
+  recapTimer = setTimeout(() => {
+    recap.classList.remove("show");
+  }, 1400);
+}
+
+onValue(ref(db, "overlayState/main"), snap => {
   const s = snap.val() || {};
+  const soldTeams = s.soldTeams || {};
 
-  document.getElementById("title").innerText = s.title || "BREAK";
+  fitTitle(s.title || "BREAK");
+  render(soldTeams);
 
-  render(s.soldTeams || {});
+  document.getElementById("tickerText").textContent =
+    s.tickerMode === "default"
+      ? (s.defaultTicker || "Welcome to SMJ Sports Cards & Collectibles!")
+      : buildAssignmentTicker(soldTeams);
 
-  document.getElementById("recap")
-    .classList.toggle("show", s.recapMode);
+  if (s.recapMode && !lastRecapMode) {
+    showRecapSplash();
+  }
+  lastRecapMode = !!s.recapMode;
 });
 </script>
 
