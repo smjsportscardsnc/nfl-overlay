@@ -75,7 +75,8 @@ html,body{
   position:relative;
   padding:2px;
   display:grid;
-  grid-template-rows:repeat(4, minmax(0, 1fr));
+  grid-template-columns:repeat(10, minmax(0,1fr));
+  grid-template-rows:repeat(4, minmax(0,1fr));
   gap:2px;
   background:
     radial-gradient(circle at center, rgba(255,255,255,.06), transparent 38%),
@@ -86,35 +87,15 @@ html,body{
   position:absolute;
   inset:0;
   background:url("./logo.png") center center no-repeat;
-  background-size:28%;
+  background-size:26%;
   opacity:.05;
   pointer-events:none;
 }
 
-.team-row{
-  display:grid;
-  gap:2px;
+.team,
+.center-logo{
   position:relative;
   z-index:1;
-  min-width:0;
-}
-.team-row.row1{
-  grid-template-columns:repeat(8, minmax(0,1fr));
-}
-.team-row.row2{
-  grid-template-columns:repeat(3, minmax(0,1fr)) 2.6fr repeat(4, minmax(0,1fr));
-}
-.team-row.row3{
-  grid-template-columns:repeat(4, minmax(0,1fr)) 2.6fr repeat(3, minmax(0,1fr));
-}
-.team-row.row4{
-  grid-template-columns:repeat(10, minmax(0,1fr));
-}
-
-.team,
-.logo-cell,
-.spacer-cell{
-  position:relative;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -209,13 +190,9 @@ html,body{
   box-shadow:0 1px 4px rgba(0,0,0,.28);
 }
 
-.spacer-cell{
-  background:transparent;
-  border:none;
-  box-shadow:none;
-}
-
-.logo-cell{
+.center-logo{
+  grid-column:4 / span 4;
+  grid-row:2 / span 2;
   background:
     radial-gradient(circle at center, rgba(255,255,255,.08), transparent 52%),
     linear-gradient(180deg, rgba(10,15,24,.94), rgba(4,6,10,.97));
@@ -224,9 +201,9 @@ html,body{
     inset 0 1px 0 rgba(255,255,255,.04),
     0 8px 20px rgba(0,0,0,.22);
 }
-.logo-cell img{
-  width:72%;
-  height:72%;
+.center-logo img{
+  width:58%;
+  height:58%;
   object-fit:contain;
   filter:drop-shadow(0 4px 10px rgba(0,0,0,.28));
 }
@@ -301,11 +278,10 @@ html,body{
     </div>
   </div>
 
-  <div class="bar board">
-    <div class="team-row row1" id="row1"></div>
-    <div class="team-row row2" id="row2"></div>
-    <div class="team-row row3" id="row3"></div>
-    <div class="team-row row4" id="row4"></div>
+  <div class="bar board" id="board">
+    <div class="center-logo">
+      <img src="./logo.png" alt="SMJ Logo">
+    </div>
   </div>
 
   <div class="bar ticker">
@@ -340,25 +316,53 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 /*
-  Matches control.html team order by city name:
-
-  ARI ATL BAL BUF CAR CHI CIN CLE
-  DAL DEN DET GB HOU IND JAX KC
-  LV LAC LAR MIA MIN NE NO NYG
-  NYJ PHI PIT SF SEA TB TEN WAS
+  City-name order to match control page:
+  ARI ATL BAL BUF CAR CHI CIN CLE DAL DEN
+  DET GB HOU IND JAX KC
+  LV LAC LAR MIA MIN NE
+  NO NYG NYJ PHI PIT SF SEA TB TEN WAS
 */
-const BOARD_ROWS = {
-  row1: ['ari','atl','bal','buf','car','chi','cin','cle'],
+const TEAM_POSITIONS = [
+  // Row 1 - 10 teams
+  { key:"ari", col:1, row:1 },
+  { key:"atl", col:2, row:1 },
+  { key:"bal", col:3, row:1 },
+  { key:"buf", col:4, row:1 },
+  { key:"car", col:5, row:1 },
+  { key:"chi", col:6, row:1 },
+  { key:"cin", col:7, row:1 },
+  { key:"cle", col:8, row:1 },
+  { key:"dal", col:9, row:1 },
+  { key:"den", col:10, row:1 },
 
-  // stepped top of logo area: 3 teams, logo, 4 teams
-  row2: ['dal','den','det','LOGO','gb','hou','ind','jax'],
+  // Row 2 - 6 teams (3 left, 3 right)
+  { key:"det", col:1, row:2 },
+  { key:"gb",  col:2, row:2 },
+  { key:"hou", col:3, row:2 },
+  { key:"ind", col:8, row:2 },
+  { key:"jax", col:9, row:2 },
+  { key:"kc",  col:10, row:2 },
 
-  // stepped bottom of logo area: 4 teams, logo, 3 teams
-  row3: ['lv','lac','lar','mia','LOGO','min','ne','no'],
+  // Row 3 - 6 teams (3 left, 3 right)
+  { key:"lv",  col:1, row:3 },
+  { key:"lac", col:2, row:3 },
+  { key:"lar", col:3, row:3 },
+  { key:"mia", col:8, row:3 },
+  { key:"min", col:9, row:3 },
+  { key:"ne",  col:10, row:3 },
 
-  // last 8 teams
-  row4: ['nyg','nyj','phi','pit','sf','sea','tb','ten','was']
-};
+  // Row 4 - 10 teams
+  { key:"no",  col:1, row:4 },
+  { key:"nyg", col:2, row:4 },
+  { key:"nyj", col:3, row:4 },
+  { key:"phi", col:4, row:4 },
+  { key:"pit", col:5, row:4 },
+  { key:"sf",  col:6, row:4 },
+  { key:"sea", col:7, row:4 },
+  { key:"tb",  col:8, row:4 },
+  { key:"ten", col:9, row:4 },
+  { key:"was", col:10, row:4 }
+];
 
 let prevSold = {};
 let lastRecapMode = false;
@@ -405,19 +409,6 @@ function getChaserMap(chasers){
   return map;
 }
 
-function makeSpacerCell(){
-  const wrap = document.createElement("div");
-  wrap.className = "spacer-cell";
-  return wrap;
-}
-
-function makeLogoCell(){
-  const wrap = document.createElement("div");
-  wrap.className = "logo-cell";
-  wrap.innerHTML = '<img src="./logo.png" alt="SMJ Logo">';
-  return wrap;
-}
-
 function makeTeamCell(teamKey, soldTeams, chasers){
   const wrap = document.createElement("div");
   const label = teamKey.toUpperCase();
@@ -462,35 +453,24 @@ function makeTeamCell(teamKey, soldTeams, chasers){
   return wrap;
 }
 
-function renderRow(rowEl, items, soldTeams, chasers){
-  rowEl.innerHTML = "";
-
-  items.forEach(item => {
-    if (item === "LOGO") {
-      rowEl.appendChild(makeLogoCell());
-    } else if (item === "SPACE") {
-      rowEl.appendChild(makeSpacerCell());
-    } else {
-      rowEl.appendChild(makeTeamCell(item, soldTeams, chasers));
-    }
-  });
-}
-
 function renderBoard(soldTeams, chasers){
+  const board = document.getElementById("board");
+
+  board.querySelectorAll(".team").forEach(el => el.remove());
+
   const chaserMap = getChaserMap(chasers);
   let assignedCount = 0;
 
-  Object.entries(BOARD_ROWS).forEach(([rowId, items]) => {
-    const rowEl = document.getElementById(rowId);
-    renderRow(rowEl, items, soldTeams, chasers);
+  TEAM_POSITIONS.forEach(item => {
+    const cell = makeTeamCell(item.key, soldTeams, chasers);
+    cell.style.gridColumn = String(item.col);
+    cell.style.gridRow = String(item.row);
+    board.appendChild(cell);
 
-    items.forEach(item => {
-      if (item === "LOGO" || item === "SPACE") return;
-      const soldInfo = soldTeams?.[item];
-      const label = item.toUpperCase();
-      const chaserAssigned = !!(chaserMap[label.toLowerCase()]?.length);
-      if (soldInfo || chaserAssigned) assignedCount += 1;
-    });
+    const soldInfo = soldTeams?.[item.key];
+    const label = item.key.toUpperCase();
+    const chaserAssigned = !!(chaserMap[label.toLowerCase()]?.length);
+    if (soldInfo || chaserAssigned) assignedCount += 1;
   });
 
   document.getElementById("count").textContent = String(32 - assignedCount);
