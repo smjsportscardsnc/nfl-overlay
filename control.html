@@ -67,6 +67,9 @@ button.good{
 button.warn{
   background:linear-gradient(90deg,#ff6b6b,#ff8e53);
 }
+button.danger{
+  background:linear-gradient(90deg,#c62828,#e53935);
+}
 .half{flex:1 1 280px}
 .note{font-size:13px;color:var(--muted);line-height:1.45;}
 .status{font-size:13px;color:var(--muted);margin-top:10px;}
@@ -158,6 +161,9 @@ button.warn{
   <div class="group">
     <div class="note">Use this page on your tablet. It controls the overlay in OBS through Firebase.</div>
     <div class="status" id="connectionStatus">Not connected yet.</div>
+    <div class="row" style="margin-top:12px;">
+      <button class="danger" onclick="newBreak()">New Break</button>
+    </div>
   </div>
 
   <div class="group">
@@ -438,6 +444,16 @@ window.removeTeam = async function(team){
   const nextSold = { ...(state.soldTeams || {}) };
   delete nextSold[team];
   await update(ref(db, STATE_PATH), { soldTeams: nextSold });
+};
+
+window.newBreak = async function(){
+  const confirmed = window.confirm("Start a new break? This will clear all teams, chasers, ticker mode, and reset the overlay.");
+  if(!confirmed) return;
+
+  selectedTeam = "";
+  document.getElementById("buyerInput").value = "";
+
+  await set(ref(db, STATE_PATH), structuredClone(defaults));
 };
 
 const stateRef = ref(db, STATE_PATH);
