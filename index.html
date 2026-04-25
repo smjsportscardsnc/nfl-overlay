@@ -252,6 +252,21 @@ html,body{
   pointer-events:none;
   z-index:4;
 }
+.team.logo-missing::after{
+  content:attr(data-label);
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  font-size:24px;
+  font-weight:1000;
+  color:#fff;
+  text-shadow:0 0 10px rgba(97,184,255,.65);
+}
+.team.sold.logo-missing::after{
+  content:"✕";
+}
+
 .team.just-sold{
   animation:soldPop .55s ease-out, energyFlash 1.05s ease-out;
 }
@@ -514,46 +529,1300 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 const LEAGUES = {
-  nfl: {
-    title: "NFL BREAK NIGHT",
-    total: 32,
-    logoPath: "./logo.png",
-    teams: {
-      ari:{label:"ARI",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/ari.png"}, atl:{label:"ATL",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/atl.png"}, bal:{label:"BAL",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/bal.png"}, buf:{label:"BUF",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/buf.png"}, car:{label:"CAR",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/car.png"}, chi:{label:"CHI",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/chi.png"}, cin:{label:"CIN",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/cin.png"}, cle:{label:"CLE",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/cle.png"}, dal:{label:"DAL",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/dal.png"}, den:{label:"DEN",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/den.png"}, det:{label:"DET",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/det.png"}, gb:{label:"GB",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/gb.png"}, hou:{label:"HOU",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/hou.png"}, ind:{label:"IND",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/ind.png"}, jax:{label:"JAX",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/jax.png"}, kc:{label:"KC",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/kc.png"}, lv:{label:"LV",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/lv.png"}, lac:{label:"LAC",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/lac.png"}, lar:{label:"LAR",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/lar.png"}, mia:{label:"MIA",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/mia.png"}, min:{label:"MIN",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/min.png"}, ne:{label:"NE",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/ne.png"}, no:{label:"NO",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/no.png"}, nyg:{label:"NYG",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/nyg.png"}, nyj:{label:"NYJ",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/nyj.png"}, phi:{label:"PHI",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/phi.png"}, pit:{label:"PIT",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/pit.png"}, sf:{label:"SF",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/sf.png"}, sea:{label:"SEA",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/sea.png"}, tb:{label:"TB",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/tb.png"}, ten:{label:"TEN",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/ten.png"}, was:{label:"WAS",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/was.png"}
+  "nfl": {
+    "title": "NFL BREAK NIGHT",
+    "total": 32,
+    "logoPath": "./logo.png",
+    "teams": {
+      "ari": {
+        "label": "ARI",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/ari.png"
+      },
+      "atl": {
+        "label": "ATL",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/atl.png"
+      },
+      "bal": {
+        "label": "BAL",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/bal.png"
+      },
+      "buf": {
+        "label": "BUF",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/buf.png"
+      },
+      "car": {
+        "label": "CAR",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/car.png"
+      },
+      "chi": {
+        "label": "CHI",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/chi.png"
+      },
+      "cin": {
+        "label": "CIN",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/cin.png"
+      },
+      "cle": {
+        "label": "CLE",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/cle.png"
+      },
+      "dal": {
+        "label": "DAL",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/dal.png"
+      },
+      "den": {
+        "label": "DEN",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/den.png"
+      },
+      "det": {
+        "label": "DET",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/det.png"
+      },
+      "gb": {
+        "label": "GB",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/gb.png"
+      },
+      "hou": {
+        "label": "HOU",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/hou.png"
+      },
+      "ind": {
+        "label": "IND",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/ind.png"
+      },
+      "jax": {
+        "label": "JAX",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/jax.png"
+      },
+      "kc": {
+        "label": "KC",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/kc.png"
+      },
+      "lv": {
+        "label": "LV",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/lv.png"
+      },
+      "lac": {
+        "label": "LAC",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/lac.png"
+      },
+      "lar": {
+        "label": "LAR",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/lar.png"
+      },
+      "mia": {
+        "label": "MIA",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/mia.png"
+      },
+      "min": {
+        "label": "MIN",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/min.png"
+      },
+      "ne": {
+        "label": "NE",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/ne.png"
+      },
+      "no": {
+        "label": "NO",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/no.png"
+      },
+      "nyg": {
+        "label": "NYG",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/nyg.png"
+      },
+      "nyj": {
+        "label": "NYJ",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/nyj.png"
+      },
+      "phi": {
+        "label": "PHI",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/phi.png"
+      },
+      "pit": {
+        "label": "PIT",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/pit.png"
+      },
+      "sf": {
+        "label": "SF",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/sf.png"
+      },
+      "sea": {
+        "label": "SEA",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/sea.png"
+      },
+      "tb": {
+        "label": "TB",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/tb.png"
+      },
+      "ten": {
+        "label": "TEN",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/ten.png"
+      },
+      "was": {
+        "label": "WAS",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/was.png"
+      }
     },
-    positions: [
-      ['ari',1,1],['atl',2,1],['bal',3,1],['buf',4,1],['car',5,1],['chi',6,1],['cin',7,1],['cle',8,1],['dal',9,1],['den',10,1],
-      ['det',1,2],['gb',2,2],['hou',3,2],['ind',8,2],['jax',9,2],['kc',10,2],
-      ['lv',1,3],['lac',2,3],['lar',3,3],['mia',8,3],['min',9,3],['ne',10,3],
-      ['no',1,4],['nyg',2,4],['nyj',3,4],['phi',4,4],['pit',5,4],['sf',6,4],['sea',7,4],['tb',8,4],['ten',9,4],['was',10,4]
+    "positions": [
+      [
+        "ari",
+        1,
+        1
+      ],
+      [
+        "atl",
+        2,
+        1
+      ],
+      [
+        "bal",
+        3,
+        1
+      ],
+      [
+        "buf",
+        4,
+        1
+      ],
+      [
+        "car",
+        5,
+        1
+      ],
+      [
+        "chi",
+        6,
+        1
+      ],
+      [
+        "cin",
+        7,
+        1
+      ],
+      [
+        "cle",
+        8,
+        1
+      ],
+      [
+        "dal",
+        9,
+        1
+      ],
+      [
+        "den",
+        10,
+        1
+      ],
+      [
+        "det",
+        1,
+        2
+      ],
+      [
+        "gb",
+        2,
+        2
+      ],
+      [
+        "hou",
+        3,
+        2
+      ],
+      [
+        "ind",
+        8,
+        2
+      ],
+      [
+        "jax",
+        9,
+        2
+      ],
+      [
+        "kc",
+        10,
+        2
+      ],
+      [
+        "lv",
+        1,
+        3
+      ],
+      [
+        "lac",
+        2,
+        3
+      ],
+      [
+        "lar",
+        3,
+        3
+      ],
+      [
+        "mia",
+        8,
+        3
+      ],
+      [
+        "min",
+        9,
+        3
+      ],
+      [
+        "ne",
+        10,
+        3
+      ],
+      [
+        "no",
+        1,
+        4
+      ],
+      [
+        "nyg",
+        2,
+        4
+      ],
+      [
+        "nyj",
+        3,
+        4
+      ],
+      [
+        "phi",
+        4,
+        4
+      ],
+      [
+        "pit",
+        5,
+        4
+      ],
+      [
+        "sf",
+        6,
+        4
+      ],
+      [
+        "sea",
+        7,
+        4
+      ],
+      [
+        "tb",
+        8,
+        4
+      ],
+      [
+        "ten",
+        9,
+        4
+      ],
+      [
+        "was",
+        10,
+        4
+      ]
     ]
   },
-  nba: {
-    title: "NBA BREAK NIGHT",
-    total: 30,
-    logoPath: "./logo.png",
-    teams: {
-      atl:{label:"ATL",logo:"https://a.espncdn.com/i/teamlogos/nba/500/atl.png"}, bos:{label:"BOS",logo:"https://a.espncdn.com/i/teamlogos/nba/500/bos.png"}, bkn:{label:"BKN",logo:"https://a.espncdn.com/i/teamlogos/nba/500/bkn.png"}, cha:{label:"CHA",logo:"https://a.espncdn.com/i/teamlogos/nba/500/cha.png"}, chi:{label:"CHI",logo:"https://a.espncdn.com/i/teamlogos/nba/500/chi.png"}, cle:{label:"CLE",logo:"https://a.espncdn.com/i/teamlogos/nba/500/cle.png"}, dal:{label:"DAL",logo:"https://a.espncdn.com/i/teamlogos/nba/500/dal.png"}, den:{label:"DEN",logo:"https://a.espncdn.com/i/teamlogos/nba/500/den.png"}, det:{label:"DET",logo:"https://a.espncdn.com/i/teamlogos/nba/500/det.png"}, gsw:{label:"GSW",logo:"https://a.espncdn.com/i/teamlogos/nba/500/gs.png"}, hou:{label:"HOU",logo:"https://a.espncdn.com/i/teamlogos/nba/500/hou.png"}, ind:{label:"IND",logo:"https://a.espncdn.com/i/teamlogos/nba/500/ind.png"}, lac:{label:"LAC",logo:"https://a.espncdn.com/i/teamlogos/nba/500/lac.png"}, lal:{label:"LAL",logo:"https://a.espncdn.com/i/teamlogos/nba/500/lal.png"}, mem:{label:"MEM",logo:"https://a.espncdn.com/i/teamlogos/nba/500/mem.png"}, mia:{label:"MIA",logo:"https://a.espncdn.com/i/teamlogos/nba/500/mia.png"}, mil:{label:"MIL",logo:"https://a.espncdn.com/i/teamlogos/nba/500/mil.png"}, min:{label:"MIN",logo:"https://a.espncdn.com/i/teamlogos/nba/500/min.png"}, nop:{label:"NOP",logo:"https://a.espncdn.com/i/teamlogos/nba/500/no.png"}, nyk:{label:"NYK",logo:"https://a.espncdn.com/i/teamlogos/nba/500/ny.png"}, okc:{label:"OKC",logo:"https://a.espncdn.com/i/teamlogos/nba/500/okc.png"}, orl:{label:"ORL",logo:"https://a.espncdn.com/i/teamlogos/nba/500/orl.png"}, phi:{label:"PHI",logo:"https://a.espncdn.com/i/teamlogos/nba/500/phi.png"}, phx:{label:"PHX",logo:"https://a.espncdn.com/i/teamlogos/nba/500/phx.png"}, por:{label:"POR",logo:"https://a.espncdn.com/i/teamlogos/nba/500/por.png"}, sac:{label:"SAC",logo:"https://a.espncdn.com/i/teamlogos/nba/500/sac.png"}, sas:{label:"SAS",logo:"https://a.espncdn.com/i/teamlogos/nba/500/sa.png"}, tor:{label:"TOR",logo:"https://a.espncdn.com/i/teamlogos/nba/500/tor.png"}, uta:{label:"UTA",logo:"https://a.espncdn.com/i/teamlogos/nba/500/utah.png"}, was:{label:"WAS",logo:"https://a.espncdn.com/i/teamlogos/nba/500/wsh.png"}
+  "nba": {
+    "title": "NBA BREAK NIGHT",
+    "total": 30,
+    "logoPath": "./logo.png",
+    "teams": {
+      "atl": {
+        "label": "ATL",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/atl.png"
+      },
+      "bos": {
+        "label": "BOS",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/bos.png"
+      },
+      "bkn": {
+        "label": "BKN",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/bkn.png"
+      },
+      "cha": {
+        "label": "CHA",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/cha.png"
+      },
+      "chi": {
+        "label": "CHI",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/chi.png"
+      },
+      "cle": {
+        "label": "CLE",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/cle.png"
+      },
+      "dal": {
+        "label": "DAL",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/dal.png"
+      },
+      "den": {
+        "label": "DEN",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/den.png"
+      },
+      "det": {
+        "label": "DET",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/det.png"
+      },
+      "gsw": {
+        "label": "GSW",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/gs.png"
+      },
+      "hou": {
+        "label": "HOU",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/hou.png"
+      },
+      "ind": {
+        "label": "IND",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/ind.png"
+      },
+      "lac": {
+        "label": "LAC",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/lac.png"
+      },
+      "lal": {
+        "label": "LAL",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/lal.png"
+      },
+      "mem": {
+        "label": "MEM",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/mem.png"
+      },
+      "mia": {
+        "label": "MIA",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/mia.png"
+      },
+      "mil": {
+        "label": "MIL",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/mil.png"
+      },
+      "min": {
+        "label": "MIN",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/min.png"
+      },
+      "nop": {
+        "label": "NOP",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/no.png"
+      },
+      "nyk": {
+        "label": "NYK",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/ny.png"
+      },
+      "okc": {
+        "label": "OKC",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/okc.png"
+      },
+      "orl": {
+        "label": "ORL",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/orl.png"
+      },
+      "phi": {
+        "label": "PHI",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/phi.png"
+      },
+      "phx": {
+        "label": "PHX",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/phx.png"
+      },
+      "por": {
+        "label": "POR",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/por.png"
+      },
+      "sac": {
+        "label": "SAC",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/sac.png"
+      },
+      "sas": {
+        "label": "SAS",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/sa.png"
+      },
+      "tor": {
+        "label": "TOR",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/tor.png"
+      },
+      "uta": {
+        "label": "UTA",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/utah.png"
+      },
+      "was": {
+        "label": "WAS",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/wsh.png"
+      }
     },
-    positions: [
-      ['atl',1,1],['bos',2,1],['bkn',3,1],['cha',4,1],['chi',5,1],['cle',6,1],['dal',7,1],['den',8,1],['det',9,1],
-      ['gsw',1,2],['hou',2,2],['ind',3,2],['lac',8,2],['lal',9,2],['mem',10,2],
-      ['mia',1,3],['mil',2,3],['min',3,3],['nop',8,3],['nyk',9,3],['okc',10,3],
-      ['orl',1,4],['phi',2,4],['phx',3,4],['por',4,4],['sac',5,4],['sas',6,4],['tor',7,4],['uta',8,4],['was',9,4]
+    "positions": [
+      [
+        "atl",
+        1,
+        1
+      ],
+      [
+        "bos",
+        2,
+        1
+      ],
+      [
+        "bkn",
+        3,
+        1
+      ],
+      [
+        "cha",
+        4,
+        1
+      ],
+      [
+        "chi",
+        5,
+        1
+      ],
+      [
+        "cle",
+        6,
+        1
+      ],
+      [
+        "dal",
+        7,
+        1
+      ],
+      [
+        "den",
+        8,
+        1
+      ],
+      [
+        "det",
+        9,
+        1
+      ],
+      [
+        "gsw",
+        1,
+        2
+      ],
+      [
+        "hou",
+        2,
+        2
+      ],
+      [
+        "ind",
+        3,
+        2
+      ],
+      [
+        "lac",
+        8,
+        2
+      ],
+      [
+        "lal",
+        9,
+        2
+      ],
+      [
+        "mem",
+        10,
+        2
+      ],
+      [
+        "mia",
+        1,
+        3
+      ],
+      [
+        "mil",
+        2,
+        3
+      ],
+      [
+        "min",
+        3,
+        3
+      ],
+      [
+        "nop",
+        8,
+        3
+      ],
+      [
+        "nyk",
+        9,
+        3
+      ],
+      [
+        "okc",
+        10,
+        3
+      ],
+      [
+        "orl",
+        1,
+        4
+      ],
+      [
+        "phi",
+        2,
+        4
+      ],
+      [
+        "phx",
+        3,
+        4
+      ],
+      [
+        "por",
+        4,
+        4
+      ],
+      [
+        "sac",
+        5,
+        4
+      ],
+      [
+        "sas",
+        6,
+        4
+      ],
+      [
+        "tor",
+        7,
+        4
+      ],
+      [
+        "uta",
+        8,
+        4
+      ],
+      [
+        "was",
+        9,
+        4
+      ]
     ]
   },
-  mlb: {
-    title: "MLB BREAK NIGHT",
-    total: 30,
-    logoPath: "./logo.png",
-    teams: {
-      ari:{label:"ARI",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/ari.png"}, atl:{label:"ATL",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/atl.png"}, bal:{label:"BAL",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/bal.png"}, bos:{label:"BOS",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/bos.png"}, chc:{label:"CHC",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/chc.png"}, cws:{label:"CWS",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/cws.png"}, cin:{label:"CIN",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/cin.png"}, cle:{label:"CLE",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/cle.png"}, col:{label:"COL",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/col.png"}, det:{label:"DET",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/det.png"}, hou:{label:"HOU",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/hou.png"}, kc:{label:"KC",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/kc.png"}, laa:{label:"LAA",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/laa.png"}, lad:{label:"LAD",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/lad.png"}, mia:{label:"MIA",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/mia.png"}, mil:{label:"MIL",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/mil.png"}, min:{label:"MIN",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/min.png"}, nym:{label:"NYM",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/nym.png"}, nyy:{label:"NYY",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/nyy.png"}, oak:{label:"ATH",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/oak.png"}, phi:{label:"PHI",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/phi.png"}, pit:{label:"PIT",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/pit.png"}, sd:{label:"SD",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/sd.png"}, sf:{label:"SF",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/sf.png"}, sea:{label:"SEA",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/sea.png"}, stl:{label:"STL",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/stl.png"}, tb:{label:"TB",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/tb.png"}, tex:{label:"TEX",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/tex.png"}, tor:{label:"TOR",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/tor.png"}, wsh:{label:"WSH",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/wsh.png"}
+  "mlb": {
+    "title": "MLB BREAK NIGHT",
+    "total": 30,
+    "logoPath": "./logo.png",
+    "teams": {
+      "ari": {
+        "label": "ARI",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/ari.png"
+      },
+      "atl": {
+        "label": "ATL",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/atl.png"
+      },
+      "bal": {
+        "label": "BAL",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/bal.png"
+      },
+      "bos": {
+        "label": "BOS",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/bos.png"
+      },
+      "chc": {
+        "label": "CHC",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/chc.png"
+      },
+      "cws": {
+        "label": "CWS",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/cws.png"
+      },
+      "cin": {
+        "label": "CIN",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/cin.png"
+      },
+      "cle": {
+        "label": "CLE",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/cle.png"
+      },
+      "col": {
+        "label": "COL",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/col.png"
+      },
+      "det": {
+        "label": "DET",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/det.png"
+      },
+      "hou": {
+        "label": "HOU",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/hou.png"
+      },
+      "kc": {
+        "label": "KC",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/kc.png"
+      },
+      "laa": {
+        "label": "LAA",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/laa.png"
+      },
+      "lad": {
+        "label": "LAD",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/lad.png"
+      },
+      "mia": {
+        "label": "MIA",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/mia.png"
+      },
+      "mil": {
+        "label": "MIL",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/mil.png"
+      },
+      "min": {
+        "label": "MIN",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/min.png"
+      },
+      "nym": {
+        "label": "NYM",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/nym.png"
+      },
+      "nyy": {
+        "label": "NYY",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/nyy.png"
+      },
+      "oak": {
+        "label": "ATH",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/oak.png"
+      },
+      "phi": {
+        "label": "PHI",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/phi.png"
+      },
+      "pit": {
+        "label": "PIT",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/pit.png"
+      },
+      "sd": {
+        "label": "SD",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/sd.png"
+      },
+      "sf": {
+        "label": "SF",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/sf.png"
+      },
+      "sea": {
+        "label": "SEA",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/sea.png"
+      },
+      "stl": {
+        "label": "STL",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/stl.png"
+      },
+      "tb": {
+        "label": "TB",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/tb.png"
+      },
+      "tex": {
+        "label": "TEX",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/tex.png"
+      },
+      "tor": {
+        "label": "TOR",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/tor.png"
+      },
+      "wsh": {
+        "label": "WSH",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/wsh.png"
+      }
     },
-    positions: [
-      ['ari',1,1],['atl',2,1],['bal',3,1],['bos',4,1],['chc',5,1],['cws',6,1],['cin',7,1],['cle',8,1],['col',9,1],
-      ['det',1,2],['hou',2,2],['kc',3,2],['laa',8,2],['lad',9,2],['mia',10,2],
-      ['mil',1,3],['min',2,3],['nym',3,3],['nyy',8,3],['oak',9,3],['phi',10,3],
-      ['pit',1,4],['sd',2,4],['sf',3,4],['sea',4,4],['stl',5,4],['tb',6,4],['tex',7,4],['tor',8,4],['wsh',9,4]
+    "positions": [
+      [
+        "ari",
+        1,
+        1
+      ],
+      [
+        "atl",
+        2,
+        1
+      ],
+      [
+        "bal",
+        3,
+        1
+      ],
+      [
+        "bos",
+        4,
+        1
+      ],
+      [
+        "chc",
+        5,
+        1
+      ],
+      [
+        "cws",
+        6,
+        1
+      ],
+      [
+        "cin",
+        7,
+        1
+      ],
+      [
+        "cle",
+        8,
+        1
+      ],
+      [
+        "col",
+        9,
+        1
+      ],
+      [
+        "det",
+        1,
+        2
+      ],
+      [
+        "hou",
+        2,
+        2
+      ],
+      [
+        "kc",
+        3,
+        2
+      ],
+      [
+        "laa",
+        8,
+        2
+      ],
+      [
+        "lad",
+        9,
+        2
+      ],
+      [
+        "mia",
+        10,
+        2
+      ],
+      [
+        "mil",
+        1,
+        3
+      ],
+      [
+        "min",
+        2,
+        3
+      ],
+      [
+        "nym",
+        3,
+        3
+      ],
+      [
+        "nyy",
+        8,
+        3
+      ],
+      [
+        "oak",
+        9,
+        3
+      ],
+      [
+        "phi",
+        10,
+        3
+      ],
+      [
+        "pit",
+        1,
+        4
+      ],
+      [
+        "sd",
+        2,
+        4
+      ],
+      [
+        "sf",
+        3,
+        4
+      ],
+      [
+        "sea",
+        4,
+        4
+      ],
+      [
+        "stl",
+        5,
+        4
+      ],
+      [
+        "tb",
+        6,
+        4
+      ],
+      [
+        "tex",
+        7,
+        4
+      ],
+      [
+        "tor",
+        8,
+        4
+      ],
+      [
+        "wsh",
+        9,
+        4
+      ]
+    ]
+  },
+  "nhl": {
+    "title": "NHL BREAK NIGHT",
+    "total": 32,
+    "logoPath": "./logo.png",
+    "teams": {
+      "ana": {
+        "label": "ANA",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/ana.png"
+      },
+      "bos": {
+        "label": "BOS",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/bos.png"
+      },
+      "buf": {
+        "label": "BUF",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/buf.png"
+      },
+      "cgy": {
+        "label": "CGY",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/cgy.png"
+      },
+      "car": {
+        "label": "CAR",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/car.png"
+      },
+      "chi": {
+        "label": "CHI",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/chi.png"
+      },
+      "col": {
+        "label": "COL",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/col.png"
+      },
+      "cbj": {
+        "label": "CBJ",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/cbj.png"
+      },
+      "dal": {
+        "label": "DAL",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/dal.png"
+      },
+      "det": {
+        "label": "DET",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/det.png"
+      },
+      "edm": {
+        "label": "EDM",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/edm.png"
+      },
+      "fla": {
+        "label": "FLA",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/fla.png"
+      },
+      "la": {
+        "label": "LA",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/la.png"
+      },
+      "min": {
+        "label": "MIN",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/min.png"
+      },
+      "mtl": {
+        "label": "MTL",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/mtl.png"
+      },
+      "nsh": {
+        "label": "NSH",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/nsh.png"
+      },
+      "nj": {
+        "label": "NJ",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/nj.png"
+      },
+      "nyi": {
+        "label": "NYI",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/nyi.png"
+      },
+      "nyr": {
+        "label": "NYR",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/nyr.png"
+      },
+      "ott": {
+        "label": "OTT",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/ott.png"
+      },
+      "phi": {
+        "label": "PHI",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/phi.png"
+      },
+      "pit": {
+        "label": "PIT",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/pit.png"
+      },
+      "sj": {
+        "label": "SJ",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/sj.png"
+      },
+      "sea": {
+        "label": "SEA",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/sea.png"
+      },
+      "stl": {
+        "label": "STL",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/stl.png"
+      },
+      "tb": {
+        "label": "TB",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/tb.png"
+      },
+      "tor": {
+        "label": "TOR",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/tor.png"
+      },
+      "utah": {
+        "label": "UTA",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/utah.png"
+      },
+      "van": {
+        "label": "VAN",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/van.png"
+      },
+      "vgk": {
+        "label": "VGK",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/vgk.png"
+      },
+      "wsh": {
+        "label": "WSH",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/wsh.png"
+      },
+      "wpg": {
+        "label": "WPG",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/wpg.png"
+      }
+    },
+    "positions": [
+      [
+        "ana",
+        1,
+        1
+      ],
+      [
+        "bos",
+        2,
+        1
+      ],
+      [
+        "buf",
+        3,
+        1
+      ],
+      [
+        "cgy",
+        4,
+        1
+      ],
+      [
+        "car",
+        5,
+        1
+      ],
+      [
+        "chi",
+        6,
+        1
+      ],
+      [
+        "col",
+        7,
+        1
+      ],
+      [
+        "cbj",
+        8,
+        1
+      ],
+      [
+        "dal",
+        9,
+        1
+      ],
+      [
+        "det",
+        10,
+        1
+      ],
+      [
+        "edm",
+        1,
+        2
+      ],
+      [
+        "fla",
+        2,
+        2
+      ],
+      [
+        "la",
+        3,
+        2
+      ],
+      [
+        "min",
+        8,
+        2
+      ],
+      [
+        "mtl",
+        9,
+        2
+      ],
+      [
+        "nsh",
+        10,
+        2
+      ],
+      [
+        "nj",
+        1,
+        3
+      ],
+      [
+        "nyi",
+        2,
+        3
+      ],
+      [
+        "nyr",
+        3,
+        3
+      ],
+      [
+        "ott",
+        8,
+        3
+      ],
+      [
+        "phi",
+        9,
+        3
+      ],
+      [
+        "pit",
+        10,
+        3
+      ],
+      [
+        "sj",
+        1,
+        4
+      ],
+      [
+        "sea",
+        2,
+        4
+      ],
+      [
+        "stl",
+        3,
+        4
+      ],
+      [
+        "tb",
+        4,
+        4
+      ],
+      [
+        "tor",
+        5,
+        4
+      ],
+      [
+        "utah",
+        6,
+        4
+      ],
+      [
+        "van",
+        7,
+        4
+      ],
+      [
+        "vgk",
+        8,
+        4
+      ],
+      [
+        "wsh",
+        9,
+        4
+      ],
+      [
+        "wpg",
+        10,
+        4
+      ]
+    ]
+  },
+  "wnba": {
+    "title": "WNBA BREAK NIGHT",
+    "total": 15,
+    "logoPath": "./logo.png",
+    "teams": {
+      "atl": {
+        "label": "ATL",
+        "logo": "https://a.espncdn.com/i/teamlogos/wnba/500/atl.png"
+      },
+      "chi": {
+        "label": "CHI",
+        "logo": "https://a.espncdn.com/i/teamlogos/wnba/500/chi.png"
+      },
+      "con": {
+        "label": "CON",
+        "logo": "https://a.espncdn.com/i/teamlogos/wnba/500/con.png"
+      },
+      "dal": {
+        "label": "DAL",
+        "logo": "https://a.espncdn.com/i/teamlogos/wnba/500/dal.png"
+      },
+      "gs": {
+        "label": "GS",
+        "logo": "https://a.espncdn.com/i/teamlogos/wnba/500/gs.png"
+      },
+      "ind": {
+        "label": "IND",
+        "logo": "https://a.espncdn.com/i/teamlogos/wnba/500/ind.png"
+      },
+      "lv": {
+        "label": "LV",
+        "logo": "https://a.espncdn.com/i/teamlogos/wnba/500/lv.png"
+      },
+      "la": {
+        "label": "LA",
+        "logo": "https://a.espncdn.com/i/teamlogos/wnba/500/la.png"
+      },
+      "min": {
+        "label": "MIN",
+        "logo": "https://a.espncdn.com/i/teamlogos/wnba/500/min.png"
+      },
+      "ny": {
+        "label": "NY",
+        "logo": "https://a.espncdn.com/i/teamlogos/wnba/500/ny.png"
+      },
+      "phx": {
+        "label": "PHX",
+        "logo": "https://a.espncdn.com/i/teamlogos/wnba/500/phx.png"
+      },
+      "por": {
+        "label": "POR",
+        "logo": "https://a.espncdn.com/i/teamlogos/wnba/500/por.png"
+      },
+      "sea": {
+        "label": "SEA",
+        "logo": "https://a.espncdn.com/i/teamlogos/wnba/500/sea.png"
+      },
+      "tor": {
+        "label": "TOR",
+        "logo": "https://a.espncdn.com/i/teamlogos/wnba/500/tor.png"
+      },
+      "was": {
+        "label": "WAS",
+        "logo": "https://a.espncdn.com/i/teamlogos/wnba/500/was.png"
+      }
+    },
+    "positions": [
+      [
+        "atl",
+        3,
+        1
+      ],
+      [
+        "chi",
+        4,
+        1
+      ],
+      [
+        "con",
+        5,
+        1
+      ],
+      [
+        "dal",
+        6,
+        1
+      ],
+      [
+        "gs",
+        7,
+        1
+      ],
+      [
+        "ind",
+        1,
+        2
+      ],
+      [
+        "lv",
+        10,
+        2
+      ],
+      [
+        "la",
+        1,
+        3
+      ],
+      [
+        "min",
+        10,
+        3
+      ],
+      [
+        "ny",
+        3,
+        4
+      ],
+      [
+        "phx",
+        4,
+        4
+      ],
+      [
+        "por",
+        5,
+        4
+      ],
+      [
+        "sea",
+        6,
+        4
+      ],
+      [
+        "tor",
+        7,
+        4
+      ],
+      [
+        "was",
+        8,
+        4
+      ]
     ]
   }
 };
@@ -606,6 +1875,7 @@ function makeTeamCell(teamKey, soldTeams, leagueData){
   const buyer = soldInfo ? (typeof soldInfo === "string" ? soldInfo : soldInfo.buyer) : "";
 
   wrap.className = "team" + (soldInfo ? " sold" : "");
+  wrap.dataset.label = team.label;
   if (soldInfo && !prevSold[teamKey]) wrap.classList.add("just-sold");
 
   const code = document.createElement("div");
@@ -672,6 +1942,7 @@ onValue(ref(db, "overlayState/main"), snap => {
 </script>
 </body>
 </html>
+
 
 
 
