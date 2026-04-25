@@ -77,7 +77,6 @@ html,body{
   font-size:18px;
   font-weight:1000;
 }
-
 .board{
   position:relative;
   padding:2px;
@@ -85,9 +84,8 @@ html,body{
   grid-template-columns:repeat(10, minmax(0,1fr));
   grid-template-rows:repeat(4, minmax(0,1fr));
   gap:2px;
-  background:#03070f;
+  background:#050a14;
 }
-
 .team,
 .center-logo{
   position:relative;
@@ -98,7 +96,6 @@ html,body{
   min-width:0;
   overflow:hidden;
 }
-
 .team{
   background:#02050b;
   border:1px solid var(--line);
@@ -109,11 +106,11 @@ html,body{
   width:60%;
   height:60%;
   object-fit:contain;
-  filter:drop-shadow(0 2px 3px rgba(0,0,0,.42));
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,.24));
 }
 .team.sold img{
-  filter:grayscale(100%) brightness(.43);
-  opacity:.72;
+  filter:grayscale(100%) brightness(.5);
+  opacity:.75;
 }
 .team.sold::after{
   content:"✕";
@@ -127,15 +124,12 @@ html,body{
   text-shadow:none;
   pointer-events:none;
 }
-.team.just-sold{
-  animation:soldPop .45s ease-out;
-}
+.team.just-sold{animation:soldPop .45s ease-out;}
 @keyframes soldPop{
   0%{transform:scale(.92)}
   55%{transform:scale(1.06)}
   100%{transform:scale(1)}
 }
-
 .team-code{
   position:absolute;
   top:2px;
@@ -156,11 +150,11 @@ html,body{
   text-overflow:ellipsis;
   font-size:7px;
   font-weight:1000;
-  background:#000;
+  background:rgba(0,0,0,.88);
   color:#fff;
   padding:1px 4px;
   border-radius:3px;
-  border:1px solid rgba(255,255,255,.18);
+  border:1px solid var(--line-soft);
 }
 .chaser-badges{
   position:absolute;
@@ -177,16 +171,14 @@ html,body{
   height:13px;
   padding:0 3px;
   border-radius:999px;
-  background:#145ccf;
-  border:1px solid rgba(255,255,255,.28);
+  background:#1d58d8;
+  border:1px solid rgba(255,255,255,.35);
   color:#fff;
   font-size:7px;
   font-weight:1000;
   line-height:12px;
   text-align:center;
-  box-shadow:none;
 }
-
 .center-logo{
   grid-column:4 / span 4;
   grid-row:2 / span 2;
@@ -198,9 +190,8 @@ html,body{
   width:58%;
   height:58%;
   object-fit:contain;
-  filter:drop-shadow(0 3px 6px rgba(0,0,0,.55));
+  filter:drop-shadow(0 4px 10px rgba(0,0,0,.28));
 }
-
 .ticker{
   display:grid;
   grid-template-columns:1fr 175px;
@@ -231,7 +222,6 @@ html,body{
   from{transform:translateX(100%)}
   to{transform:translateX(-100%)}
 }
-
 .recap{
   position:absolute;
   inset:0;
@@ -247,10 +237,10 @@ html,body{
 }
 .recap-card{
   padding:16px 24px;
-  border-radius:14px;
+  border-radius:16px;
   background:#071120;
   border:1px solid var(--line);
-  box-shadow:0 18px 40px rgba(0,0,0,.45);
+  box-shadow:0 18px 40px rgba(0,0,0,.38);
   font-size:32px;
   font-weight:1000;
   letter-spacing:1px;
@@ -308,58 +298,62 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-/*
-  City-name order to match control page:
-  ARI ATL BAL BUF CAR CHI CIN CLE DAL DEN
-  DET GB HOU IND JAX KC
-  LV LAC LAR MIA MIN NE
-  NO NYG NYJ PHI PIT SF SEA TB TEN WAS
-*/
-const TEAM_POSITIONS = [
-  { key:"ari", col:1, row:1 },
-  { key:"atl", col:2, row:1 },
-  { key:"bal", col:3, row:1 },
-  { key:"buf", col:4, row:1 },
-  { key:"car", col:5, row:1 },
-  { key:"chi", col:6, row:1 },
-  { key:"cin", col:7, row:1 },
-  { key:"cle", col:8, row:1 },
-  { key:"dal", col:9, row:1 },
-  { key:"den", col:10, row:1 },
-
-  { key:"det", col:1, row:2 },
-  { key:"gb",  col:2, row:2 },
-  { key:"hou", col:3, row:2 },
-  { key:"ind", col:8, row:2 },
-  { key:"jax", col:9, row:2 },
-  { key:"kc",  col:10, row:2 },
-
-  { key:"lv",  col:1, row:3 },
-  { key:"lac", col:2, row:3 },
-  { key:"lar", col:3, row:3 },
-  { key:"mia", col:8, row:3 },
-  { key:"min", col:9, row:3 },
-  { key:"ne",  col:10, row:3 },
-
-  { key:"no",  col:1, row:4 },
-  { key:"nyg", col:2, row:4 },
-  { key:"nyj", col:3, row:4 },
-  { key:"phi", col:4, row:4 },
-  { key:"pit", col:5, row:4 },
-  { key:"sf",  col:6, row:4 },
-  { key:"sea", col:7, row:4 },
-  { key:"tb",  col:8, row:4 },
-  { key:"ten", col:9, row:4 },
-  { key:"was", col:10, row:4 }
-];
+const LEAGUES = {
+  nfl: {
+    title: "NFL BREAK NIGHT",
+    total: 32,
+    logoPath: "./logo.png",
+    teams: {
+      ari:{label:"ARI",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/ari.png"}, atl:{label:"ATL",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/atl.png"}, bal:{label:"BAL",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/bal.png"}, buf:{label:"BUF",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/buf.png"}, car:{label:"CAR",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/car.png"}, chi:{label:"CHI",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/chi.png"}, cin:{label:"CIN",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/cin.png"}, cle:{label:"CLE",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/cle.png"}, dal:{label:"DAL",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/dal.png"}, den:{label:"DEN",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/den.png"}, det:{label:"DET",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/det.png"}, gb:{label:"GB",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/gb.png"}, hou:{label:"HOU",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/hou.png"}, ind:{label:"IND",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/ind.png"}, jax:{label:"JAX",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/jax.png"}, kc:{label:"KC",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/kc.png"}, lv:{label:"LV",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/lv.png"}, lac:{label:"LAC",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/lac.png"}, lar:{label:"LAR",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/lar.png"}, mia:{label:"MIA",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/mia.png"}, min:{label:"MIN",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/min.png"}, ne:{label:"NE",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/ne.png"}, no:{label:"NO",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/no.png"}, nyg:{label:"NYG",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/nyg.png"}, nyj:{label:"NYJ",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/nyj.png"}, phi:{label:"PHI",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/phi.png"}, pit:{label:"PIT",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/pit.png"}, sf:{label:"SF",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/sf.png"}, sea:{label:"SEA",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/sea.png"}, tb:{label:"TB",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/tb.png"}, ten:{label:"TEN",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/ten.png"}, was:{label:"WAS",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/was.png"}
+    },
+    positions: [
+      ['ari',1,1],['atl',2,1],['bal',3,1],['buf',4,1],['car',5,1],['chi',6,1],['cin',7,1],['cle',8,1],['dal',9,1],['den',10,1],
+      ['det',1,2],['gb',2,2],['hou',3,2],['ind',8,2],['jax',9,2],['kc',10,2],
+      ['lv',1,3],['lac',2,3],['lar',3,3],['mia',8,3],['min',9,3],['ne',10,3],
+      ['no',1,4],['nyg',2,4],['nyj',3,4],['phi',4,4],['pit',5,4],['sf',6,4],['sea',7,4],['tb',8,4],['ten',9,4],['was',10,4]
+    ]
+  },
+  nba: {
+    title: "NBA BREAK NIGHT",
+    total: 30,
+    logoPath: "./logo.png",
+    teams: {
+      atl:{label:"ATL",logo:"https://a.espncdn.com/i/teamlogos/nba/500/atl.png"}, bos:{label:"BOS",logo:"https://a.espncdn.com/i/teamlogos/nba/500/bos.png"}, bkn:{label:"BKN",logo:"https://a.espncdn.com/i/teamlogos/nba/500/bkn.png"}, cha:{label:"CHA",logo:"https://a.espncdn.com/i/teamlogos/nba/500/cha.png"}, chi:{label:"CHI",logo:"https://a.espncdn.com/i/teamlogos/nba/500/chi.png"}, cle:{label:"CLE",logo:"https://a.espncdn.com/i/teamlogos/nba/500/cle.png"}, dal:{label:"DAL",logo:"https://a.espncdn.com/i/teamlogos/nba/500/dal.png"}, den:{label:"DEN",logo:"https://a.espncdn.com/i/teamlogos/nba/500/den.png"}, det:{label:"DET",logo:"https://a.espncdn.com/i/teamlogos/nba/500/det.png"}, gsw:{label:"GSW",logo:"https://a.espncdn.com/i/teamlogos/nba/500/gs.png"}, hou:{label:"HOU",logo:"https://a.espncdn.com/i/teamlogos/nba/500/hou.png"}, ind:{label:"IND",logo:"https://a.espncdn.com/i/teamlogos/nba/500/ind.png"}, lac:{label:"LAC",logo:"https://a.espncdn.com/i/teamlogos/nba/500/lac.png"}, lal:{label:"LAL",logo:"https://a.espncdn.com/i/teamlogos/nba/500/lal.png"}, mem:{label:"MEM",logo:"https://a.espncdn.com/i/teamlogos/nba/500/mem.png"}, mia:{label:"MIA",logo:"https://a.espncdn.com/i/teamlogos/nba/500/mia.png"}, mil:{label:"MIL",logo:"https://a.espncdn.com/i/teamlogos/nba/500/mil.png"}, min:{label:"MIN",logo:"https://a.espncdn.com/i/teamlogos/nba/500/min.png"}, nop:{label:"NOP",logo:"https://a.espncdn.com/i/teamlogos/nba/500/no.png"}, nyk:{label:"NYK",logo:"https://a.espncdn.com/i/teamlogos/nba/500/ny.png"}, okc:{label:"OKC",logo:"https://a.espncdn.com/i/teamlogos/nba/500/okc.png"}, orl:{label:"ORL",logo:"https://a.espncdn.com/i/teamlogos/nba/500/orl.png"}, phi:{label:"PHI",logo:"https://a.espncdn.com/i/teamlogos/nba/500/phi.png"}, phx:{label:"PHX",logo:"https://a.espncdn.com/i/teamlogos/nba/500/phx.png"}, por:{label:"POR",logo:"https://a.espncdn.com/i/teamlogos/nba/500/por.png"}, sac:{label:"SAC",logo:"https://a.espncdn.com/i/teamlogos/nba/500/sac.png"}, sas:{label:"SAS",logo:"https://a.espncdn.com/i/teamlogos/nba/500/sa.png"}, tor:{label:"TOR",logo:"https://a.espncdn.com/i/teamlogos/nba/500/tor.png"}, uta:{label:"UTA",logo:"https://a.espncdn.com/i/teamlogos/nba/500/utah.png"}, was:{label:"WAS",logo:"https://a.espncdn.com/i/teamlogos/nba/500/wsh.png"}
+    },
+    positions: [
+      ['atl',1,1],['bos',2,1],['bkn',3,1],['cha',4,1],['chi',5,1],['cle',6,1],['dal',7,1],['den',8,1],['det',9,1],
+      ['gsw',1,2],['hou',2,2],['ind',3,2],['lac',8,2],['lal',9,2],['mem',10,2],
+      ['mia',1,3],['mil',2,3],['min',3,3],['nop',8,3],['nyk',9,3],['okc',10,3],
+      ['orl',1,4],['phi',2,4],['phx',3,4],['por',4,4],['sac',5,4],['sas',6,4],['tor',7,4],['uta',8,4],['was',9,4]
+    ]
+  },
+  mlb: {
+    title: "MLB BREAK NIGHT",
+    total: 30,
+    logoPath: "./logo.png",
+    teams: {
+      ari:{label:"ARI",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/ari.png"}, atl:{label:"ATL",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/atl.png"}, bal:{label:"BAL",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/bal.png"}, bos:{label:"BOS",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/bos.png"}, chc:{label:"CHC",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/chc.png"}, cws:{label:"CWS",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/cws.png"}, cin:{label:"CIN",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/cin.png"}, cle:{label:"CLE",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/cle.png"}, col:{label:"COL",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/col.png"}, det:{label:"DET",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/det.png"}, hou:{label:"HOU",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/hou.png"}, kc:{label:"KC",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/kc.png"}, laa:{label:"LAA",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/laa.png"}, lad:{label:"LAD",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/lad.png"}, mia:{label:"MIA",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/mia.png"}, mil:{label:"MIL",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/mil.png"}, min:{label:"MIN",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/min.png"}, nym:{label:"NYM",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/nym.png"}, nyy:{label:"NYY",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/nyy.png"}, oak:{label:"ATH",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/oak.png"}, phi:{label:"PHI",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/phi.png"}, pit:{label:"PIT",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/pit.png"}, sd:{label:"SD",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/sd.png"}, sf:{label:"SF",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/sf.png"}, sea:{label:"SEA",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/sea.png"}, stl:{label:"STL",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/stl.png"}, tb:{label:"TB",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/tb.png"}, tex:{label:"TEX",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/tex.png"}, tor:{label:"TOR",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/tor.png"}, wsh:{label:"WSH",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/wsh.png"}
+    },
+    positions: [
+      ['ari',1,1],['atl',2,1],['bal',3,1],['bos',4,1],['chc',5,1],['cws',6,1],['cin',7,1],['cle',8,1],['col',9,1],
+      ['det',1,2],['hou',2,2],['kc',3,2],['laa',8,2],['lad',9,2],['mia',10,2],
+      ['mil',1,3],['min',2,3],['nym',3,3],['nyy',8,3],['oak',9,3],['phi',10,3],
+      ['pit',1,4],['sd',2,4],['sf',3,4],['sea',4,4],['stl',5,4],['tb',6,4],['tex',7,4],['tor',8,4],['wsh',9,4]
+    ]
+  }
+};
 
 let prevSold = {};
 let lastRecapMode = false;
 let recapTimer = null;
 
-function buildTicker(soldTeams){
+function getLeagueData(league){
+  return LEAGUES[league] || LEAGUES.nfl;
+}
+
+function buildTicker(soldTeams, leagueData){
   const all = Object.entries(soldTeams || {}).map(([key, info]) => {
-    const label = key.toUpperCase();
+    const label = leagueData.teams[key]?.label || key.toUpperCase();
     const buyer = typeof info === "string" ? info : info.buyer;
     return `${label}: ${buyer}`;
   });
@@ -387,24 +381,33 @@ function fitTitle(text){
   }
 }
 
-function getChaserMap(chasers){
+function getChaserMap(chasers, leagueData){
+  const labelToKey = {};
+  Object.entries(leagueData.teams).forEach(([key, team]) => {
+    labelToKey[String(team.label).toLowerCase()] = key;
+  });
+
   const map = {};
   Object.entries(chasers || {}).forEach(([spot, info]) => {
     if (!info || !info.team) return;
-    const key = info.team.toLowerCase();
+    const key = labelToKey[String(info.team).toLowerCase()] || String(info.team).toLowerCase();
     if (!map[key]) map[key] = [];
     map[key].push(spot);
   });
   return map;
 }
 
-function makeTeamCell(teamKey, soldTeams, chasers){
+function makeTeamCell(teamKey, soldTeams, chasers, leagueData){
   const wrap = document.createElement("div");
-  const label = teamKey.toUpperCase();
+  const team = leagueData.teams[teamKey];
+  if (!team) return wrap;
+
+  const label = team.label;
   const soldInfo = soldTeams?.[teamKey];
-  const chaserMap = getChaserMap(chasers);
-  const chaserAssigned = !!(chaserMap[label.toLowerCase()]?.length);
+  const chaserMap = getChaserMap(chasers, leagueData);
+  const chaserAssigned = !!(chaserMap[teamKey]?.length);
   const buyer = soldInfo ? (typeof soldInfo === "string" ? soldInfo : soldInfo.buyer) : "";
+
   wrap.className = "team" + ((soldInfo || chaserAssigned) ? " sold" : "");
   if (soldInfo && !prevSold[teamKey]) wrap.classList.add("just-sold");
 
@@ -414,11 +417,11 @@ function makeTeamCell(teamKey, soldTeams, chasers){
   wrap.appendChild(code);
 
   const img = document.createElement("img");
-  img.src = `https://a.espncdn.com/i/teamlogos/nfl/500/${teamKey}.png`;
+  img.src = team.logo;
   img.alt = label;
   wrap.appendChild(img);
 
-  const badges = chaserMap[label.toLowerCase()] || [];
+  const badges = chaserMap[teamKey] || [];
   if (badges.length) {
     const badgeWrap = document.createElement("div");
     badgeWrap.className = "chaser-badges";
@@ -441,42 +444,45 @@ function makeTeamCell(teamKey, soldTeams, chasers){
   return wrap;
 }
 
-function renderBoard(soldTeams, chasers){
+function renderBoard(soldTeams, chasers, leagueData){
   const board = document.getElementById("board");
-
   board.querySelectorAll(".team").forEach(el => el.remove());
 
-  const chaserMap = getChaserMap(chasers);
+  const centerLogo = board.querySelector(".center-logo img");
+  if (centerLogo) centerLogo.src = leagueData.logoPath || "./logo.png";
+
+  const chaserMap = getChaserMap(chasers, leagueData);
   let assignedCount = 0;
 
-  TEAM_POSITIONS.forEach(item => {
-    const cell = makeTeamCell(item.key, soldTeams, chasers);
-    cell.style.gridColumn = String(item.col);
-    cell.style.gridRow = String(item.row);
+  leagueData.positions.forEach(([key, col, row]) => {
+    const cell = makeTeamCell(key, soldTeams, chasers, leagueData);
+    cell.style.gridColumn = String(col);
+    cell.style.gridRow = String(row);
     board.appendChild(cell);
 
-    const soldInfo = soldTeams?.[item.key];
-    const label = item.key.toUpperCase();
-    const chaserAssigned = !!(chaserMap[label.toLowerCase()]?.length);
+    const soldInfo = soldTeams?.[key];
+    const chaserAssigned = !!(chaserMap[key]?.length);
     if (soldInfo || chaserAssigned) assignedCount += 1;
   });
 
-  document.getElementById("count").textContent = String(32 - assignedCount);
+  document.getElementById("count").textContent = String(leagueData.total - assignedCount);
   prevSold = { ...(soldTeams || {}) };
 }
 
 onValue(ref(db, "overlayState/main"), snap => {
   const s = snap.val() || {};
+  const league = s.league || "nfl";
+  const leagueData = getLeagueData(league);
   const soldTeams = s.soldTeams || {};
   const chasers = s.chasers || {};
 
-  fitTitle(s.title || "BREAK");
-  renderBoard(soldTeams, chasers);
+  fitTitle(s.title || leagueData.title || "BREAK");
+  renderBoard(soldTeams, chasers, leagueData);
 
   document.getElementById("tickerText").textContent =
     s.tickerMode === "default"
       ? (s.defaultTicker || "Welcome to SMJ Sports Cards & Collectibles!")
-      : buildTicker(soldTeams);
+      : buildTicker(soldTeams, leagueData);
 
   if (s.recapMode && !lastRecapMode) showRecapSplash();
   lastRecapMode = !!s.recapMode;
@@ -484,4 +490,5 @@ onValue(ref(db, "overlayState/main"), snap => {
 </script>
 </body>
 </html>
+
 
