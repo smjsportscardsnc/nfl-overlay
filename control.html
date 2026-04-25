@@ -2,245 +2,468 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>SMJ Overlay Control</title>
+<meta name="viewport" content="width=1080, initial-scale=1.0" />
+<title>SMJ Break Board</title>
 <style>
 :root{
-  --bg:#081221;
-  --panel:#10203a;
-  --panel2:#132847;
-  --line:rgba(255,255,255,.12);
-  --text:#f5f7fb;
-  --muted:#b8c2d9;
+  --text:#ffffff;
+  --muted:#9fb0cc;
+  --bg:#02050b;
+  --panel:#071120;
+  --panel2:#0a172b;
+  --line:rgba(255,255,255,.42);
+  --line-soft:rgba(255,255,255,.20);
+  --red:#b71c1c;
 }
-*{box-sizing:border-box}
-body{
+html,body{
   margin:0;
+  padding:0;
+  width:1080px;
+  height:360px;
+  overflow:hidden;
   font-family:Arial, sans-serif;
-  background:linear-gradient(180deg,#081221,#0d1b30);
+  background:transparent;
   color:var(--text);
 }
-.wrap{max-width:1100px;margin:0 auto;padding:18px;}
-h1{margin:0 0 14px;font-size:26px;}
-.group{
-  background:linear-gradient(180deg,var(--panel2),var(--panel));
-  border:1px solid var(--line);
-  border-radius:16px;
-  padding:14px;
-  margin-bottom:14px;
-}
-label{
-  display:block;
-  font-size:12px;
-  text-transform:uppercase;
-  color:var(--muted);
-  margin-bottom:6px;
-  letter-spacing:1px;
-}
-.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
-input,select,button{font:inherit;}
-input,select{
-  width:100%;
-  background:rgba(255,255,255,.06);
-  border:1px solid rgba(255,255,255,.12);
-  color:var(--text);
-  padding:12px;
-  border-radius:12px;
-  min-width:0;
-}
-button{
-  border:0;
-  border-radius:12px;
-  padding:12px 14px;
-  background:linear-gradient(90deg,#61b8ff,#1d58d8);
-  color:#fff;
-  font-weight:900;
-  cursor:pointer;
-}
-button.secondary{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.08);}
-button.good{background:linear-gradient(90deg,#2bb673,#43d17a);}
-button.warn{background:linear-gradient(90deg,#ff6b6b,#ff8e53);}
-button.danger{background:linear-gradient(90deg,#c62828,#e53935);}
-.half{flex:1 1 280px}
-.third{flex:1 1 180px}
-.note{font-size:13px;color:var(--muted);line-height:1.45;}
-.status{font-size:13px;color:var(--muted);margin-top:10px;}
-.team-picker{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:8px;}
-.team-tile{
+.overlay{
+  width:1080px;
+  height:360px;
+  box-sizing:border-box;
+  padding:5px;
+  display:grid;
+  grid-template-rows:42px 1fr 30px;
+  gap:3px;
   position:relative;
-  border:1px solid rgba(255,255,255,.1);
-  background:rgba(255,255,255,.05);
-  border-radius:12px;
-  padding:8px;
+  background:
+    linear-gradient(135deg, rgba(2,5,12,.98), rgba(8,23,49,.98) 32%, rgba(2,5,12,.98) 62%, rgba(25,8,12,.95));
+  background-size:300% 300%;
+  animation:overlayBaseShift 18s ease-in-out infinite alternate;
+  border:2px solid rgba(255,255,255,.62);
+  box-shadow:
+    inset 0 0 0 1px rgba(0,0,0,.95),
+    inset 0 0 24px rgba(0,0,0,.78),
+    0 0 0 1px rgba(0,0,0,.9);
+  overflow:hidden;
+}
+.overlay::before{
+  content:"";
+  position:absolute;
+  inset:-45%;
+  background:
+    linear-gradient(115deg, transparent 0%, rgba(57,139,230,.28) 22%, transparent 46%),
+    radial-gradient(circle at 18% 12%, rgba(40,115,190,.42), transparent 28%),
+    radial-gradient(circle at 82% 78%, rgba(229,57,53,.24), transparent 31%),
+    radial-gradient(circle at 52% 48%, rgba(255,255,255,.10), transparent 22%);
+  animation:overlayGradientShift 10s ease-in-out infinite alternate;
+  pointer-events:none;
+}
+.overlay::after{
+  content:"";
+  position:absolute;
+  inset:5px;
+  border:1px solid rgba(255,255,255,.28);
+  pointer-events:none;
+  z-index:3;
+}
+@keyframes overlayBaseShift{
+  0%{background-position:0% 40%;}
+  50%{background-position:100% 55%;}
+  100%{background-position:20% 100%;}
+}
+@keyframes overlayGradientShift{
+  0%{transform:translate3d(-3%, -2%, 0) rotate(0deg) scale(1); opacity:.75;}
+  50%{transform:translate3d(2%, 3%, 0) rotate(5deg) scale(1.06); opacity:1;}
+  100%{transform:translate3d(4%, -1%, 0) rotate(-3deg) scale(1.03); opacity:.85;}
+}
+.bar{
+  position:relative;
+  z-index:1;
+  background:linear-gradient(180deg,#081426 0%,#03070f 100%);
+  border:1px solid rgba(255,255,255,.54);
+  box-shadow:
+    inset 0 0 0 1px rgba(0,0,0,.95),
+    inset 0 1px 0 rgba(255,255,255,.12);
+  overflow:hidden;
+}
+.title-bar{
+  display:grid;
+  grid-template-columns:1fr 170px;
+  align-items:center;
+  padding:0 12px;
+}
+#title{
+  text-align:left;
+  padding-left:10px;
+  font-weight:1000;
+  font-size:28px;
+  letter-spacing:.7px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  text-shadow:0 1px 0 #000, 0 0 10px rgba(97,184,255,.2);
+}
+.alive-box{
+  display:grid;
+  grid-template-columns:1fr auto;
+  align-items:center;
+  gap:10px;
+  background:linear-gradient(180deg,#d12626 0%,#8f1111 100%);
+  border:1px solid rgba(255,255,255,.72);
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.5);
+  border-radius:3px;
+  padding:4px 10px;
+}
+.alive-label{
+  font-size:10px;
+  font-weight:1000;
+  text-transform:uppercase;
+  letter-spacing:.8px;
+}
+.alive-value{
+  font-size:18px;
+  font-weight:1000;
+}
+.board{
+  position:relative;
+  padding:2px;
+  display:grid;
+  grid-template-columns:repeat(10, minmax(0,1fr));
+  grid-template-rows:repeat(4, minmax(0,1fr));
+  gap:2px;
+  background:
+    radial-gradient(circle at 18% 26%, rgba(38,119,217,.44), transparent 30%),
+    radial-gradient(circle at 86% 72%, rgba(229,57,53,.34), transparent 32%),
+    linear-gradient(135deg,#02050b 0%,#123365 35%,#030713 62%,#3a0b14 100%);
+  background-size:340% 340%;
+  animation:boardBaseShift 5.5s ease-in-out infinite alternate;
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow:inset 0 0 18px rgba(0,0,0,.75);
+}
+.board::before{
+  content:"";
+  position:absolute;
+  inset:-65%;
+  background:
+    conic-gradient(from 0deg at 50% 50%,
+      rgba(43,126,215,.0),
+      rgba(43,126,215,.42),
+      rgba(255,255,255,.18),
+      rgba(229,57,53,.34),
+      rgba(43,126,215,.0));
+  animation:ambientSpin 10s linear infinite;
+  mix-blend-mode:screen;
+  opacity:.72;
+  z-index:0;
+  pointer-events:none;
+}
+.board::after{
+  content:"";
+  position:absolute;
+  inset:-45%;
+  background:
+    radial-gradient(circle at 12% 24%, rgba(64,152,255,.78), transparent 28%),
+    radial-gradient(circle at 88% 68%, rgba(255,61,61,.54), transparent 30%),
+    radial-gradient(circle at 54% 48%, rgba(255,255,255,.30), transparent 25%),
+    linear-gradient(105deg, transparent 6%, rgba(255,255,255,.24) 39%, transparent 61%);
+  animation:ambientMove 4.8s ease-in-out infinite alternate;
+  mix-blend-mode:screen;
+  opacity:.96;
+  z-index:0;
+  pointer-events:none;
+}
+@keyframes boardBaseShift{
+  0%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+  100%{background-position:20% 100%;}
+}
+@keyframes ambientMove{
+  0%{transform:translate(-5%, -3%) scale(1); opacity:.55;}
+  50%{transform:translate(5%, 3%) scale(1.12); opacity:.95;}
+  100%{transform:translate(-1%, 5%) scale(1.06); opacity:.7;}
+}
+@keyframes logoLift{
+  0%{opacity:.52; transform:scale(.96);}
+  50%{opacity:.88; transform:scale(1.04);}
+  100%{opacity:.64; transform:scale(1);}
+}
+.team,
+.center-logo{
+  position:relative;
+  z-index:2;
   display:flex;
   align-items:center;
   justify-content:center;
-  min-height:68px;
-  cursor:pointer;
+  min-width:0;
+  overflow:hidden;
 }
-.team-tile.selected{border-color:#61b8ff;box-shadow:0 0 0 1px rgba(97,184,255,.5), 0 0 14px rgba(97,184,255,.2);}
-.team-tile.assigned{border-color:rgba(255,255,255,.18);}
-.team-tile img{width:42px;height:42px;object-fit:contain;}
-.team-tile .code{position:absolute;top:5px;left:7px;font-size:10px;font-weight:1000;letter-spacing:.4px;color:var(--muted);}
-.team-tile .buyer{
-  position:absolute;bottom:4px;left:50%;
+.team{
+  background:
+    radial-gradient(circle at 22% 18%, rgba(65,145,255,.28), transparent 34%),
+    radial-gradient(circle at 82% 76%, rgba(255,66,66,.16), transparent 34%),
+    radial-gradient(circle at 50% 48%, rgba(255,255,255,.14), transparent 58%),
+    linear-gradient(180deg,rgba(11,31,58,.88) 0%,rgba(2,5,11,.94) 100%);
+  background-size:240% 240%;
+  animation:tileGlowShift 6.5s ease-in-out infinite;
+  border:1px solid rgba(255,255,255,.58);
+  padding:2px;
+  box-shadow:
+    inset 0 0 0 1px rgba(0,0,0,.86),
+    inset 0 1px 0 rgba(255,255,255,.08);
+}
+.team::before{
+  content:"";
+  position:absolute;
+  inset:6px;
+  border-radius:10px;
+  background:
+    radial-gradient(circle at center, rgba(255,255,255,.42), rgba(97,184,255,.25) 38%, rgba(255,255,255,.07) 58%, transparent 76%);
+  z-index:0;
+  pointer-events:none;
+  animation:logoLift 3.8s ease-in-out infinite alternate;
+}
+.team img{
+  position:relative;
+  z-index:1;
+  width:60%;
+  height:60%;
+  object-fit:contain;
+  filter:
+    drop-shadow(0 2px 7px rgba(0,0,0,1))
+    drop-shadow(0 0 2px rgba(255,255,255,.95))
+    drop-shadow(0 0 10px rgba(255,255,255,.48))
+    brightness(1.42)
+    contrast(1.28)
+    saturate(1.14);
+}
+.team.sold img{
+  filter:grayscale(100%) brightness(.5);
+  opacity:.75;
+}
+.team.sold::after{
+  content:"✕";
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  font-size:26px;
+  font-weight:900;
+  color:#ff2f2f;
+  text-shadow:none;
+  pointer-events:none;
+  z-index:4;
+}
+.team.just-sold{animation:soldPop .45s ease-out;}
+@keyframes soldPop{
+  0%{transform:scale(.92)}
+  55%{transform:scale(1.06)}
+  100%{transform:scale(1)}
+}
+.team-code{
+  position:absolute;
+  z-index:2;
+  top:2px;
+  left:4px;
+  font-size:8px;
+  font-weight:1000;
+  color:var(--muted);
+  letter-spacing:.4px;
+}
+.team-username{
+  position:absolute;
+  z-index:3;
+  bottom:2px;
+  left:50%;
   transform:translateX(-50%);
-  max-width:90%;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-  font-size:10px;font-weight:1000;
-  background:rgba(4,10,22,.9);
-  padding:2px 6px;border-radius:999px;
+  max-width:92%;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  font-size:7px;
+  font-weight:1000;
+  background:rgba(0,0,0,.88);
+  color:#fff;
+  padding:1px 4px;
+  border-radius:3px;
+  border:1px solid var(--line-soft);
 }
-.table{width:100%;border-collapse:collapse;font-size:14px;}
-.table th,.table td{border-bottom:1px solid rgba(255,255,255,.08);padding:8px 6px;text-align:left;vertical-align:middle;}
-.table th{color:var(--muted); font-size:12px; text-transform:uppercase;}
-.small-btn{padding:8px 10px;font-size:12px;border-radius:10px;}
-.chaser-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}
-.chaser-card{border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);border-radius:12px;padding:10px;}
-.chaser-title{font-size:13px;font-weight:1000;letter-spacing:.6px;margin-bottom:8px;color:#fff;}
-.chaser-actions{display:flex;gap:6px;margin-top:8px;}
+.chaser-badges{
+  position:absolute;
+  z-index:3;
+  top:2px;
+  right:2px;
+  display:flex;
+  gap:2px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+  max-width:34px;
+}
+.chaser-badge{
+  min-width:13px;
+  height:13px;
+  padding:0 3px;
+  border-radius:999px;
+  background:#1d58d8;
+  border:1px solid rgba(255,255,255,.35);
+  color:#fff;
+  font-size:7px;
+  font-weight:1000;
+  line-height:12px;
+  text-align:center;
+}
+.center-logo{
+  grid-column:4 / span 4;
+  grid-row:2 / span 2;
+  background:
+    radial-gradient(circle at center, rgba(255,255,255,.22), transparent 42%),
+    radial-gradient(circle at 18% 20%, rgba(64,152,255,.48), transparent 38%),
+    radial-gradient(circle at 86% 78%, rgba(255,61,61,.32), transparent 42%),
+    linear-gradient(180deg,rgba(11,31,58,.92) 0%,rgba(2,5,11,.96) 100%);
+  background-size:260% 260%;
+  animation:tileGlowShift 5.2s ease-in-out infinite;
+  border:1px solid rgba(255,255,255,.62);
+  box-shadow:
+    inset 0 0 0 1px rgba(0,0,0,.85),
+    inset 0 1px 0 rgba(255,255,255,.12),
+    0 0 16px rgba(0,0,0,.55);
+}
+.center-logo img{
+  width:58%;
+  height:58%;
+  object-fit:contain;
+  filter:
+    drop-shadow(0 4px 12px rgba(0,0,0,.7))
+    drop-shadow(0 0 8px rgba(255,255,255,.35))
+    brightness(1.12)
+    contrast(1.08);
+}
 
-.chaser-wheel-panel{display:grid;grid-template-columns:360px 1fr;gap:14px;align-items:start;}
-.wheel-wrap{position:relative;width:340px;height:340px;margin:auto;}
-#wheelCanvas{width:340px;height:340px;border-radius:50%;background:#050b16;border:2px solid rgba(255,255,255,.22);box-shadow:0 0 28px rgba(0,0,0,.45), inset 0 0 18px rgba(255,255,255,.08);}
-.wheel-pointer{position:absolute;top:-6px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:16px solid transparent;border-right:16px solid transparent;border-top:32px solid #ff3b3b;filter:drop-shadow(0 3px 4px rgba(0,0,0,.4));z-index:2;}
-textarea{
-  width:100%;min-height:180px;resize:vertical;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:var(--text);padding:12px;border-radius:12px;font:inherit;
+.center-logo::after{content:"";position:absolute;inset:-18%;background:radial-gradient(circle, rgba(97,184,255,.26), transparent 58%);animation:logoAura 8s linear infinite;z-index:1;pointer-events:none;}
+@keyframes logoPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.055)}}
+@keyframes logoAura{0%{transform:rotate(0deg) scale(1);opacity:.55}50%{transform:rotate(180deg) scale(1.08);opacity:.9}100%{transform:rotate(360deg) scale(1);opacity:.55}}
+
+.ticker{
+  display:grid;
+  grid-template-columns:76px 1fr;
+  align-items:stretch;
+  padding:0;
+  overflow:hidden;
 }
-.wheel-result{margin-top:10px;padding:12px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);font-weight:900;min-height:44px;}
-.wheel-options{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:10px;color:var(--muted);font-size:13px;}
-.wheel-options input{width:auto;}
-@media (max-width: 900px){.chaser-wheel-panel{grid-template-columns:1fr}.wheel-wrap{width:300px;height:300px}#wheelCanvas{width:300px;height:300px}}
-@media (max-width: 900px){.team-picker{grid-template-columns:repeat(4,minmax(0,1fr));}.chaser-grid{grid-template-columns:1fr;}}
+.live-pill{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  font-size:11px;
+  font-weight:1000;
+  letter-spacing:.9px;
+  text-transform:uppercase;
+  background:linear-gradient(180deg,#d12626 0%,#8f1111 100%);
+  border-right:1px solid rgba(255,255,255,.62);
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.45);
+  z-index:2;
+}
+.ticker-window{
+  position:relative;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  min-width:0;
+  background:linear-gradient(180deg,#071120 0%,#03070f 100%);
+}
+#tickerText{
+  white-space:nowrap;
+  display:inline-block;
+  animation:ticker 24s linear infinite;
+  font-size:11px;
+  font-weight:1000;
+  padding-left:100%;
+}
+@keyframes ticker{
+  from{transform:translateX(0)}
+  to{transform:translateX(-100%)}
+}
+
+.wheel-overlay{position:absolute;inset:0;z-index:30;display:none;align-items:center;justify-content:center;flex-direction:column;background:radial-gradient(circle at center, rgba(28,81,139,.38), transparent 36%),linear-gradient(180deg, rgba(0,0,0,.82), rgba(0,0,0,.90));pointer-events:none;}
+.wheel-overlay.show{display:flex;}
+.wheel-stage{position:relative;width:520px;height:520px;display:flex;align-items:center;justify-content:center;}
+#wheelCanvas{width:500px;height:500px;border-radius:50%;border:3px solid rgba(255,255,255,.8);box-shadow:0 0 32px rgba(97,184,255,.48),0 0 70px rgba(229,57,53,.22),inset 0 0 28px rgba(255,255,255,.16);}
+.wheel-pointer{position:absolute;top:0;left:50%;transform:translateX(-50%);width:0;height:0;border-left:22px solid transparent;border-right:22px solid transparent;border-top:44px solid #ff3535;filter:drop-shadow(0 4px 4px rgba(0,0,0,.55));z-index:3;}
+.wheel-center{position:absolute;width:112px;height:112px;border-radius:50%;background:linear-gradient(180deg,#1c518b,#071326);border:2px solid rgba(255,255,255,.75);display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px;font-weight:1000;letter-spacing:1px;box-shadow:0 0 26px rgba(97,184,255,.65),inset 0 0 14px rgba(255,255,255,.18);z-index:2;}
+.wheel-winner{min-height:54px;margin-top:2px;padding:8px 20px;border-radius:999px;background:rgba(3,7,15,.78);border:1px solid rgba(255,255,255,.55);color:#fff;font-size:30px;font-weight:1000;text-transform:uppercase;text-shadow:0 0 14px rgba(255,255,255,.55),0 0 24px rgba(97,184,255,.5);opacity:0;transform:scale(.88);}
+.wheel-winner.show{opacity:1;transform:scale(1);animation:winnerHit .72s cubic-bezier(.2,.9,.2,1);}
+#confettiCanvas{position:absolute;inset:0;width:1080px;height:360px;z-index:31;pointer-events:none;}
+@keyframes winnerHit{0%{opacity:0;transform:scale(.55)}45%{opacity:1;transform:scale(1.18)}100%{opacity:1;transform:scale(1)}}
+
+.recap{
+  position:absolute;
+  inset:0;
+  display:none;
+  justify-content:center;
+  align-items:center;
+  z-index:10;
+  pointer-events:none;
+}
+.recap.show{
+  display:flex;
+  animation:fade .45s;
+}
+.recap-card{
+  padding:16px 24px;
+  border-radius:16px;
+  background:#071120;
+  border:1px solid var(--line);
+  box-shadow:0 18px 40px rgba(0,0,0,.38);
+  font-size:32px;
+  font-weight:1000;
+  letter-spacing:1px;
+}
+@keyframes fade{
+  from{opacity:0; transform:translateY(-14px) scale(.96)}
+  to{opacity:1; transform:translateY(0) scale(1)}
+}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <h1>SMJ Overlay Control</h1>
-
-  <div class="group">
-    <div class="note">Use this page on your tablet. It controls the overlay in OBS through Firebase.</div>
-    <div class="status" id="connectionStatus">Not connected yet.</div>
-    <div class="row" style="margin-top:12px;">
-      <div class="third">
-        <label>League</label>
-        <select id="leagueSelect" onchange="switchLeague()">
-          <option value="nfl">NFL</option>
-          <option value="nba">NBA</option>
-          <option value="mlb">MLB</option>
-        </select>
-      </div>
-      <button class="danger" onclick="newBreak()">New Break</button>
+<div class="overlay" id="overlay">
+  <div class="bar title-bar">
+    <div id="title">BREAK</div>
+    <div class="alive-box">
+      <div class="alive-label">Teams Alive</div>
+      <div class="alive-value" id="count">32</div>
     </div>
   </div>
 
-  <div class="group">
-    <label>Overlay Title</label>
-    <div class="row">
-      <input id="titleInput" class="half" placeholder="Break title">
-      <button onclick="setTitle()">Set Title</button>
+  <div class="bar board" id="board">
+    <div class="center-logo">
+      <img src="./logo.png" alt="SMJ Logo">
     </div>
   </div>
 
-  <div class="group">
-    <label>Custom Ticker</label>
-    <div class="row">
-      <input id="tickerInput" class="half" placeholder="Custom ticker text">
-      <button onclick="setTicker()">Set Custom Ticker</button>
-      <button class="secondary" onclick="toggleAssignmentTicker()">Use Assignment Ticker</button>
+  <div class="bar ticker">
+    <div class="live-pill">LIVE</div>
+    <div class="ticker-window">
+      <div id="tickerText">Welcome to SMJ Sports Cards & Collectibles!</div>
     </div>
   </div>
 
-  <div class="group">
-    <label>Click A Team To Select It</label>
-    <div class="team-picker" id="teamPicker"></div>
-    <div class="row" style="margin-top:10px;">
-      <input id="buyerInput" class="half" placeholder="Whatnot username">
-      <button class="good" onclick="assignBuyer()">Assign Selected Team</button>
-      <button class="secondary" onclick="clearSelectedTeam()">Clear Selected Team</button>
+  <div class="wheel-overlay" id="wheelOverlay">
+    <canvas id="confettiCanvas" width="1080" height="360"></canvas>
+    <div class="wheel-stage">
+      <div class="wheel-pointer"></div>
+      <canvas id="wheelCanvas" width="700" height="700"></canvas>
+      <div class="wheel-center">SPIN</div>
     </div>
+    <div class="wheel-winner" id="wheelWinner"></div>
   </div>
 
-  <div class="group">
-    <label>Chaser Team Tracker</label>
-    <div class="note" style="margin-bottom:10px;">Track your 9 chaser spots separately here. Picking a team here updates the overlay immediately.</div>
-    <div class="chaser-grid" id="chaserGrid"></div>
-  </div>
-
-
-  <div class="group">
-    <label>Chaser Randomizer Wheel</label>
-    <div class="note" style="margin-bottom:10px;">Paste eligible usernames, one per line. Spin assigns the winner to the next open chaser spot. If you already selected the chaser teams above, the overlay will update immediately.</div>
-    <div class="chaser-wheel-panel">
-      <div class="wheel-wrap">
-        <div class="wheel-pointer"></div>
-        <canvas id="wheelCanvas" width="680" height="680"></canvas>
-      </div>
-      <div>
-        <label>Eligible Users</label>
-        <textarea id="chaserEntrants" placeholder="username1
-username2
-username3"></textarea>
-        <div class="wheel-options">
-          <label style="display:flex;align-items:center;gap:6px;margin:0;text-transform:none;letter-spacing:0;font-size:13px;color:var(--muted);">
-            <input type="checkbox" id="removeWinnerAfterSpin" checked>
-            Remove winner after each spin
-          </label>
-        </div>
-        <div class="row" style="margin-top:10px;">
-          <button class="good" onclick="spinNextChaser()">Spin Next Chaser</button>
-          <button class="secondary" onclick="spinAllRemainingChasers()">Auto Assign Remaining</button>
-          <button class="warn" onclick="clearChaserWinners()">Clear Chaser Winners</button>
-        </div>
-        <div class="wheel-result" id="wheelResult">Ready to spin.</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="group">
-    <label>Assignments</label>
-    <div style="overflow:auto">
-      <table class="table">
-        <thead>
-          <tr><th>Team</th><th>Buyer</th><th>Base Cards</th><th>Actions</th></tr>
-        </thead>
-        <tbody id="assignmentsBody"></tbody>
-      </table>
-    </div>
+  <div class="recap" id="recap">
+    <div class="recap-card">RECAP MODE</div>
   </div>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-import { getDatabase, ref, onValue, set, update } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
-
-const LEAGUES = {
-  nfl: {
-    title: "NFL BREAK NIGHT",
-    teams: [
-      ['ari','ARI','https://a.espncdn.com/i/teamlogos/nfl/500/ari.png'],['atl','ATL','https://a.espncdn.com/i/teamlogos/nfl/500/atl.png'],['bal','BAL','https://a.espncdn.com/i/teamlogos/nfl/500/bal.png'],['buf','BUF','https://a.espncdn.com/i/teamlogos/nfl/500/buf.png'],['car','CAR','https://a.espncdn.com/i/teamlogos/nfl/500/car.png'],['chi','CHI','https://a.espncdn.com/i/teamlogos/nfl/500/chi.png'],['cin','CIN','https://a.espncdn.com/i/teamlogos/nfl/500/cin.png'],['cle','CLE','https://a.espncdn.com/i/teamlogos/nfl/500/cle.png'],
-      ['dal','DAL','https://a.espncdn.com/i/teamlogos/nfl/500/dal.png'],['den','DEN','https://a.espncdn.com/i/teamlogos/nfl/500/den.png'],['det','DET','https://a.espncdn.com/i/teamlogos/nfl/500/det.png'],['gb','GB','https://a.espncdn.com/i/teamlogos/nfl/500/gb.png'],['hou','HOU','https://a.espncdn.com/i/teamlogos/nfl/500/hou.png'],['ind','IND','https://a.espncdn.com/i/teamlogos/nfl/500/ind.png'],['jax','JAX','https://a.espncdn.com/i/teamlogos/nfl/500/jax.png'],['kc','KC','https://a.espncdn.com/i/teamlogos/nfl/500/kc.png'],
-      ['lv','LV','https://a.espncdn.com/i/teamlogos/nfl/500/lv.png'],['lac','LAC','https://a.espncdn.com/i/teamlogos/nfl/500/lac.png'],['lar','LAR','https://a.espncdn.com/i/teamlogos/nfl/500/lar.png'],['mia','MIA','https://a.espncdn.com/i/teamlogos/nfl/500/mia.png'],['min','MIN','https://a.espncdn.com/i/teamlogos/nfl/500/min.png'],['ne','NE','https://a.espncdn.com/i/teamlogos/nfl/500/ne.png'],['no','NO','https://a.espncdn.com/i/teamlogos/nfl/500/no.png'],['nyg','NYG','https://a.espncdn.com/i/teamlogos/nfl/500/nyg.png'],
-      ['nyj','NYJ','https://a.espncdn.com/i/teamlogos/nfl/500/nyj.png'],['phi','PHI','https://a.espncdn.com/i/teamlogos/nfl/500/phi.png'],['pit','PIT','https://a.espncdn.com/i/teamlogos/nfl/500/pit.png'],['sea','SEA','https://a.espncdn.com/i/teamlogos/nfl/500/sea.png'],['sf','SF','https://a.espncdn.com/i/teamlogos/nfl/500/sf.png'],['tb','TB','https://a.espncdn.com/i/teamlogos/nfl/500/tb.png'],['ten','TEN','https://a.espncdn.com/i/teamlogos/nfl/500/ten.png'],['was','WAS','https://a.espncdn.com/i/teamlogos/nfl/500/was.png']
-    ]
-  },
-  nba: {
-    title: "NBA BREAK NIGHT",
-    teams: [
-      ['atl','ATL','https://a.espncdn.com/i/teamlogos/nba/500/atl.png'],['bos','BOS','https://a.espncdn.com/i/teamlogos/nba/500/bos.png'],['bkn','BKN','https://a.espncdn.com/i/teamlogos/nba/500/bkn.png'],['cha','CHA','https://a.espncdn.com/i/teamlogos/nba/500/cha.png'],['chi','CHI','https://a.espncdn.com/i/teamlogos/nba/500/chi.png'],['cle','CLE','https://a.espncdn.com/i/teamlogos/nba/500/cle.png'],['dal','DAL','https://a.espncdn.com/i/teamlogos/nba/500/dal.png'],['den','DEN','https://a.espncdn.com/i/teamlogos/nba/500/den.png'],['det','DET','https://a.espncdn.com/i/teamlogos/nba/500/det.png'],['gsw','GSW','https://a.espncdn.com/i/teamlogos/nba/500/gs.png'],
-      ['hou','HOU','https://a.espncdn.com/i/teamlogos/nba/500/hou.png'],['ind','IND','https://a.espncdn.com/i/teamlogos/nba/500/ind.png'],['lac','LAC','https://a.espncdn.com/i/teamlogos/nba/500/lac.png'],['lal','LAL','https://a.espncdn.com/i/teamlogos/nba/500/lal.png'],['mem','MEM','https://a.espncdn.com/i/teamlogos/nba/500/mem.png'],['mia','MIA','https://a.espncdn.com/i/teamlogos/nba/500/mia.png'],['mil','MIL','https://a.espncdn.com/i/teamlogos/nba/500/mil.png'],['min','MIN','https://a.espncdn.com/i/teamlogos/nba/500/min.png'],['nop','NOP','https://a.espncdn.com/i/teamlogos/nba/500/no.png'],['nyk','NYK','https://a.espncdn.com/i/teamlogos/nba/500/ny.png'],
-      ['okc','OKC','https://a.espncdn.com/i/teamlogos/nba/500/okc.png'],['orl','ORL','https://a.espncdn.com/i/teamlogos/nba/500/orl.png'],['phi','PHI','https://a.espncdn.com/i/teamlogos/nba/500/phi.png'],['phx','PHX','https://a.espncdn.com/i/teamlogos/nba/500/phx.png'],['por','POR','https://a.espncdn.com/i/teamlogos/nba/500/por.png'],['sac','SAC','https://a.espncdn.com/i/teamlogos/nba/500/sac.png'],['sas','SAS','https://a.espncdn.com/i/teamlogos/nba/500/sa.png'],['tor','TOR','https://a.espncdn.com/i/teamlogos/nba/500/tor.png'],['uta','UTA','https://a.espncdn.com/i/teamlogos/nba/500/utah.png'],['was','WAS','https://a.espncdn.com/i/teamlogos/nba/500/wsh.png']
-    ]
-  },
-  mlb: {
-    title: "MLB BREAK NIGHT",
-    teams: [
-      ['ari','ARI','https://a.espncdn.com/i/teamlogos/mlb/500/ari.png'],['atl','ATL','https://a.espncdn.com/i/teamlogos/mlb/500/atl.png'],['bal','BAL','https://a.espncdn.com/i/teamlogos/mlb/500/bal.png'],['bos','BOS','https://a.espncdn.com/i/teamlogos/mlb/500/bos.png'],['chc','CHC','https://a.espncdn.com/i/teamlogos/mlb/500/chc.png'],['cws','CWS','https://a.espncdn.com/i/teamlogos/mlb/500/cws.png'],['cin','CIN','https://a.espncdn.com/i/teamlogos/mlb/500/cin.png'],['cle','CLE','https://a.espncdn.com/i/teamlogos/mlb/500/cle.png'],['col','COL','https://a.espncdn.com/i/teamlogos/mlb/500/col.png'],['det','DET','https://a.espncdn.com/i/teamlogos/mlb/500/det.png'],
-      ['hou','HOU','https://a.espncdn.com/i/teamlogos/mlb/500/hou.png'],['kc','KC','https://a.espncdn.com/i/teamlogos/mlb/500/kc.png'],['laa','LAA','https://a.espncdn.com/i/teamlogos/mlb/500/laa.png'],['lad','LAD','https://a.espncdn.com/i/teamlogos/mlb/500/lad.png'],['mia','MIA','https://a.espncdn.com/i/teamlogos/mlb/500/mia.png'],['mil','MIL','https://a.espncdn.com/i/teamlogos/mlb/500/mil.png'],['min','MIN','https://a.espncdn.com/i/teamlogos/mlb/500/min.png'],['nym','NYM','https://a.espncdn.com/i/teamlogos/mlb/500/nym.png'],['nyy','NYY','https://a.espncdn.com/i/teamlogos/mlb/500/nyy.png'],['oak','ATH','https://a.espncdn.com/i/teamlogos/mlb/500/oak.png'],
-      ['phi','PHI','https://a.espncdn.com/i/teamlogos/mlb/500/phi.png'],['pit','PIT','https://a.espncdn.com/i/teamlogos/mlb/500/pit.png'],['sd','SD','https://a.espncdn.com/i/teamlogos/mlb/500/sd.png'],['sf','SF','https://a.espncdn.com/i/teamlogos/mlb/500/sf.png'],['sea','SEA','https://a.espncdn.com/i/teamlogos/mlb/500/sea.png'],['stl','STL','https://a.espncdn.com/i/teamlogos/mlb/500/stl.png'],['tb','TB','https://a.espncdn.com/i/teamlogos/mlb/500/tb.png'],['tex','TEX','https://a.espncdn.com/i/teamlogos/mlb/500/tex.png'],['tor','TOR','https://a.espncdn.com/i/teamlogos/mlb/500/tor.png'],['wsh','WSH','https://a.espncdn.com/i/teamlogos/mlb/500/wsh.png']
-    ]
-  }
-};
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAP5JIYtql-4YB-wAgNT2Urja4DUOFoRws",
@@ -253,414 +476,215 @@ const firebaseConfig = {
   measurementId: "G-511F87E4GE"
 };
 
-const STATE_PATH = "overlayState/main";
-function defaultChasers(){
-  return {
-    "1": { winner: "", team: "" },
-    "2": { winner: "", team: "" },
-    "3": { winner: "", team: "" },
-    "4": { winner: "", team: "" },
-    "5": { winner: "", team: "" },
-    "6": { winner: "", team: "" },
-    "7": { winner: "", team: "" },
-    "8": { winner: "", team: "" },
-    "9": { winner: "", team: "" }
-  };
-}
-function makeDefaults(league = "nfl"){
-  const leagueInfo = LEAGUES[league] || LEAGUES.nfl;
-  return {
-    league,
-    title: leagueInfo.title,
-    soldTeams: {},
-    tickerMode: "default",
-    defaultTicker: "Welcome to SMJ Sports Cards & Collectibles!",
-    recapMode: false,
-    chasers: defaultChasers()
-  };
-}
-
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
-let state = makeDefaults("nfl");
-let selectedTeam = "";
 
-function getLeague(){
-  return state.league || "nfl";
+const LEAGUES = {
+  nfl: {
+    title: "NFL BREAK NIGHT",
+    total: 32,
+    logoPath: "./logo.png",
+    teams: {
+      ari:{label:"ARI",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/ari.png"}, atl:{label:"ATL",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/atl.png"}, bal:{label:"BAL",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/bal.png"}, buf:{label:"BUF",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/buf.png"}, car:{label:"CAR",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/car.png"}, chi:{label:"CHI",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/chi.png"}, cin:{label:"CIN",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/cin.png"}, cle:{label:"CLE",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/cle.png"}, dal:{label:"DAL",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/dal.png"}, den:{label:"DEN",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/den.png"}, det:{label:"DET",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/det.png"}, gb:{label:"GB",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/gb.png"}, hou:{label:"HOU",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/hou.png"}, ind:{label:"IND",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/ind.png"}, jax:{label:"JAX",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/jax.png"}, kc:{label:"KC",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/kc.png"}, lv:{label:"LV",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/lv.png"}, lac:{label:"LAC",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/lac.png"}, lar:{label:"LAR",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/lar.png"}, mia:{label:"MIA",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/mia.png"}, min:{label:"MIN",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/min.png"}, ne:{label:"NE",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/ne.png"}, no:{label:"NO",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/no.png"}, nyg:{label:"NYG",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/nyg.png"}, nyj:{label:"NYJ",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/nyj.png"}, phi:{label:"PHI",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/phi.png"}, pit:{label:"PIT",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/pit.png"}, sf:{label:"SF",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/sf.png"}, sea:{label:"SEA",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/sea.png"}, tb:{label:"TB",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/tb.png"}, ten:{label:"TEN",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/ten.png"}, was:{label:"WAS",logo:"https://a.espncdn.com/i/teamlogos/nfl/500/was.png"}
+    },
+    positions: [
+      ['ari',1,1],['atl',2,1],['bal',3,1],['buf',4,1],['car',5,1],['chi',6,1],['cin',7,1],['cle',8,1],['dal',9,1],['den',10,1],
+      ['det',1,2],['gb',2,2],['hou',3,2],['ind',8,2],['jax',9,2],['kc',10,2],
+      ['lv',1,3],['lac',2,3],['lar',3,3],['mia',8,3],['min',9,3],['ne',10,3],
+      ['no',1,4],['nyg',2,4],['nyj',3,4],['phi',4,4],['pit',5,4],['sf',6,4],['sea',7,4],['tb',8,4],['ten',9,4],['was',10,4]
+    ]
+  },
+  nba: {
+    title: "NBA BREAK NIGHT",
+    total: 30,
+    logoPath: "./logo.png",
+    teams: {
+      atl:{label:"ATL",logo:"https://a.espncdn.com/i/teamlogos/nba/500/atl.png"}, bos:{label:"BOS",logo:"https://a.espncdn.com/i/teamlogos/nba/500/bos.png"}, bkn:{label:"BKN",logo:"https://a.espncdn.com/i/teamlogos/nba/500/bkn.png"}, cha:{label:"CHA",logo:"https://a.espncdn.com/i/teamlogos/nba/500/cha.png"}, chi:{label:"CHI",logo:"https://a.espncdn.com/i/teamlogos/nba/500/chi.png"}, cle:{label:"CLE",logo:"https://a.espncdn.com/i/teamlogos/nba/500/cle.png"}, dal:{label:"DAL",logo:"https://a.espncdn.com/i/teamlogos/nba/500/dal.png"}, den:{label:"DEN",logo:"https://a.espncdn.com/i/teamlogos/nba/500/den.png"}, det:{label:"DET",logo:"https://a.espncdn.com/i/teamlogos/nba/500/det.png"}, gsw:{label:"GSW",logo:"https://a.espncdn.com/i/teamlogos/nba/500/gs.png"}, hou:{label:"HOU",logo:"https://a.espncdn.com/i/teamlogos/nba/500/hou.png"}, ind:{label:"IND",logo:"https://a.espncdn.com/i/teamlogos/nba/500/ind.png"}, lac:{label:"LAC",logo:"https://a.espncdn.com/i/teamlogos/nba/500/lac.png"}, lal:{label:"LAL",logo:"https://a.espncdn.com/i/teamlogos/nba/500/lal.png"}, mem:{label:"MEM",logo:"https://a.espncdn.com/i/teamlogos/nba/500/mem.png"}, mia:{label:"MIA",logo:"https://a.espncdn.com/i/teamlogos/nba/500/mia.png"}, mil:{label:"MIL",logo:"https://a.espncdn.com/i/teamlogos/nba/500/mil.png"}, min:{label:"MIN",logo:"https://a.espncdn.com/i/teamlogos/nba/500/min.png"}, nop:{label:"NOP",logo:"https://a.espncdn.com/i/teamlogos/nba/500/no.png"}, nyk:{label:"NYK",logo:"https://a.espncdn.com/i/teamlogos/nba/500/ny.png"}, okc:{label:"OKC",logo:"https://a.espncdn.com/i/teamlogos/nba/500/okc.png"}, orl:{label:"ORL",logo:"https://a.espncdn.com/i/teamlogos/nba/500/orl.png"}, phi:{label:"PHI",logo:"https://a.espncdn.com/i/teamlogos/nba/500/phi.png"}, phx:{label:"PHX",logo:"https://a.espncdn.com/i/teamlogos/nba/500/phx.png"}, por:{label:"POR",logo:"https://a.espncdn.com/i/teamlogos/nba/500/por.png"}, sac:{label:"SAC",logo:"https://a.espncdn.com/i/teamlogos/nba/500/sac.png"}, sas:{label:"SAS",logo:"https://a.espncdn.com/i/teamlogos/nba/500/sa.png"}, tor:{label:"TOR",logo:"https://a.espncdn.com/i/teamlogos/nba/500/tor.png"}, uta:{label:"UTA",logo:"https://a.espncdn.com/i/teamlogos/nba/500/utah.png"}, was:{label:"WAS",logo:"https://a.espncdn.com/i/teamlogos/nba/500/wsh.png"}
+    },
+    positions: [
+      ['atl',1,1],['bos',2,1],['bkn',3,1],['cha',4,1],['chi',5,1],['cle',6,1],['dal',7,1],['den',8,1],['det',9,1],
+      ['gsw',1,2],['hou',2,2],['ind',3,2],['lac',8,2],['lal',9,2],['mem',10,2],
+      ['mia',1,3],['mil',2,3],['min',3,3],['nop',8,3],['nyk',9,3],['okc',10,3],
+      ['orl',1,4],['phi',2,4],['phx',3,4],['por',4,4],['sac',5,4],['sas',6,4],['tor',7,4],['uta',8,4],['was',9,4]
+    ]
+  },
+  mlb: {
+    title: "MLB BREAK NIGHT",
+    total: 30,
+    logoPath: "./logo.png",
+    teams: {
+      ari:{label:"ARI",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/ari.png"}, atl:{label:"ATL",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/atl.png"}, bal:{label:"BAL",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/bal.png"}, bos:{label:"BOS",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/bos.png"}, chc:{label:"CHC",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/chc.png"}, cws:{label:"CWS",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/cws.png"}, cin:{label:"CIN",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/cin.png"}, cle:{label:"CLE",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/cle.png"}, col:{label:"COL",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/col.png"}, det:{label:"DET",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/det.png"}, hou:{label:"HOU",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/hou.png"}, kc:{label:"KC",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/kc.png"}, laa:{label:"LAA",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/laa.png"}, lad:{label:"LAD",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/lad.png"}, mia:{label:"MIA",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/mia.png"}, mil:{label:"MIL",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/mil.png"}, min:{label:"MIN",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/min.png"}, nym:{label:"NYM",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/nym.png"}, nyy:{label:"NYY",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/nyy.png"}, oak:{label:"ATH",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/oak.png"}, phi:{label:"PHI",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/phi.png"}, pit:{label:"PIT",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/pit.png"}, sd:{label:"SD",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/sd.png"}, sf:{label:"SF",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/sf.png"}, sea:{label:"SEA",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/sea.png"}, stl:{label:"STL",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/stl.png"}, tb:{label:"TB",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/tb.png"}, tex:{label:"TEX",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/tex.png"}, tor:{label:"TOR",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/tor.png"}, wsh:{label:"WSH",logo:"https://a.espncdn.com/i/teamlogos/mlb/500/wsh.png"}
+    },
+    positions: [
+      ['ari',1,1],['atl',2,1],['bal',3,1],['bos',4,1],['chc',5,1],['cws',6,1],['cin',7,1],['cle',8,1],['col',9,1],
+      ['det',1,2],['hou',2,2],['kc',3,2],['laa',8,2],['lad',9,2],['mia',10,2],
+      ['mil',1,3],['min',2,3],['nym',3,3],['nyy',8,3],['oak',9,3],['phi',10,3],
+      ['pit',1,4],['sd',2,4],['sf',3,4],['sea',4,4],['stl',5,4],['tb',6,4],['tex',7,4],['tor',8,4],['wsh',9,4]
+    ]
+  }
+};
+
+let prevSold = {};
+let lastRecapMode = false;
+let recapTimer = null;
+let lastSpinId = null;
+let audioCtx = null;
+
+
+
+function getAudioContext(){try{audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==="suspended")audioCtx.resume().catch(()=>{});return audioCtx;}catch(e){return null;}}
+function playTone(freq,duration=.05,type="square",gainValue=.035){const ctx=getAudioContext();if(!ctx)return;const osc=ctx.createOscillator();const gain=ctx.createGain();osc.type=type;osc.frequency.value=freq;gain.gain.setValueAtTime(.0001,ctx.currentTime);gain.gain.exponentialRampToValueAtTime(gainValue,ctx.currentTime+.008);gain.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+duration);osc.connect(gain);gain.connect(ctx.destination);osc.start();osc.stop(ctx.currentTime+duration+.02);}
+function playTick(){playTone(900+Math.random()*180,.035,"square",.025);}
+function playWinnerHit(){playTone(220,.16,"sawtooth",.055);setTimeout(()=>playTone(440,.18,"triangle",.05),90);setTimeout(()=>playTone(880,.22,"triangle",.045),185);}
+function drawOverlayWheel(names,rotation=0){const canvas=document.getElementById("wheelCanvas");if(!canvas)return;const ctx=canvas.getContext("2d");const w=canvas.width,h=canvas.height,cx=w/2,cy=h/2,r=Math.min(cx,cy)-18;const list=names&&names.length?names:["Add Users"];const slice=Math.PI*2/list.length;const colors=["#1c518b","#071326","#d12626","#0d2a4d","#132847","#a51414"];ctx.clearRect(0,0,w,h);ctx.save();ctx.translate(cx,cy);ctx.rotate(rotation);list.forEach((name,i)=>{const start=i*slice,end=start+slice;ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,r,start,end);ctx.closePath();ctx.fillStyle=colors[i%colors.length];ctx.fill();ctx.strokeStyle="rgba(255,255,255,.62)";ctx.lineWidth=4;ctx.stroke();ctx.save();ctx.rotate(start+slice/2);ctx.textAlign="right";ctx.fillStyle="#fff";ctx.shadowColor="rgba(0,0,0,.85)";ctx.shadowBlur=6;ctx.font="900 28px Arial";const text=String(name||"").length>15?String(name).slice(0,14)+"…":String(name||"");ctx.fillText(text,r-28,9);ctx.restore();});ctx.restore();ctx.beginPath();ctx.arc(cx,cy,62,0,Math.PI*2);ctx.fillStyle="#050b16";ctx.fill();ctx.strokeStyle="rgba(255,255,255,.75)";ctx.lineWidth=5;ctx.stroke();ctx.fillStyle="#fff";ctx.font="900 28px Arial";ctx.textAlign="center";ctx.fillText("SMJ",cx,cy+10);}
+function launchConfetti(){const canvas=document.getElementById("confettiCanvas");if(!canvas)return;const ctx=canvas.getContext("2d");const pieces=[];const colors=["#ffffff","#61b8ff","#1c518b","#ff3535","#ffd166"];for(let i=0;i<150;i++){pieces.push({x:canvas.width/2+(Math.random()-.5)*180,y:canvas.height/2+(Math.random()-.5)*50,vx:(Math.random()-.5)*9,vy:-Math.random()*7-2,g:.18+Math.random()*.12,s:4+Math.random()*6,r:Math.random()*Math.PI,vr:(Math.random()-.5)*.35,c:colors[Math.floor(Math.random()*colors.length)],life:90+Math.random()*45});}let frame=0;function animate(){frame++;ctx.clearRect(0,0,canvas.width,canvas.height);pieces.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=p.g;p.r+=p.vr;p.life--;ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.r);ctx.fillStyle=p.c;ctx.globalAlpha=Math.max(0,Math.min(1,p.life/60));ctx.fillRect(-p.s/2,-p.s/2,p.s,p.s*.55);ctx.restore();});if(frame<140)requestAnimationFrame(animate);else ctx.clearRect(0,0,canvas.width,canvas.height);}animate();}
+function spinOverlayWheel(spinState){if(!spinState||!spinState.names||!spinState.names.length)return;const overlay=document.getElementById("wheelOverlay");const winnerEl=document.getElementById("wheelWinner");const names=spinState.names;const winner=spinState.winner||names[0];const winnerIndex=Math.max(0,names.findIndex(n=>String(n)===String(winner)));const count=names.length;const slice=Math.PI*2/count;const pointerAngle=-Math.PI/2;const targetAngle=winnerIndex*slice+slice/2;const spins=8+Math.random()*2;const finalRotation=pointerAngle-targetAngle+spins*Math.PI*2;const duration=spinState.duration||6200;const start=performance.now();let lastTickSlice=-1;overlay.classList.add("show");winnerEl.classList.remove("show");winnerEl.textContent="";function easeOutQuint(t){return 1-Math.pow(1-t,5);}function frame(now){const t=Math.min((now-start)/duration,1);const eased=easeOutQuint(t);const rot=finalRotation*eased;drawOverlayWheel(names,rot);const tickSlice=Math.floor(((((rot%(Math.PI*2))+Math.PI*2)%(Math.PI*2))/slice));if(tickSlice!==lastTickSlice&&t<.96){lastTickSlice=tickSlice;playTick();}if(t<1){requestAnimationFrame(frame);}else{drawOverlayWheel(names,finalRotation);winnerEl.textContent=`WINNER: ${winner}`;winnerEl.classList.add("show");playWinnerHit();launchConfetti();setTimeout(()=>{overlay.classList.remove("show");winnerEl.classList.remove("show");},3600);}}requestAnimationFrame(frame);}
+
+function getLeagueData(league){
+  return LEAGUES[league] || LEAGUES.nfl;
 }
-function getTeamData(){
-  return (LEAGUES[getLeague()] || LEAGUES.nfl).teams;
-}
-function renderInputs(){
-  document.getElementById("leagueSelect").value = getLeague();
-  document.getElementById("titleInput").value = state.title || "";
-  document.getElementById("tickerInput").value = state.defaultTicker || "";
-}
-function renderTeamPicker(){
-  const picker = document.getElementById("teamPicker");
-  picker.innerHTML = "";
-  getTeamData().forEach(([k,label,logo]) => {
-    const info = state.soldTeams?.[k];
-    const buyer = !info ? "" : (typeof info === "string" ? info : info.buyer);
-    const tile = document.createElement("button");
-    tile.type = "button";
-    tile.className = "team-tile" + (selectedTeam === k ? " selected" : "") + (info ? " assigned" : "");
-    tile.onclick = () => { selectedTeam = k; renderTeamPicker(); };
-    const code = document.createElement("div");
-    code.className = "code";
-    code.textContent = label;
-    const img = document.createElement("img");
-    img.src = logo;
-    img.alt = label;
-    tile.appendChild(code);
-    tile.appendChild(img);
-    if(buyer){
-      const buyerTag = document.createElement("div");
-      buyerTag.className = "buyer";
-      buyerTag.textContent = buyer;
-      tile.appendChild(buyerTag);
-    }
-    picker.appendChild(tile);
-  });
-}
-function renderAssignments(){
-  const tbody = document.getElementById("assignmentsBody");
-  tbody.innerHTML = "";
-  getTeamData().forEach(([k,label]) => {
-    const info = state.soldTeams?.[k];
-    if(!info) return;
+
+function buildTicker(soldTeams, leagueData){
+  const all = Object.entries(soldTeams || {}).map(([key, info]) => {
+    const label = leagueData.teams[key]?.label || key.toUpperCase();
     const buyer = typeof info === "string" ? info : info.buyer;
-    const baseCards = typeof info === "string" ? "No" : info.baseCards;
-    const tr = document.createElement("tr");
-    tr.innerHTML = `<td>${label}</td><td>${buyer}</td><td>${baseCards}</td><td><button class="small-btn secondary" onclick="removeTeam('${k}')">Remove</button></td>`;
-    tbody.appendChild(tr);
+    return `${label}: ${buyer}`;
   });
+  const welcome = "Welcome to SMJ Sports Cards & Collectibles!";
+  return all.length ? all.join(" • ") + " • " + welcome : welcome;
 }
-function renderChasers(){
-  const grid = document.getElementById("chaserGrid");
-  grid.innerHTML = "";
-  for(let i=1;i<=9;i++){
-    const spot = String(i);
-    const info = state.chasers?.[spot] || { winner:"", team:"" };
-    const card = document.createElement("div");
-    card.className = "chaser-card";
-    const title = document.createElement("div");
-    title.className = "chaser-title";
-    title.textContent = `Chaser ${spot}`;
-    const winnerLabel = document.createElement("label");
-    winnerLabel.textContent = "Winner";
-    const winnerInput = document.createElement("input");
-    winnerInput.value = info.winner || "";
-    winnerInput.placeholder = "Winner username";
-    winnerInput.onchange = () => saveChaserField(spot, "winner", winnerInput.value);
-    const teamLabel = document.createElement("label");
-    teamLabel.textContent = "Team";
-    const teamSelect = document.createElement("select");
-    const blank = document.createElement("option");
-    blank.value = "";
-    blank.textContent = "Select team";
-    teamSelect.appendChild(blank);
-    getTeamData().forEach(([key,label]) => {
-      const opt = document.createElement("option");
-      opt.value = label;
-      opt.textContent = label;
-      if(info.team === label) opt.selected = true;
-      teamSelect.appendChild(opt);
+
+function showRecapSplash(){
+  const recap = document.getElementById("recap");
+  recap.classList.remove("show");
+  void recap.offsetWidth;
+  recap.classList.add("show");
+  if (recapTimer) clearTimeout(recapTimer);
+  recapTimer = setTimeout(() => recap.classList.remove("show"), 1400);
+}
+
+function fitTitle(text){
+  const el = document.getElementById("title");
+  el.textContent = text || "BREAK";
+  let size = 28;
+  el.style.fontSize = size + "px";
+  while (el.scrollWidth > el.clientWidth && size > 18) {
+    size -= 1;
+    el.style.fontSize = size + "px";
+  }
+}
+
+function getChaserMap(chasers, leagueData){
+  const labelToKey = {};
+  Object.entries(leagueData.teams).forEach(([key, team]) => {
+    labelToKey[String(team.label).toLowerCase()] = key;
+  });
+
+  const map = {};
+  Object.entries(chasers || {}).forEach(([spot, info]) => {
+    if (!info || !info.team) return;
+    const key = labelToKey[String(info.team).toLowerCase()] || String(info.team).toLowerCase();
+    if (!map[key]) map[key] = [];
+    map[key].push(spot);
+  });
+  return map;
+}
+
+function makeTeamCell(teamKey, soldTeams, chasers, leagueData){
+  const wrap = document.createElement("div");
+  const team = leagueData.teams[teamKey];
+  if (!team) return wrap;
+
+  const label = team.label;
+  const soldInfo = soldTeams?.[teamKey];
+  const chaserMap = getChaserMap(chasers, leagueData);
+  const chaserAssigned = !!(chaserMap[teamKey]?.length);
+  const buyer = soldInfo ? (typeof soldInfo === "string" ? soldInfo : soldInfo.buyer) : "";
+
+  wrap.className = "team" + ((soldInfo || chaserAssigned) ? " sold" : "");
+  if (soldInfo && !prevSold[teamKey]) wrap.classList.add("just-sold");
+
+  const code = document.createElement("div");
+  code.className = "team-code";
+  code.textContent = label;
+  wrap.appendChild(code);
+
+  const img = document.createElement("img");
+  img.src = team.logo;
+  img.alt = label;
+  wrap.appendChild(img);
+
+  const badges = chaserMap[teamKey] || [];
+  if (badges.length) {
+    const badgeWrap = document.createElement("div");
+    badgeWrap.className = "chaser-badges";
+    badges.forEach(spot => {
+      const badge = document.createElement("div");
+      badge.className = "chaser-badge";
+      badge.textContent = spot;
+      badgeWrap.appendChild(badge);
     });
-    teamSelect.onchange = () => saveChaserField(spot, "team", teamSelect.value);
-    const actions = document.createElement("div");
-    actions.className = "chaser-actions";
-    const assignSelectedBtn = document.createElement("button");
-    assignSelectedBtn.className = "small-btn secondary";
-    assignSelectedBtn.textContent = "Use Selected Team";
-    assignSelectedBtn.onclick = () => {
-      if(!selectedTeam) return;
-      const selectedLabel = getTeamData().find(([k]) => k === selectedTeam)?.[1] || "";
-      teamSelect.value = selectedLabel;
-      saveChaserField(spot, "team", selectedLabel);
-    };
-    const clearBtn = document.createElement("button");
-    clearBtn.className = "small-btn warn";
-    clearBtn.textContent = "Clear";
-    clearBtn.onclick = () => clearChaser(spot);
-    actions.appendChild(assignSelectedBtn);
-    actions.appendChild(clearBtn);
-    card.appendChild(title);
-    card.appendChild(winnerLabel);
-    card.appendChild(winnerInput);
-    card.appendChild(teamLabel);
-    card.appendChild(teamSelect);
-    card.appendChild(actions);
-    grid.appendChild(card);
+    wrap.appendChild(badgeWrap);
   }
+
+  if (buyer) {
+    const tag = document.createElement("div");
+    tag.className = "team-username";
+    tag.textContent = buyer;
+    wrap.appendChild(tag);
+  }
+
+  return wrap;
 }
 
-function parseEntrants(){
-  const raw = document.getElementById("chaserEntrants")?.value || "";
-  return raw.split(/[
-,]+/).map(v => v.trim()).filter(Boolean);
-}
-function setEntrants(list){
-  const el = document.getElementById("chaserEntrants");
-  if(el) el.value = list.join("
-");
-  drawWheel();
-}
-function drawWheel(rotation = 0){
-  const canvas = document.getElementById("wheelCanvas");
-  if(!canvas) return;
-  const ctx = canvas.getContext("2d");
-  const entrants = parseEntrants();
-  const w = canvas.width;
-  const h = canvas.height;
-  const cx = w / 2;
-  const cy = h / 2;
-  const r = Math.min(cx, cy) - 16;
-  ctx.clearRect(0,0,w,h);
-  ctx.save();
-  ctx.translate(cx, cy);
-  ctx.rotate(rotation);
-  const colors = ["#1c518b", "#102846", "#b71c1c", "#0d1b33", "#234f7f", "#182338"];
-  const count = Math.max(entrants.length, 1);
-  const slice = Math.PI * 2 / count;
-  for(let i=0;i<count;i++){
-    const start = i * slice;
-    const end = start + slice;
-    ctx.beginPath();
-    ctx.moveTo(0,0);
-    ctx.arc(0,0,r,start,end);
-    ctx.closePath();
-    ctx.fillStyle = entrants.length ? colors[i % colors.length] : "#111827";
-    ctx.fill();
-    ctx.strokeStyle = "rgba(255,255,255,.38)";
-    ctx.lineWidth = 3;
-    ctx.stroke();
-    ctx.save();
-    ctx.rotate(start + slice / 2);
-    ctx.textAlign = "right";
-    ctx.fillStyle = "#fff";
-    ctx.font = "bold 28px Arial";
-    const text = entrants[i] || "Add users";
-    ctx.fillText(text.length > 16 ? text.slice(0,15) + "…" : text, r - 24, 10);
-    ctx.restore();
-  }
-  ctx.restore();
-  ctx.beginPath();
-  ctx.arc(cx,cy,52,0,Math.PI*2);
-  ctx.fillStyle = "#050b16";
-  ctx.fill();
-  ctx.strokeStyle = "rgba(255,255,255,.5)";
-  ctx.lineWidth = 4;
-  ctx.stroke();
-  ctx.fillStyle = "#fff";
-  ctx.font = "900 24px Arial";
-  ctx.textAlign = "center";
-  ctx.fillText("SMJ", cx, cy + 8);
-}
-function getNextOpenChaserSpot(){
-  for(let i=1;i<=9;i++){
-    const spot = String(i);
-    const info = state.chasers?.[spot] || {};
-    if(!info.winner) return spot;
-  }
-  return "";
-}
-async function assignChaserWinner(spot, winner){
-  const nextChasers = { ...(state.chasers || {}) };
-  nextChasers[spot] = {
-    winner,
-    team: nextChasers[spot]?.team || ""
-  };
-  await update(ref(db, STATE_PATH), { chasers: nextChasers });
-}
-function pickWinnerIndex(entrants){
-  return Math.floor(Math.random() * entrants.length);
-}
-async function finishChaserSpin(winnerIndex, finalRotation){
-  const entrants = parseEntrants();
-  const spot = getNextOpenChaserSpot();
-  if(!spot){
-    document.getElementById("wheelResult").textContent = "All 9 chaser spots already have winners.";
-    return;
-  }
-  const winner = entrants[winnerIndex];
-  await assignChaserWinner(spot, winner);
-  document.getElementById("wheelResult").textContent = `Chaser ${spot}: ${winner}`;
-  if(document.getElementById("removeWinnerAfterSpin")?.checked){
-    entrants.splice(winnerIndex, 1);
-    setEntrants(entrants);
-  } else {
-    drawWheel(finalRotation);
-  }
-}
-window.spinNextChaser = async function(){
-  const entrants = parseEntrants();
-  if(!entrants.length){
-    document.getElementById("wheelResult").textContent = "Add eligible usernames first.";
-    drawWheel();
-    return;
-  }
-  const spot = getNextOpenChaserSpot();
-  if(!spot){
-    document.getElementById("wheelResult").textContent = "All 9 chaser spots already have winners.";
-    return;
-  }
-  const winnerIndex = pickWinnerIndex(entrants);
-  const slice = Math.PI * 2 / entrants.length;
-  const pointerAngle = -Math.PI / 2;
-  const targetAngle = winnerIndex * slice + slice / 2;
-  const spins = 7 + Math.random() * 2;
-  const finalRotation = pointerAngle - targetAngle + spins * Math.PI * 2;
-  const start = performance.now();
-  const duration = 6200;
-  const startRotation = 0;
+function renderBoard(soldTeams, chasers, leagueData){
+  const board = document.getElementById("board");
+  board.querySelectorAll(".team").forEach(el => el.remove());
 
-  await update(ref(db, STATE_PATH), {
-    spinState: {
-      id: Date.now(),
-      spinning: true,
-      names: entrants,
-      winner: entrants[winnerIndex],
-      winnerIndex,
-      duration,
-      startedAt: Date.now()
-    }
+  const centerLogo = board.querySelector(".center-logo img");
+  if (centerLogo) centerLogo.src = leagueData.logoPath || "./logo.png";
+
+  const chaserMap = getChaserMap(chasers, leagueData);
+  let assignedCount = 0;
+
+  leagueData.positions.forEach(([key, col, row]) => {
+    const cell = makeTeamCell(key, soldTeams, chasers, leagueData);
+    cell.style.gridColumn = String(col);
+    cell.style.gridRow = String(row);
+    board.appendChild(cell);
+
+    const soldInfo = soldTeams?.[key];
+    const chaserAssigned = !!(chaserMap[key]?.length);
+    if (soldInfo || chaserAssigned) assignedCount += 1;
   });
 
-  function easeOutQuint(t){ return 1 - Math.pow(1 - t, 5); }
-  function frame(now){
-    const t = Math.min((now - start) / duration, 1);
-    const eased = easeOutQuint(t);
-    const rot = startRotation + (finalRotation - startRotation) * eased;
-    drawWheel(rot);
-    if(t < 1){
-      requestAnimationFrame(frame);
-    } else {
-      finishChaserSpin(winnerIndex, finalRotation);
-      setTimeout(() => {
-        update(ref(db, STATE_PATH), { spinState: { spinning: false } });
-      }, 3800);
-    }
-  }
-  document.getElementById("wheelResult").textContent = `Spinning for Chaser ${spot}…`;
-  requestAnimationFrame(frame);
-};
-window.spinAllRemainingChasers = async function(){
-  let entrants = parseEntrants();
-  if(!entrants.length){
-    document.getElementById("wheelResult").textContent = "Add eligible usernames first.";
-    return;
-  }
-  const removeWinners = document.getElementById("removeWinnerAfterSpin")?.checked;
-  let last = "";
-  for(let i=1;i<=9;i++){
-    const spot = String(i);
-    const info = state.chasers?.[spot] || {};
-    if(info.winner) continue;
-    if(!entrants.length) break;
-    const winnerIndex = pickWinnerIndex(entrants);
-    const winner = entrants[winnerIndex];
-    await assignChaserWinner(spot, winner);
-    last = `Chaser ${spot}: ${winner}`;
-    if(removeWinners) entrants.splice(winnerIndex, 1);
-    state.chasers = { ...(state.chasers || {}), [spot]: { winner, team: info.team || "" } };
-  }
-  setEntrants(entrants);
-  document.getElementById("wheelResult").textContent = last || "No open chaser spots found.";
-};
-window.clearChaserWinners = async function(){
-  const confirmed = window.confirm("Clear only the chaser winners? The selected chaser teams will stay in place.");
-  if(!confirmed) return;
-  const nextChasers = { ...(state.chasers || {}) };
-  for(let i=1;i<=9;i++){
-    const spot = String(i);
-    nextChasers[spot] = { winner: "", team: nextChasers[spot]?.team || "" };
-  }
-  await update(ref(db, STATE_PATH), { chasers: nextChasers });
-  document.getElementById("wheelResult").textContent = "Chaser winners cleared.";
-};
-document.addEventListener("input", (e) => {
-  if(e.target?.id === "chaserEntrants") drawWheel();
-});
-
-async function saveChaserField(spot, field, value){
-  const nextChasers = { ...(state.chasers || {}) };
-  nextChasers[spot] = { winner: nextChasers[spot]?.winner || "", team: nextChasers[spot]?.team || "", [field]: value };
-  await update(ref(db, STATE_PATH), { chasers: nextChasers });
+  document.getElementById("count").textContent = String(leagueData.total - assignedCount);
+  prevSold = { ...(soldTeams || {}) };
 }
-window.clearChaser = async function(spot){
-  const nextChasers = { ...(state.chasers || {}) };
-  nextChasers[spot] = { winner: "", team: "" };
-  await update(ref(db, STATE_PATH), { chasers: nextChasers });
-};
-window.switchLeague = async function(){
-  const nextLeague = document.getElementById("leagueSelect").value;
-  if(nextLeague === getLeague()) return;
-  const confirmed = window.confirm("Switch league? This will clear current teams and chasers so assignments do not carry into the wrong sport.");
-  if(!confirmed){
-    document.getElementById("leagueSelect").value = getLeague();
-    return;
+
+onValue(ref(db, "overlayState/main"), snap => {
+  const s = snap.val() || {};
+  const league = s.league || "nfl";
+  const leagueData = getLeagueData(league);
+  const soldTeams = s.soldTeams || {};
+  const chasers = s.chasers || {};
+
+  fitTitle(s.title || leagueData.title || "BREAK");
+  renderBoard(soldTeams, chasers, leagueData);
+
+  document.getElementById("tickerText").textContent =
+    s.tickerMode === "default"
+      ? (s.defaultTicker || "Welcome to SMJ Sports Cards & Collectibles!")
+      : buildTicker(soldTeams, leagueData);
+
+  const spinState = s.spinState || {};
+  if (spinState.spinning && spinState.id && spinState.id !== lastSpinId) {
+    lastSpinId = spinState.id;
+    spinOverlayWheel(spinState);
   }
-  selectedTeam = "";
-  document.getElementById("buyerInput").value = "";
-  await set(ref(db, STATE_PATH), makeDefaults(nextLeague));
-};
-window.setTitle = async function(){
-  const v = document.getElementById("titleInput").value.trim();
-  if(!v) return;
-  await update(ref(db, STATE_PATH), { title: v.toUpperCase() });
-};
-window.setTicker = async function(){
-  const v = document.getElementById("tickerInput").value.trim();
-  await update(ref(db, STATE_PATH), { defaultTicker: v || makeDefaults(getLeague()).defaultTicker, tickerMode: "default" });
-};
-window.toggleAssignmentTicker = async function(){
-  await update(ref(db, STATE_PATH), { tickerMode: "assignments" });
-};
-window.assignBuyer = async function(){
-  const team = selectedTeam;
-  const buyer = document.getElementById("buyerInput").value.trim();
-  if(!team || !buyer) return;
-  const nextSold = { ...(state.soldTeams || {}) };
-  nextSold[team] = { buyer, baseCards: "No" };
-  await update(ref(db, STATE_PATH), { soldTeams: nextSold });
-  document.getElementById("buyerInput").value = "";
-};
-window.clearSelectedTeam = async function(){
-  const team = selectedTeam;
-  if(!team) return;
-  const nextSold = { ...(state.soldTeams || {}) };
-  delete nextSold[team];
-  await update(ref(db, STATE_PATH), { soldTeams: nextSold });
-};
-window.removeTeam = async function(team){
-  const nextSold = { ...(state.soldTeams || {}) };
-  delete nextSold[team];
-  await update(ref(db, STATE_PATH), { soldTeams: nextSold });
-};
-window.newBreak = async function(){
-  const confirmed = window.confirm("Start a new break? This will clear all teams, chasers, ticker mode, and reset the overlay for the current league.");
-  if(!confirmed) return;
-  selectedTeam = "";
-  document.getElementById("buyerInput").value = "";
-  await set(ref(db, STATE_PATH), makeDefaults(getLeague()));
-};
-const stateRef = ref(db, STATE_PATH);
-onValue(stateRef, async (snap) => {
-  const val = snap.val();
-  if (val === null) {
-    await set(stateRef, makeDefaults("nfl"));
-    return;
-  }
-  state = { ...makeDefaults(val.league || "nfl"), ...val };
-  document.getElementById("connectionStatus").textContent = "Connected.";
-  renderInputs();
-  renderTeamPicker();
-  renderAssignments();
-  renderChasers();
-  drawWheel();
-}, () => {
-  document.getElementById("connectionStatus").textContent = "Connection error.";
+
+  if (s.recapMode && !lastRecapMode) showRecapSplash();
+  lastRecapMode = !!s.recapMode;
 });
 </script>
 </body>
