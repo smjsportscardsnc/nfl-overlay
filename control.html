@@ -37,7 +37,7 @@ label{
   margin-bottom:6px;
   letter-spacing:1px;
 }
-.row{display:flex;gap:10px;flex-wrap:wrap;}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
 input,select,button{font:inherit;}
 input,select{
   width:100%;
@@ -57,27 +57,15 @@ button{
   font-weight:900;
   cursor:pointer;
 }
-button.secondary{
-  background:rgba(255,255,255,.08);
-  border:1px solid rgba(255,255,255,.08);
-}
-button.good{
-  background:linear-gradient(90deg,#2bb673,#43d17a);
-}
-button.warn{
-  background:linear-gradient(90deg,#ff6b6b,#ff8e53);
-}
-button.danger{
-  background:linear-gradient(90deg,#c62828,#e53935);
-}
+button.secondary{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.08);}
+button.good{background:linear-gradient(90deg,#2bb673,#43d17a);}
+button.warn{background:linear-gradient(90deg,#ff6b6b,#ff8e53);}
+button.danger{background:linear-gradient(90deg,#c62828,#e53935);}
 .half{flex:1 1 280px}
+.third{flex:1 1 180px}
 .note{font-size:13px;color:var(--muted);line-height:1.45;}
 .status{font-size:13px;color:var(--muted);margin-top:10px;}
-.team-picker{
-  display:grid;
-  grid-template-columns:repeat(8,minmax(0,1fr));
-  gap:8px;
-}
+.team-picker{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:8px;}
 .team-tile{
   position:relative;
   border:1px solid rgba(255,255,255,.1);
@@ -90,20 +78,10 @@ button.danger{
   min-height:68px;
   cursor:pointer;
 }
-.team-tile.selected{
-  border-color:#61b8ff;
-  box-shadow:0 0 0 1px rgba(97,184,255,.5), 0 0 14px rgba(97,184,255,.2);
-}
-.team-tile.assigned{
-  border-color:rgba(255,255,255,.18);
-}
-.team-tile img{
-  width:42px;height:42px;object-fit:contain;
-}
-.team-tile .code{
-  position:absolute;top:5px;left:7px;
-  font-size:10px;font-weight:1000;letter-spacing:.4px;color:var(--muted);
-}
+.team-tile.selected{border-color:#61b8ff;box-shadow:0 0 0 1px rgba(97,184,255,.5), 0 0 14px rgba(97,184,255,.2);}
+.team-tile.assigned{border-color:rgba(255,255,255,.18);}
+.team-tile img{width:42px;height:42px;object-fit:contain;}
+.team-tile .code{position:absolute;top:5px;left:7px;font-size:10px;font-weight:1000;letter-spacing:.4px;color:var(--muted);}
 .team-tile .buyer{
   position:absolute;bottom:4px;left:50%;
   transform:translateX(-50%);
@@ -114,44 +92,14 @@ button.danger{
   padding:2px 6px;border-radius:999px;
 }
 .table{width:100%;border-collapse:collapse;font-size:14px;}
-.table th,.table td{
-  border-bottom:1px solid rgba(255,255,255,.08);
-  padding:8px 6px;text-align:left;
-  vertical-align:middle;
-}
+.table th,.table td{border-bottom:1px solid rgba(255,255,255,.08);padding:8px 6px;text-align:left;vertical-align:middle;}
 .table th{color:var(--muted); font-size:12px; text-transform:uppercase;}
-.small-btn{
-  padding:8px 10px;
-  font-size:12px;
-  border-radius:10px;
-}
-.chaser-grid{
-  display:grid;
-  grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:10px;
-}
-.chaser-card{
-  border:1px solid rgba(255,255,255,.08);
-  background:rgba(255,255,255,.04);
-  border-radius:12px;
-  padding:10px;
-}
-.chaser-title{
-  font-size:13px;
-  font-weight:1000;
-  letter-spacing:.6px;
-  margin-bottom:8px;
-  color:#fff;
-}
-.chaser-actions{
-  display:flex;
-  gap:6px;
-  margin-top:8px;
-}
-@media (max-width: 900px){
-  .team-picker{grid-template-columns:repeat(4,minmax(0,1fr));}
-  .chaser-grid{grid-template-columns:1fr;}
-}
+.small-btn{padding:8px 10px;font-size:12px;border-radius:10px;}
+.chaser-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}
+.chaser-card{border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);border-radius:12px;padding:10px;}
+.chaser-title{font-size:13px;font-weight:1000;letter-spacing:.6px;margin-bottom:8px;color:#fff;}
+.chaser-actions{display:flex;gap:6px;margin-top:8px;}
+@media (max-width: 900px){.team-picker{grid-template-columns:repeat(4,minmax(0,1fr));}.chaser-grid{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
@@ -162,6 +110,14 @@ button.danger{
     <div class="note">Use this page on your tablet. It controls the overlay in OBS through Firebase.</div>
     <div class="status" id="connectionStatus">Not connected yet.</div>
     <div class="row" style="margin-top:12px;">
+      <div class="third">
+        <label>League</label>
+        <select id="leagueSelect" onchange="switchLeague()">
+          <option value="nfl">NFL</option>
+          <option value="nba">NBA</option>
+          <option value="mlb">MLB</option>
+        </select>
+      </div>
       <button class="danger" onclick="newBreak()">New Break</button>
     </div>
   </div>
@@ -216,12 +172,33 @@ button.danger{
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import { getDatabase, ref, onValue, set, update } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
 
-const TEAM_DATA = [
-  ['ari','ARI'],['atl','ATL'],['bal','BAL'],['buf','BUF'],['car','CAR'],['chi','CHI'],['cin','CIN'],['cle','CLE'],
-  ['dal','DAL'],['den','DEN'],['det','DET'],['gb','GB'],['hou','HOU'],['ind','IND'],['jax','JAX'],['kc','KC'],
-  ['lv','LV'],['lac','LAC'],['lar','LAR'],['mia','MIA'],['min','MIN'],['ne','NE'],['no','NO'],['nyg','NYG'],
-  ['nyj','NYJ'],['phi','PHI'],['pit','PIT'],['sea','SEA'],['sf','SF'],['tb','TB'],['ten','TEN'],['was','WAS']
-];
+const LEAGUES = {
+  nfl: {
+    title: "NFL BREAK NIGHT",
+    teams: [
+      ['ari','ARI','https://a.espncdn.com/i/teamlogos/nfl/500/ari.png'],['atl','ATL','https://a.espncdn.com/i/teamlogos/nfl/500/atl.png'],['bal','BAL','https://a.espncdn.com/i/teamlogos/nfl/500/bal.png'],['buf','BUF','https://a.espncdn.com/i/teamlogos/nfl/500/buf.png'],['car','CAR','https://a.espncdn.com/i/teamlogos/nfl/500/car.png'],['chi','CHI','https://a.espncdn.com/i/teamlogos/nfl/500/chi.png'],['cin','CIN','https://a.espncdn.com/i/teamlogos/nfl/500/cin.png'],['cle','CLE','https://a.espncdn.com/i/teamlogos/nfl/500/cle.png'],
+      ['dal','DAL','https://a.espncdn.com/i/teamlogos/nfl/500/dal.png'],['den','DEN','https://a.espncdn.com/i/teamlogos/nfl/500/den.png'],['det','DET','https://a.espncdn.com/i/teamlogos/nfl/500/det.png'],['gb','GB','https://a.espncdn.com/i/teamlogos/nfl/500/gb.png'],['hou','HOU','https://a.espncdn.com/i/teamlogos/nfl/500/hou.png'],['ind','IND','https://a.espncdn.com/i/teamlogos/nfl/500/ind.png'],['jax','JAX','https://a.espncdn.com/i/teamlogos/nfl/500/jax.png'],['kc','KC','https://a.espncdn.com/i/teamlogos/nfl/500/kc.png'],
+      ['lv','LV','https://a.espncdn.com/i/teamlogos/nfl/500/lv.png'],['lac','LAC','https://a.espncdn.com/i/teamlogos/nfl/500/lac.png'],['lar','LAR','https://a.espncdn.com/i/teamlogos/nfl/500/lar.png'],['mia','MIA','https://a.espncdn.com/i/teamlogos/nfl/500/mia.png'],['min','MIN','https://a.espncdn.com/i/teamlogos/nfl/500/min.png'],['ne','NE','https://a.espncdn.com/i/teamlogos/nfl/500/ne.png'],['no','NO','https://a.espncdn.com/i/teamlogos/nfl/500/no.png'],['nyg','NYG','https://a.espncdn.com/i/teamlogos/nfl/500/nyg.png'],
+      ['nyj','NYJ','https://a.espncdn.com/i/teamlogos/nfl/500/nyj.png'],['phi','PHI','https://a.espncdn.com/i/teamlogos/nfl/500/phi.png'],['pit','PIT','https://a.espncdn.com/i/teamlogos/nfl/500/pit.png'],['sea','SEA','https://a.espncdn.com/i/teamlogos/nfl/500/sea.png'],['sf','SF','https://a.espncdn.com/i/teamlogos/nfl/500/sf.png'],['tb','TB','https://a.espncdn.com/i/teamlogos/nfl/500/tb.png'],['ten','TEN','https://a.espncdn.com/i/teamlogos/nfl/500/ten.png'],['was','WAS','https://a.espncdn.com/i/teamlogos/nfl/500/was.png']
+    ]
+  },
+  nba: {
+    title: "NBA BREAK NIGHT",
+    teams: [
+      ['atl','ATL','https://a.espncdn.com/i/teamlogos/nba/500/atl.png'],['bos','BOS','https://a.espncdn.com/i/teamlogos/nba/500/bos.png'],['bkn','BKN','https://a.espncdn.com/i/teamlogos/nba/500/bkn.png'],['cha','CHA','https://a.espncdn.com/i/teamlogos/nba/500/cha.png'],['chi','CHI','https://a.espncdn.com/i/teamlogos/nba/500/chi.png'],['cle','CLE','https://a.espncdn.com/i/teamlogos/nba/500/cle.png'],['dal','DAL','https://a.espncdn.com/i/teamlogos/nba/500/dal.png'],['den','DEN','https://a.espncdn.com/i/teamlogos/nba/500/den.png'],['det','DET','https://a.espncdn.com/i/teamlogos/nba/500/det.png'],['gsw','GSW','https://a.espncdn.com/i/teamlogos/nba/500/gs.png'],
+      ['hou','HOU','https://a.espncdn.com/i/teamlogos/nba/500/hou.png'],['ind','IND','https://a.espncdn.com/i/teamlogos/nba/500/ind.png'],['lac','LAC','https://a.espncdn.com/i/teamlogos/nba/500/lac.png'],['lal','LAL','https://a.espncdn.com/i/teamlogos/nba/500/lal.png'],['mem','MEM','https://a.espncdn.com/i/teamlogos/nba/500/mem.png'],['mia','MIA','https://a.espncdn.com/i/teamlogos/nba/500/mia.png'],['mil','MIL','https://a.espncdn.com/i/teamlogos/nba/500/mil.png'],['min','MIN','https://a.espncdn.com/i/teamlogos/nba/500/min.png'],['nop','NOP','https://a.espncdn.com/i/teamlogos/nba/500/no.png'],['nyk','NYK','https://a.espncdn.com/i/teamlogos/nba/500/ny.png'],
+      ['okc','OKC','https://a.espncdn.com/i/teamlogos/nba/500/okc.png'],['orl','ORL','https://a.espncdn.com/i/teamlogos/nba/500/orl.png'],['phi','PHI','https://a.espncdn.com/i/teamlogos/nba/500/phi.png'],['phx','PHX','https://a.espncdn.com/i/teamlogos/nba/500/phx.png'],['por','POR','https://a.espncdn.com/i/teamlogos/nba/500/por.png'],['sac','SAC','https://a.espncdn.com/i/teamlogos/nba/500/sac.png'],['sas','SAS','https://a.espncdn.com/i/teamlogos/nba/500/sa.png'],['tor','TOR','https://a.espncdn.com/i/teamlogos/nba/500/tor.png'],['uta','UTA','https://a.espncdn.com/i/teamlogos/nba/500/utah.png'],['was','WAS','https://a.espncdn.com/i/teamlogos/nba/500/wsh.png']
+    ]
+  },
+  mlb: {
+    title: "MLB BREAK NIGHT",
+    teams: [
+      ['ari','ARI','https://a.espncdn.com/i/teamlogos/mlb/500/ari.png'],['atl','ATL','https://a.espncdn.com/i/teamlogos/mlb/500/atl.png'],['bal','BAL','https://a.espncdn.com/i/teamlogos/mlb/500/bal.png'],['bos','BOS','https://a.espncdn.com/i/teamlogos/mlb/500/bos.png'],['chc','CHC','https://a.espncdn.com/i/teamlogos/mlb/500/chc.png'],['cws','CWS','https://a.espncdn.com/i/teamlogos/mlb/500/cws.png'],['cin','CIN','https://a.espncdn.com/i/teamlogos/mlb/500/cin.png'],['cle','CLE','https://a.espncdn.com/i/teamlogos/mlb/500/cle.png'],['col','COL','https://a.espncdn.com/i/teamlogos/mlb/500/col.png'],['det','DET','https://a.espncdn.com/i/teamlogos/mlb/500/det.png'],
+      ['hou','HOU','https://a.espncdn.com/i/teamlogos/mlb/500/hou.png'],['kc','KC','https://a.espncdn.com/i/teamlogos/mlb/500/kc.png'],['laa','LAA','https://a.espncdn.com/i/teamlogos/mlb/500/laa.png'],['lad','LAD','https://a.espncdn.com/i/teamlogos/mlb/500/lad.png'],['mia','MIA','https://a.espncdn.com/i/teamlogos/mlb/500/mia.png'],['mil','MIL','https://a.espncdn.com/i/teamlogos/mlb/500/mil.png'],['min','MIN','https://a.espncdn.com/i/teamlogos/mlb/500/min.png'],['nym','NYM','https://a.espncdn.com/i/teamlogos/mlb/500/nym.png'],['nyy','NYY','https://a.espncdn.com/i/teamlogos/mlb/500/nyy.png'],['oak','ATH','https://a.espncdn.com/i/teamlogos/mlb/500/oak.png'],
+      ['phi','PHI','https://a.espncdn.com/i/teamlogos/mlb/500/phi.png'],['pit','PIT','https://a.espncdn.com/i/teamlogos/mlb/500/pit.png'],['sd','SD','https://a.espncdn.com/i/teamlogos/mlb/500/sd.png'],['sf','SF','https://a.espncdn.com/i/teamlogos/mlb/500/sf.png'],['sea','SEA','https://a.espncdn.com/i/teamlogos/mlb/500/sea.png'],['stl','STL','https://a.espncdn.com/i/teamlogos/mlb/500/stl.png'],['tb','TB','https://a.espncdn.com/i/teamlogos/mlb/500/tb.png'],['tex','TEX','https://a.espncdn.com/i/teamlogos/mlb/500/tex.png'],['tor','TOR','https://a.espncdn.com/i/teamlogos/mlb/500/tor.png'],['wsh','WSH','https://a.espncdn.com/i/teamlogos/mlb/500/wsh.png']
+    ]
+  }
+};
 
 const firebaseConfig = {
   apiKey: "AIzaSyAP5JIYtql-4YB-wAgNT2Urja4DUOFoRws",
@@ -235,13 +212,8 @@ const firebaseConfig = {
 };
 
 const STATE_PATH = "overlayState/main";
-const defaults = {
-  title: "NFL BREAK NIGHT",
-  soldTeams: {},
-  tickerMode: "default",
-  defaultTicker: "Welcome to SMJ Sports Cards & Collectibles!",
-  recapMode: false,
-  chasers: {
+function defaultChasers(){
+  return {
     "1": { winner: "", team: "" },
     "2": { winner: "", team: "" },
     "3": { winner: "", team: "" },
@@ -251,107 +223,102 @@ const defaults = {
     "7": { winner: "", team: "" },
     "8": { winner: "", team: "" },
     "9": { winner: "", team: "" }
-  }
-};
+  };
+}
+function makeDefaults(league = "nfl"){
+  const leagueInfo = LEAGUES[league] || LEAGUES.nfl;
+  return {
+    league,
+    title: leagueInfo.title,
+    soldTeams: {},
+    tickerMode: "default",
+    defaultTicker: "Welcome to SMJ Sports Cards & Collectibles!",
+    recapMode: false,
+    chasers: defaultChasers()
+  };
+}
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
-let state = structuredClone(defaults);
+let state = makeDefaults("nfl");
 let selectedTeam = "";
 
+function getLeague(){
+  return state.league || "nfl";
+}
+function getTeamData(){
+  return (LEAGUES[getLeague()] || LEAGUES.nfl).teams;
+}
 function renderInputs(){
+  document.getElementById("leagueSelect").value = getLeague();
   document.getElementById("titleInput").value = state.title || "";
   document.getElementById("tickerInput").value = state.defaultTicker || "";
 }
-
 function renderTeamPicker(){
   const picker = document.getElementById("teamPicker");
   picker.innerHTML = "";
-  TEAM_DATA.forEach(([k,label]) => {
+  getTeamData().forEach(([k,label,logo]) => {
     const info = state.soldTeams?.[k];
     const buyer = !info ? "" : (typeof info === "string" ? info : info.buyer);
-
     const tile = document.createElement("button");
     tile.type = "button";
     tile.className = "team-tile" + (selectedTeam === k ? " selected" : "") + (info ? " assigned" : "");
-    tile.onclick = () => {
-      selectedTeam = k;
-      renderTeamPicker();
-    };
-
+    tile.onclick = () => { selectedTeam = k; renderTeamPicker(); };
     const code = document.createElement("div");
     code.className = "code";
     code.textContent = label;
-
     const img = document.createElement("img");
-    img.src = `https://a.espncdn.com/i/teamlogos/nfl/500/${k}.png`;
+    img.src = logo;
     img.alt = label;
-
     tile.appendChild(code);
     tile.appendChild(img);
-
     if(buyer){
       const buyerTag = document.createElement("div");
       buyerTag.className = "buyer";
       buyerTag.textContent = buyer;
       tile.appendChild(buyerTag);
     }
-
     picker.appendChild(tile);
   });
 }
-
 function renderAssignments(){
   const tbody = document.getElementById("assignmentsBody");
   tbody.innerHTML = "";
-  TEAM_DATA.forEach(([k,label]) => {
+  getTeamData().forEach(([k,label]) => {
     const info = state.soldTeams?.[k];
     if(!info) return;
     const buyer = typeof info === "string" ? info : info.buyer;
     const baseCards = typeof info === "string" ? "No" : info.baseCards;
-
     const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${label}</td>
-      <td>${buyer}</td>
-      <td>${baseCards}</td>
-      <td><button class="small-btn secondary" onclick="removeTeam('${k}')">Remove</button></td>
-    `;
+    tr.innerHTML = `<td>${label}</td><td>${buyer}</td><td>${baseCards}</td><td><button class="small-btn secondary" onclick="removeTeam('${k}')">Remove</button></td>`;
     tbody.appendChild(tr);
   });
 }
-
 function renderChasers(){
   const grid = document.getElementById("chaserGrid");
   grid.innerHTML = "";
   for(let i=1;i<=9;i++){
     const spot = String(i);
     const info = state.chasers?.[spot] || { winner:"", team:"" };
-
     const card = document.createElement("div");
     card.className = "chaser-card";
-
     const title = document.createElement("div");
     title.className = "chaser-title";
     title.textContent = `Chaser ${spot}`;
-
     const winnerLabel = document.createElement("label");
     winnerLabel.textContent = "Winner";
     const winnerInput = document.createElement("input");
     winnerInput.value = info.winner || "";
     winnerInput.placeholder = "Winner username";
     winnerInput.onchange = () => saveChaserField(spot, "winner", winnerInput.value);
-
     const teamLabel = document.createElement("label");
     teamLabel.textContent = "Team";
     const teamSelect = document.createElement("select");
-
     const blank = document.createElement("option");
     blank.value = "";
     blank.textContent = "Select team";
     teamSelect.appendChild(blank);
-
-    TEAM_DATA.forEach(([key,label]) => {
+    getTeamData().forEach(([key,label]) => {
       const opt = document.createElement("option");
       opt.value = label;
       opt.textContent = label;
@@ -359,28 +326,23 @@ function renderChasers(){
       teamSelect.appendChild(opt);
     });
     teamSelect.onchange = () => saveChaserField(spot, "team", teamSelect.value);
-
     const actions = document.createElement("div");
     actions.className = "chaser-actions";
-
     const assignSelectedBtn = document.createElement("button");
     assignSelectedBtn.className = "small-btn secondary";
     assignSelectedBtn.textContent = "Use Selected Team";
     assignSelectedBtn.onclick = () => {
       if(!selectedTeam) return;
-      const selectedLabel = TEAM_DATA.find(([k]) => k === selectedTeam)?.[1] || "";
+      const selectedLabel = getTeamData().find(([k]) => k === selectedTeam)?.[1] || "";
       teamSelect.value = selectedLabel;
       saveChaserField(spot, "team", selectedLabel);
     };
-
     const clearBtn = document.createElement("button");
     clearBtn.className = "small-btn warn";
     clearBtn.textContent = "Clear";
     clearBtn.onclick = () => clearChaser(spot);
-
     actions.appendChild(assignSelectedBtn);
     actions.appendChild(clearBtn);
-
     card.appendChild(title);
     card.appendChild(winnerLabel);
     card.appendChild(winnerInput);
@@ -390,38 +352,40 @@ function renderChasers(){
     grid.appendChild(card);
   }
 }
-
 async function saveChaserField(spot, field, value){
   const nextChasers = { ...(state.chasers || {}) };
-  nextChasers[spot] = {
-    winner: nextChasers[spot]?.winner || "",
-    team: nextChasers[spot]?.team || "",
-    [field]: value
-  };
+  nextChasers[spot] = { winner: nextChasers[spot]?.winner || "", team: nextChasers[spot]?.team || "", [field]: value };
   await update(ref(db, STATE_PATH), { chasers: nextChasers });
 }
-
 window.clearChaser = async function(spot){
   const nextChasers = { ...(state.chasers || {}) };
   nextChasers[spot] = { winner: "", team: "" };
   await update(ref(db, STATE_PATH), { chasers: nextChasers });
 };
-
+window.switchLeague = async function(){
+  const nextLeague = document.getElementById("leagueSelect").value;
+  if(nextLeague === getLeague()) return;
+  const confirmed = window.confirm("Switch league? This will clear current teams and chasers so assignments do not carry into the wrong sport.");
+  if(!confirmed){
+    document.getElementById("leagueSelect").value = getLeague();
+    return;
+  }
+  selectedTeam = "";
+  document.getElementById("buyerInput").value = "";
+  await set(ref(db, STATE_PATH), makeDefaults(nextLeague));
+};
 window.setTitle = async function(){
   const v = document.getElementById("titleInput").value.trim();
   if(!v) return;
   await update(ref(db, STATE_PATH), { title: v.toUpperCase() });
 };
-
 window.setTicker = async function(){
   const v = document.getElementById("tickerInput").value.trim();
-  await update(ref(db, STATE_PATH), { defaultTicker: v || defaults.defaultTicker, tickerMode: "default" });
+  await update(ref(db, STATE_PATH), { defaultTicker: v || makeDefaults(getLeague()).defaultTicker, tickerMode: "default" });
 };
-
 window.toggleAssignmentTicker = async function(){
   await update(ref(db, STATE_PATH), { tickerMode: "assignments" });
 };
-
 window.assignBuyer = async function(){
   const team = selectedTeam;
   const buyer = document.getElementById("buyerInput").value.trim();
@@ -431,7 +395,6 @@ window.assignBuyer = async function(){
   await update(ref(db, STATE_PATH), { soldTeams: nextSold });
   document.getElementById("buyerInput").value = "";
 };
-
 window.clearSelectedTeam = async function(){
   const team = selectedTeam;
   if(!team) return;
@@ -439,31 +402,26 @@ window.clearSelectedTeam = async function(){
   delete nextSold[team];
   await update(ref(db, STATE_PATH), { soldTeams: nextSold });
 };
-
 window.removeTeam = async function(team){
   const nextSold = { ...(state.soldTeams || {}) };
   delete nextSold[team];
   await update(ref(db, STATE_PATH), { soldTeams: nextSold });
 };
-
 window.newBreak = async function(){
-  const confirmed = window.confirm("Start a new break? This will clear all teams, chasers, ticker mode, and reset the overlay.");
+  const confirmed = window.confirm("Start a new break? This will clear all teams, chasers, ticker mode, and reset the overlay for the current league.");
   if(!confirmed) return;
-
   selectedTeam = "";
   document.getElementById("buyerInput").value = "";
-
-  await set(ref(db, STATE_PATH), structuredClone(defaults));
+  await set(ref(db, STATE_PATH), makeDefaults(getLeague()));
 };
-
 const stateRef = ref(db, STATE_PATH);
 onValue(stateRef, async (snap) => {
   const val = snap.val();
   if (val === null) {
-    await set(stateRef, defaults);
+    await set(stateRef, makeDefaults("nfl"));
     return;
   }
-  state = { ...defaults, ...val };
+  state = { ...makeDefaults(val.league || "nfl"), ...val };
   document.getElementById("connectionStatus").textContent = "Connected.";
   renderInputs();
   renderTeamPicker();
