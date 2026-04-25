@@ -131,23 +131,43 @@ html,body{
   grid-template-rows:repeat(4, minmax(0,1fr));
   gap:2px;
   background:
-    linear-gradient(135deg,#02050b 0%,#0b1b34 42%,#030713 70%,#16070b 100%);
-  background-size:280% 280%;
-  animation:boardBaseShift 14s ease-in-out infinite alternate;
+    radial-gradient(circle at 18% 26%, rgba(38,119,217,.44), transparent 30%),
+    radial-gradient(circle at 86% 72%, rgba(229,57,53,.34), transparent 32%),
+    linear-gradient(135deg,#02050b 0%,#123365 35%,#030713 62%,#3a0b14 100%);
+  background-size:340% 340%;
+  animation:boardBaseShift 5.5s ease-in-out infinite alternate;
   border:1px solid rgba(255,255,255,.18);
   box-shadow:inset 0 0 18px rgba(0,0,0,.75);
+}
+.board::before{
+  content:"";
+  position:absolute;
+  inset:-65%;
+  background:
+    conic-gradient(from 0deg at 50% 50%,
+      rgba(43,126,215,.0),
+      rgba(43,126,215,.42),
+      rgba(255,255,255,.18),
+      rgba(229,57,53,.34),
+      rgba(43,126,215,.0));
+  animation:ambientSpin 10s linear infinite;
+  mix-blend-mode:screen;
+  opacity:.72;
+  z-index:0;
+  pointer-events:none;
 }
 .board::after{
   content:"";
   position:absolute;
-  inset:-40%;
+  inset:-45%;
   background:
-    radial-gradient(circle at 18% 28%, rgba(43,126,215,.58), transparent 30%),
-    radial-gradient(circle at 84% 68%, rgba(229,57,53,.34), transparent 32%),
-    radial-gradient(circle at 52% 52%, rgba(255,255,255,.16), transparent 26%),
-    linear-gradient(100deg, transparent 10%, rgba(255,255,255,.08) 42%, transparent 72%);
-  animation:ambientMove 8s ease-in-out infinite alternate;
+    radial-gradient(circle at 12% 24%, rgba(64,152,255,.78), transparent 28%),
+    radial-gradient(circle at 88% 68%, rgba(255,61,61,.54), transparent 30%),
+    radial-gradient(circle at 54% 48%, rgba(255,255,255,.30), transparent 25%),
+    linear-gradient(105deg, transparent 6%, rgba(255,255,255,.24) 39%, transparent 61%);
+  animation:ambientMove 4.8s ease-in-out infinite alternate;
   mix-blend-mode:screen;
+  opacity:.96;
   z-index:0;
   pointer-events:none;
 }
@@ -178,8 +198,12 @@ html,body{
 }
 .team{
   background:
-    radial-gradient(circle at 50% 48%, rgba(255,255,255,.09), transparent 58%),
-    linear-gradient(180deg,#09182d 0%,#02050b 100%);
+    radial-gradient(circle at 22% 18%, rgba(65,145,255,.28), transparent 34%),
+    radial-gradient(circle at 82% 76%, rgba(255,66,66,.16), transparent 34%),
+    radial-gradient(circle at 50% 48%, rgba(255,255,255,.14), transparent 58%),
+    linear-gradient(180deg,rgba(11,31,58,.88) 0%,rgba(2,5,11,.94) 100%);
+  background-size:240% 240%;
+  animation:tileGlowShift 6.5s ease-in-out infinite;
   border:1px solid rgba(255,255,255,.58);
   padding:2px;
   box-shadow:
@@ -192,10 +216,10 @@ html,body{
   inset:6px;
   border-radius:10px;
   background:
-    radial-gradient(circle at center, rgba(255,255,255,.30), rgba(97,184,255,.16) 38%, transparent 72%);
+    radial-gradient(circle at center, rgba(255,255,255,.42), rgba(97,184,255,.25) 38%, rgba(255,255,255,.07) 58%, transparent 76%);
   z-index:0;
   pointer-events:none;
-  animation:logoLift 5s ease-in-out infinite alternate;
+  animation:logoLift 3.8s ease-in-out infinite alternate;
 }
 .team img{
   position:relative;
@@ -290,12 +314,12 @@ html,body{
   grid-column:4 / span 4;
   grid-row:2 / span 2;
   background:
-    radial-gradient(circle at center, rgba(255,255,255,.16), transparent 42%),
-    radial-gradient(circle at 22% 20%, rgba(43,126,215,.28), transparent 38%),
-    radial-gradient(circle at 82% 78%, rgba(229,57,53,.18), transparent 42%),
-    linear-gradient(180deg,#09182d 0%,#02050b 100%);
-  background-size:220% 220%;
-  animation:boardBaseShift 12s ease-in-out infinite alternate;
+    radial-gradient(circle at center, rgba(255,255,255,.22), transparent 42%),
+    radial-gradient(circle at 18% 20%, rgba(64,152,255,.48), transparent 38%),
+    radial-gradient(circle at 86% 78%, rgba(255,61,61,.32), transparent 42%),
+    linear-gradient(180deg,rgba(11,31,58,.92) 0%,rgba(2,5,11,.96) 100%);
+  background-size:260% 260%;
+  animation:tileGlowShift 5.2s ease-in-out infinite;
   border:1px solid rgba(255,255,255,.62);
   box-shadow:
     inset 0 0 0 1px rgba(0,0,0,.85),
