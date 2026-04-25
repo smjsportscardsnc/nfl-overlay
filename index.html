@@ -29,16 +29,51 @@ html,body{
   width:1080px;
   height:360px;
   box-sizing:border-box;
-  padding:4px;
+  padding:5px;
   display:grid;
-  grid-template-rows:42px 1fr 28px;
-  gap:2px;
+  grid-template-rows:42px 1fr 30px;
+  gap:3px;
   position:relative;
+  background:
+    linear-gradient(135deg, rgba(4,10,22,.98), rgba(9,20,42,.98) 35%, rgba(2,5,12,.98) 68%, rgba(14,29,55,.98));
+  border:2px solid rgba(255,255,255,.62);
+  box-shadow:
+    inset 0 0 0 1px rgba(0,0,0,.95),
+    inset 0 0 24px rgba(0,0,0,.78),
+    0 0 0 1px rgba(0,0,0,.9);
+  overflow:hidden;
+}
+.overlay::before{
+  content:"";
+  position:absolute;
+  inset:-45%;
+  background:
+    linear-gradient(115deg, transparent 0%, rgba(28,81,139,.15) 22%, transparent 44%),
+    radial-gradient(circle at 18% 12%, rgba(40,115,190,.22), transparent 26%),
+    radial-gradient(circle at 84% 86%, rgba(15,62,112,.28), transparent 30%);
+  animation:overlayGradientShift 12s ease-in-out infinite alternate;
+  pointer-events:none;
+}
+.overlay::after{
+  content:"";
+  position:absolute;
+  inset:5px;
+  border:1px solid rgba(255,255,255,.28);
+  pointer-events:none;
+  z-index:3;
+}
+@keyframes overlayGradientShift{
+  from{transform:translate3d(-2%, -1%, 0) rotate(0deg)}
+  to{transform:translate3d(2%, 1%, 0) rotate(4deg)}
 }
 .bar{
-  background:#071120;
-  border:1px solid var(--line);
-  box-shadow:none;
+  position:relative;
+  z-index:1;
+  background:linear-gradient(180deg,#081426 0%,#03070f 100%);
+  border:1px solid rgba(255,255,255,.54);
+  box-shadow:
+    inset 0 0 0 1px rgba(0,0,0,.95),
+    inset 0 1px 0 rgba(255,255,255,.12);
   overflow:hidden;
 }
 .title-bar{
@@ -56,14 +91,16 @@ html,body{
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
+  text-shadow:0 1px 0 #000, 0 0 10px rgba(97,184,255,.2);
 }
 .alive-box{
   display:grid;
   grid-template-columns:1fr auto;
   align-items:center;
   gap:10px;
-  background:#b71c1c;
-  border:1px solid rgba(255,255,255,.48);
+  background:linear-gradient(180deg,#d12626 0%,#8f1111 100%);
+  border:1px solid rgba(255,255,255,.72);
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.5);
   border-radius:3px;
   padding:4px 10px;
 }
@@ -84,7 +121,10 @@ html,body{
   grid-template-columns:repeat(10, minmax(0,1fr));
   grid-template-rows:repeat(4, minmax(0,1fr));
   gap:2px;
-  background:#050a14;
+  background:
+    linear-gradient(135deg,#02050b 0%,#081426 42%,#02050b 100%);
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow:inset 0 0 18px rgba(0,0,0,.75);
 }
 .team,
 .center-logo{
@@ -97,10 +137,12 @@ html,body{
   overflow:hidden;
 }
 .team{
-  background:#02050b;
-  border:1px solid var(--line);
+  background:linear-gradient(180deg,#050b15 0%,#010307 100%);
+  border:1px solid rgba(255,255,255,.58);
   padding:2px;
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,.05);
+  box-shadow:
+    inset 0 0 0 1px rgba(0,0,0,.86),
+    inset 0 1px 0 rgba(255,255,255,.08);
 }
 .team img{
   width:60%;
@@ -182,9 +224,14 @@ html,body{
 .center-logo{
   grid-column:4 / span 4;
   grid-row:2 / span 2;
-  background:#060c18;
-  border:1px solid var(--line);
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);
+  background:
+    radial-gradient(circle at center, rgba(28,81,139,.24), transparent 55%),
+    linear-gradient(180deg,#071426 0%,#02050b 100%);
+  border:1px solid rgba(255,255,255,.62);
+  box-shadow:
+    inset 0 0 0 1px rgba(0,0,0,.85),
+    inset 0 1px 0 rgba(255,255,255,.12),
+    0 0 16px rgba(0,0,0,.55);
 }
 .center-logo img{
   width:58%;
@@ -194,22 +241,32 @@ html,body{
 }
 .ticker{
   display:grid;
-  grid-template-columns:1fr 175px;
-  align-items:center;
-  padding:0 8px;
-}
-.bottom-note{
-  display:grid;
-  grid-template-columns:auto auto;
-  align-items:center;
-  gap:8px;
+  grid-template-columns:76px 1fr;
+  align-items:stretch;
+  padding:0;
+  overflow:hidden;
 }
 .live-pill{
+  display:flex;
+  align-items:center;
+  justify-content:center;
   color:#fff;
-  font-size:10px;
+  font-size:11px;
   font-weight:1000;
-  letter-spacing:.8px;
+  letter-spacing:.9px;
   text-transform:uppercase;
+  background:linear-gradient(180deg,#d12626 0%,#8f1111 100%);
+  border-right:1px solid rgba(255,255,255,.62);
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.45);
+  z-index:2;
+}
+.ticker-window{
+  position:relative;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  min-width:0;
+  background:linear-gradient(180deg,#071120 0%,#03070f 100%);
 }
 #tickerText{
   white-space:nowrap;
@@ -217,9 +274,10 @@ html,body{
   animation:ticker 24s linear infinite;
   font-size:11px;
   font-weight:1000;
+  padding-left:100%;
 }
 @keyframes ticker{
-  from{transform:translateX(100%)}
+  from{transform:translateX(0)}
   to{transform:translateX(-100%)}
 }
 .recap{
@@ -268,11 +326,10 @@ html,body{
   </div>
 
   <div class="bar ticker">
-    <div class="bottom-note">
-      <div class="live-pill">LIVE</div>
+    <div class="live-pill">LIVE</div>
+    <div class="ticker-window">
       <div id="tickerText">Welcome to SMJ Sports Cards & Collectibles!</div>
     </div>
-    <div></div>
   </div>
 
   <div class="recap" id="recap">
