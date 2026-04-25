@@ -99,6 +99,18 @@ button.danger{background:linear-gradient(90deg,#c62828,#e53935);}
 .chaser-card{border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);border-radius:12px;padding:10px;}
 .chaser-title{font-size:13px;font-weight:1000;letter-spacing:.6px;margin-bottom:8px;color:#fff;}
 .chaser-actions{display:flex;gap:6px;margin-top:8px;}
+
+.chaser-wheel-panel{display:grid;grid-template-columns:360px 1fr;gap:14px;align-items:start;}
+.wheel-wrap{position:relative;width:340px;height:340px;margin:auto;}
+#wheelCanvas{width:340px;height:340px;border-radius:50%;background:#050b16;border:2px solid rgba(255,255,255,.22);box-shadow:0 0 28px rgba(0,0,0,.45), inset 0 0 18px rgba(255,255,255,.08);}
+.wheel-pointer{position:absolute;top:-6px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:16px solid transparent;border-right:16px solid transparent;border-top:32px solid #ff3b3b;filter:drop-shadow(0 3px 4px rgba(0,0,0,.4));z-index:2;}
+textarea{
+  width:100%;min-height:180px;resize:vertical;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:var(--text);padding:12px;border-radius:12px;font:inherit;
+}
+.wheel-result{margin-top:10px;padding:12px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);font-weight:900;min-height:44px;}
+.wheel-options{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:10px;color:var(--muted);font-size:13px;}
+.wheel-options input{width:auto;}
+@media (max-width: 900px){.chaser-wheel-panel{grid-template-columns:1fr}.wheel-wrap{width:300px;height:300px}#wheelCanvas{width:300px;height:300px}}
 @media (max-width: 900px){.team-picker{grid-template-columns:repeat(4,minmax(0,1fr));}.chaser-grid{grid-template-columns:1fr;}}
 </style>
 </head>
@@ -153,6 +165,36 @@ button.danger{background:linear-gradient(90deg,#c62828,#e53935);}
     <label>Chaser Team Tracker</label>
     <div class="note" style="margin-bottom:10px;">Track your 9 chaser spots separately here. Picking a team here updates the overlay immediately.</div>
     <div class="chaser-grid" id="chaserGrid"></div>
+  </div>
+
+
+  <div class="group">
+    <label>Chaser Randomizer Wheel</label>
+    <div class="note" style="margin-bottom:10px;">Paste eligible usernames, one per line. Spin assigns the winner to the next open chaser spot. If you already selected the chaser teams above, the overlay will update immediately.</div>
+    <div class="chaser-wheel-panel">
+      <div class="wheel-wrap">
+        <div class="wheel-pointer"></div>
+        <canvas id="wheelCanvas" width="680" height="680"></canvas>
+      </div>
+      <div>
+        <label>Eligible Users</label>
+        <textarea id="chaserEntrants" placeholder="username1
+username2
+username3"></textarea>
+        <div class="wheel-options">
+          <label style="display:flex;align-items:center;gap:6px;margin:0;text-transform:none;letter-spacing:0;font-size:13px;color:var(--muted);">
+            <input type="checkbox" id="removeWinnerAfterSpin" checked>
+            Remove winner after each spin
+          </label>
+        </div>
+        <div class="row" style="margin-top:10px;">
+          <button class="good" onclick="spinNextChaser()">Spin Next Chaser</button>
+          <button class="secondary" onclick="spinAllRemainingChasers()">Auto Assign Remaining</button>
+          <button class="warn" onclick="clearChaserWinners()">Clear Chaser Winners</button>
+        </div>
+        <div class="wheel-result" id="wheelResult">Ready to spin.</div>
+      </div>
+    </div>
   </div>
 
   <div class="group">
@@ -352,6 +394,195 @@ function renderChasers(){
     grid.appendChild(card);
   }
 }
+
+function parseEntrants(){
+  const raw = document.getElementById("chaserEntrants")?.value || "";
+  return raw.split(/[
+,]+/).map(v => v.trim()).filter(Boolean);
+}
+function setEntrants(list){
+  const el = document.getElementById("chaserEntrants");
+  if(el) el.value = list.join("
+");
+  drawWheel();
+}
+function drawWheel(rotation = 0){
+  const canvas = document.getElementById("wheelCanvas");
+  if(!canvas) return;
+  const ctx = canvas.getContext("2d");
+  const entrants = parseEntrants();
+  const w = canvas.width;
+  const h = canvas.height;
+  const cx = w / 2;
+  const cy = h / 2;
+  const r = Math.min(cx, cy) - 16;
+  ctx.clearRect(0,0,w,h);
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(rotation);
+  const colors = ["#1c518b", "#102846", "#b71c1c", "#0d1b33", "#234f7f", "#182338"];
+  const count = Math.max(entrants.length, 1);
+  const slice = Math.PI * 2 / count;
+  for(let i=0;i<count;i++){
+    const start = i * slice;
+    const end = start + slice;
+    ctx.beginPath();
+    ctx.moveTo(0,0);
+    ctx.arc(0,0,r,start,end);
+    ctx.closePath();
+    ctx.fillStyle = entrants.length ? colors[i % colors.length] : "#111827";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(255,255,255,.38)";
+    ctx.lineWidth = 3;
+    ctx.stroke();
+    ctx.save();
+    ctx.rotate(start + slice / 2);
+    ctx.textAlign = "right";
+    ctx.fillStyle = "#fff";
+    ctx.font = "bold 28px Arial";
+    const text = entrants[i] || "Add users";
+    ctx.fillText(text.length > 16 ? text.slice(0,15) + "…" : text, r - 24, 10);
+    ctx.restore();
+  }
+  ctx.restore();
+  ctx.beginPath();
+  ctx.arc(cx,cy,52,0,Math.PI*2);
+  ctx.fillStyle = "#050b16";
+  ctx.fill();
+  ctx.strokeStyle = "rgba(255,255,255,.5)";
+  ctx.lineWidth = 4;
+  ctx.stroke();
+  ctx.fillStyle = "#fff";
+  ctx.font = "900 24px Arial";
+  ctx.textAlign = "center";
+  ctx.fillText("SMJ", cx, cy + 8);
+}
+function getNextOpenChaserSpot(){
+  for(let i=1;i<=9;i++){
+    const spot = String(i);
+    const info = state.chasers?.[spot] || {};
+    if(!info.winner) return spot;
+  }
+  return "";
+}
+async function assignChaserWinner(spot, winner){
+  const nextChasers = { ...(state.chasers || {}) };
+  nextChasers[spot] = {
+    winner,
+    team: nextChasers[spot]?.team || ""
+  };
+  await update(ref(db, STATE_PATH), { chasers: nextChasers });
+}
+function pickWinnerIndex(entrants){
+  return Math.floor(Math.random() * entrants.length);
+}
+async function finishChaserSpin(winnerIndex, finalRotation){
+  const entrants = parseEntrants();
+  const spot = getNextOpenChaserSpot();
+  if(!spot){
+    document.getElementById("wheelResult").textContent = "All 9 chaser spots already have winners.";
+    return;
+  }
+  const winner = entrants[winnerIndex];
+  await assignChaserWinner(spot, winner);
+  document.getElementById("wheelResult").textContent = `Chaser ${spot}: ${winner}`;
+  if(document.getElementById("removeWinnerAfterSpin")?.checked){
+    entrants.splice(winnerIndex, 1);
+    setEntrants(entrants);
+  } else {
+    drawWheel(finalRotation);
+  }
+}
+window.spinNextChaser = async function(){
+  const entrants = parseEntrants();
+  if(!entrants.length){
+    document.getElementById("wheelResult").textContent = "Add eligible usernames first.";
+    drawWheel();
+    return;
+  }
+  const spot = getNextOpenChaserSpot();
+  if(!spot){
+    document.getElementById("wheelResult").textContent = "All 9 chaser spots already have winners.";
+    return;
+  }
+  const winnerIndex = pickWinnerIndex(entrants);
+  const slice = Math.PI * 2 / entrants.length;
+  const pointerAngle = -Math.PI / 2;
+  const targetAngle = winnerIndex * slice + slice / 2;
+  const spins = 7 + Math.random() * 2;
+  const finalRotation = pointerAngle - targetAngle + spins * Math.PI * 2;
+  const start = performance.now();
+  const duration = 6200;
+  const startRotation = 0;
+
+  await update(ref(db, STATE_PATH), {
+    spinState: {
+      id: Date.now(),
+      spinning: true,
+      names: entrants,
+      winner: entrants[winnerIndex],
+      winnerIndex,
+      duration,
+      startedAt: Date.now()
+    }
+  });
+
+  function easeOutQuint(t){ return 1 - Math.pow(1 - t, 5); }
+  function frame(now){
+    const t = Math.min((now - start) / duration, 1);
+    const eased = easeOutQuint(t);
+    const rot = startRotation + (finalRotation - startRotation) * eased;
+    drawWheel(rot);
+    if(t < 1){
+      requestAnimationFrame(frame);
+    } else {
+      finishChaserSpin(winnerIndex, finalRotation);
+      setTimeout(() => {
+        update(ref(db, STATE_PATH), { spinState: { spinning: false } });
+      }, 3800);
+    }
+  }
+  document.getElementById("wheelResult").textContent = `Spinning for Chaser ${spot}…`;
+  requestAnimationFrame(frame);
+};
+window.spinAllRemainingChasers = async function(){
+  let entrants = parseEntrants();
+  if(!entrants.length){
+    document.getElementById("wheelResult").textContent = "Add eligible usernames first.";
+    return;
+  }
+  const removeWinners = document.getElementById("removeWinnerAfterSpin")?.checked;
+  let last = "";
+  for(let i=1;i<=9;i++){
+    const spot = String(i);
+    const info = state.chasers?.[spot] || {};
+    if(info.winner) continue;
+    if(!entrants.length) break;
+    const winnerIndex = pickWinnerIndex(entrants);
+    const winner = entrants[winnerIndex];
+    await assignChaserWinner(spot, winner);
+    last = `Chaser ${spot}: ${winner}`;
+    if(removeWinners) entrants.splice(winnerIndex, 1);
+    state.chasers = { ...(state.chasers || {}), [spot]: { winner, team: info.team || "" } };
+  }
+  setEntrants(entrants);
+  document.getElementById("wheelResult").textContent = last || "No open chaser spots found.";
+};
+window.clearChaserWinners = async function(){
+  const confirmed = window.confirm("Clear only the chaser winners? The selected chaser teams will stay in place.");
+  if(!confirmed) return;
+  const nextChasers = { ...(state.chasers || {}) };
+  for(let i=1;i<=9;i++){
+    const spot = String(i);
+    nextChasers[spot] = { winner: "", team: nextChasers[spot]?.team || "" };
+  }
+  await update(ref(db, STATE_PATH), { chasers: nextChasers });
+  document.getElementById("wheelResult").textContent = "Chaser winners cleared.";
+};
+document.addEventListener("input", (e) => {
+  if(e.target?.id === "chaserEntrants") drawWheel();
+});
+
 async function saveChaserField(spot, field, value){
   const nextChasers = { ...(state.chasers || {}) };
   nextChasers[spot] = { winner: nextChasers[spot]?.winner || "", team: nextChasers[spot]?.team || "", [field]: value };
@@ -427,6 +658,7 @@ onValue(stateRef, async (snap) => {
   renderTeamPicker();
   renderAssignments();
   renderChasers();
+  drawWheel();
 }, () => {
   document.getElementById("connectionStatus").textContent = "Connection error.";
 });
