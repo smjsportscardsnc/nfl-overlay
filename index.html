@@ -252,11 +252,39 @@ html,body{
   pointer-events:none;
   z-index:4;
 }
-.team.just-sold{animation:soldPop .45s ease-out;}
+.team.just-sold{
+  animation:soldPop .55s ease-out, energyFlash 1.05s ease-out;
+}
+.team.just-sold::before{
+  inset:0;
+  border-radius:0;
+  background:
+    radial-gradient(circle at center, rgba(255,255,255,.78), rgba(64,152,255,.48) 28%, rgba(229,57,53,.28) 48%, transparent 72%);
+  animation:energyBurst 1.05s ease-out forwards;
+  z-index:3;
+}
+.team.just-sold img{
+  animation:assignedLogoHit .85s ease-out;
+}
 @keyframes soldPop{
   0%{transform:scale(.92)}
   55%{transform:scale(1.06)}
   100%{transform:scale(1)}
+}
+@keyframes energyFlash{
+  0%{box-shadow:0 0 0 rgba(64,152,255,0), inset 0 0 0 1px rgba(255,255,255,.2);}
+  18%{box-shadow:0 0 26px rgba(64,152,255,.95), 0 0 44px rgba(255,255,255,.38), inset 0 0 18px rgba(255,255,255,.32);}
+  100%{box-shadow:inset 0 0 0 1px rgba(0,0,0,.86), inset 0 1px 0 rgba(255,255,255,.08);}
+}
+@keyframes energyBurst{
+  0%{opacity:0; transform:scale(.2) rotate(0deg);}
+  18%{opacity:1; transform:scale(.75) rotate(8deg);}
+  100%{opacity:0; transform:scale(1.9) rotate(18deg);}
+}
+@keyframes assignedLogoHit{
+  0%{transform:scale(.86); filter:brightness(2) contrast(1.25) drop-shadow(0 0 18px rgba(255,255,255,.9));}
+  40%{transform:scale(1.18);}
+  100%{transform:scale(1);}
 }
 .team-code{
   position:absolute;
@@ -302,15 +330,72 @@ html,body{
     inset 0 1px 0 rgba(255,255,255,.12),
     0 0 16px rgba(0,0,0,.55);
 }
+.center-logo::before{
+  content:"";
+  position:absolute;
+  inset:-30%;
+  background:
+    conic-gradient(from 0deg,
+      rgba(64,152,255,.0),
+      rgba(64,152,255,.40),
+      rgba(255,255,255,.18),
+      rgba(229,57,53,.28),
+      rgba(64,152,255,.0));
+  animation:logoAura 8s linear infinite;
+  mix-blend-mode:screen;
+  opacity:.78;
+  z-index:0;
+  pointer-events:none;
+}
 .center-logo img{
+  position:relative;
+  z-index:1;
   width:58%;
   height:58%;
   object-fit:contain;
+  animation:logoPulse 3.1s ease-in-out infinite;
   filter:
-    drop-shadow(0 4px 12px rgba(0,0,0,.7))
-    drop-shadow(0 0 8px rgba(255,255,255,.35))
-    brightness(1.12)
-    contrast(1.08);
+    drop-shadow(0 4px 12px rgba(0,0,0,.75))
+    drop-shadow(0 0 8px rgba(255,255,255,.48))
+    drop-shadow(0 0 20px rgba(64,152,255,.62))
+    drop-shadow(0 0 34px rgba(64,152,255,.34))
+    brightness(1.18)
+    contrast(1.12);
+}
+@keyframes logoPulse{
+  0%{
+    transform:scale(1);
+    filter:
+      drop-shadow(0 4px 12px rgba(0,0,0,.75))
+      drop-shadow(0 0 7px rgba(255,255,255,.34))
+      drop-shadow(0 0 14px rgba(64,152,255,.42))
+      brightness(1.12)
+      contrast(1.08);
+  }
+  50%{
+    transform:scale(1.055);
+    filter:
+      drop-shadow(0 4px 12px rgba(0,0,0,.75))
+      drop-shadow(0 0 13px rgba(255,255,255,.68))
+      drop-shadow(0 0 28px rgba(64,152,255,.9))
+      drop-shadow(0 0 44px rgba(229,57,53,.28))
+      brightness(1.28)
+      contrast(1.16);
+  }
+  100%{
+    transform:scale(1);
+    filter:
+      drop-shadow(0 4px 12px rgba(0,0,0,.75))
+      drop-shadow(0 0 7px rgba(255,255,255,.34))
+      drop-shadow(0 0 14px rgba(64,152,255,.42))
+      brightness(1.12)
+      contrast(1.08);
+  }
+}
+@keyframes logoAura{
+  0%{transform:rotate(0deg) scale(1); opacity:.55;}
+  50%{transform:rotate(180deg) scale(1.08); opacity:.95;}
+  100%{transform:rotate(360deg) scale(1); opacity:.55;}
 }
 .ticker{
   display:grid;
