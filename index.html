@@ -26,7 +26,8 @@ html,body{
   color:var(--text);
 }
 .overlay{
-  width:1080px;
+  width:960px;
+  margin:0 auto;
   height:360px;
   box-sizing:border-box;
   padding:5px;
@@ -89,7 +90,7 @@ html,body{
   display:grid;
   grid-template-columns:1fr 170px;
   align-items:center;
-  padding:0 12px;
+  padding:0 20px;
 }
 #title{
   text-align:left;
@@ -125,7 +126,7 @@ html,body{
 }
 .board{
   position:relative;
-  padding:2px;
+  padding:4px 8px;
   display:grid;
   grid-template-columns:repeat(10, minmax(0,1fr));
   grid-template-rows:repeat(4, minmax(0,1fr));
@@ -224,8 +225,8 @@ html,body{
 .team img{
   position:relative;
   z-index:1;
-  width:82%;
-  height:82%;
+  width:76%;
+  height:76%;
   object-fit:contain;
   filter:
     drop-shadow(0 2px 7px rgba(0,0,0,1))
