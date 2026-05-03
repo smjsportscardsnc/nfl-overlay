@@ -1,0 +1,1947 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1080, initial-scale=1.0" />
+<title>SMJ Break Board</title>
+<style>
+:root{
+  --text:#ffffff;
+  --muted:#9fb0cc;
+  --bg:#02050b;
+  --panel:#071120;
+  --panel2:#0a172b;
+  --line:rgba(255,255,255,.42);
+  --line-soft:rgba(255,255,255,.20);
+  --red:#b71c1c;
+}
+html,body{
+  margin:0;
+  padding:0;
+  width:1080px;
+  height:360px;
+  overflow:hidden;
+  font-family:Arial, sans-serif;
+  background:transparent;
+  color:var(--text);
+}
+.overlay{
+  width:960px;
+  margin:0 auto;
+  height:360px;
+  box-sizing:border-box;
+  padding:5px;
+  display:grid;
+  grid-template-rows:42px 1fr 44px;
+  gap:3px;
+  position:relative;
+  background:
+    linear-gradient(135deg, rgba(2,5,12,.98), rgba(8,23,49,.98) 32%, rgba(2,5,12,.98) 62%, rgba(25,8,12,.95));
+  background-size:300% 300%;
+  animation:overlayBaseShift 18s ease-in-out infinite alternate;
+  border:2px solid rgba(255,255,255,.62);
+  box-shadow:
+    inset 0 0 0 1px rgba(0,0,0,.95),
+    inset 0 0 24px rgba(0,0,0,.78),
+    0 0 0 1px rgba(0,0,0,.9);
+  overflow:hidden;
+}
+.overlay::before{
+  content:"";
+  position:absolute;
+  inset:-45%;
+  background:
+    linear-gradient(115deg, transparent 0%, rgba(57,139,230,.28) 22%, transparent 46%),
+    radial-gradient(circle at 18% 12%, rgba(40,115,190,.42), transparent 28%),
+    radial-gradient(circle at 82% 78%, rgba(229,57,53,.24), transparent 31%),
+    radial-gradient(circle at 52% 48%, rgba(255,255,255,.10), transparent 22%);
+  animation:overlayGradientShift 10s ease-in-out infinite alternate;
+  pointer-events:none;
+}
+.overlay::after{
+  content:"";
+  position:absolute;
+  inset:5px;
+  border:1px solid rgba(255,255,255,.28);
+  pointer-events:none;
+  z-index:3;
+}
+@keyframes overlayBaseShift{
+  0%{background-position:0% 40%;}
+  50%{background-position:100% 55%;}
+  100%{background-position:20% 100%;}
+}
+@keyframes overlayGradientShift{
+  0%{transform:translate3d(-3%, -2%, 0) rotate(0deg) scale(1); opacity:.75;}
+  50%{transform:translate3d(2%, 3%, 0) rotate(5deg) scale(1.06); opacity:1;}
+  100%{transform:translate3d(4%, -1%, 0) rotate(-3deg) scale(1.03); opacity:.85;}
+}
+.bar{
+  position:relative;
+  z-index:1;
+  background:linear-gradient(180deg,#081426 0%,#03070f 100%);
+  border:1px solid rgba(255,255,255,.54);
+  box-shadow:
+    inset 0 0 0 1px rgba(0,0,0,.95),
+    inset 0 1px 0 rgba(255,255,255,.12);
+  overflow:hidden;
+}
+.title-bar{
+  display:grid;
+  grid-template-columns:1fr 170px;
+  align-items:center;
+  padding:0 20px;
+}
+#title{
+  text-align:left;
+  padding-left:10px;
+  font-weight:1000;
+  font-size:28px;
+  letter-spacing:.7px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  text-shadow:0 1px 0 #000, 0 0 10px rgba(97,184,255,.2);
+}
+.alive-box{
+  display:grid;
+  grid-template-columns:1fr auto;
+  align-items:center;
+  gap:10px;
+  background:linear-gradient(180deg,#d12626 0%,#8f1111 100%);
+  border:1px solid rgba(255,255,255,.72);
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.5);
+  border-radius:3px;
+  padding:4px 10px;
+}
+.alive-label{
+  font-size:10px;
+  font-weight:1000;
+  text-transform:uppercase;
+  letter-spacing:.8px;
+}
+.alive-value{
+  font-size:18px;
+  font-weight:1000;
+}
+.board{
+  position:relative;
+  padding:4px 8px;
+  display:grid;
+  grid-template-columns:repeat(10, minmax(0,1fr));
+  grid-template-rows:repeat(4, minmax(0,1fr));
+  gap:2px;
+  background:
+    radial-gradient(circle at 18% 26%, rgba(38,119,217,.44), transparent 30%),
+    radial-gradient(circle at 86% 72%, rgba(229,57,53,.34), transparent 32%),
+    linear-gradient(135deg,#02050b 0%,#123365 35%,#030713 62%,#3a0b14 100%);
+  background-size:340% 340%;
+  animation:boardBaseShift 5.5s ease-in-out infinite alternate;
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow:inset 0 0 18px rgba(0,0,0,.75);
+}
+.board::before{
+  content:"";
+  position:absolute;
+  inset:-65%;
+  background:
+    conic-gradient(from 0deg at 50% 50%,
+      rgba(43,126,215,.0),
+      rgba(43,126,215,.42),
+      rgba(255,255,255,.18),
+      rgba(229,57,53,.34),
+      rgba(43,126,215,.0));
+  animation:ambientSpin 10s linear infinite;
+  mix-blend-mode:screen;
+  opacity:.72;
+  z-index:0;
+  pointer-events:none;
+}
+.board::after{
+  content:"";
+  position:absolute;
+  inset:-45%;
+  background:
+    radial-gradient(circle at 12% 24%, rgba(64,152,255,.78), transparent 28%),
+    radial-gradient(circle at 88% 68%, rgba(255,61,61,.54), transparent 30%),
+    radial-gradient(circle at 54% 48%, rgba(255,255,255,.30), transparent 25%),
+    linear-gradient(105deg, transparent 6%, rgba(255,255,255,.24) 39%, transparent 61%);
+  animation:ambientMove 4.8s ease-in-out infinite alternate;
+  mix-blend-mode:screen;
+  opacity:.96;
+  z-index:0;
+  pointer-events:none;
+}
+@keyframes boardBaseShift{
+  0%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+  100%{background-position:20% 100%;}
+}
+@keyframes ambientMove{
+  0%{transform:translate(-5%, -3%) scale(1); opacity:.55;}
+  50%{transform:translate(5%, 3%) scale(1.12); opacity:.95;}
+  100%{transform:translate(-1%, 5%) scale(1.06); opacity:.7;}
+}
+@keyframes logoLift{
+  0%{opacity:.52; transform:scale(.96);}
+  50%{opacity:.88; transform:scale(1.04);}
+  100%{opacity:.64; transform:scale(1);}
+}
+.team,
+.center-logo{
+  position:relative;
+  z-index:2;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-width:0;
+  overflow:hidden;
+}
+.team{
+  background:
+    radial-gradient(circle at 22% 18%, rgba(65,145,255,.28), transparent 34%),
+    radial-gradient(circle at 82% 76%, rgba(255,66,66,.16), transparent 34%),
+    radial-gradient(circle at 50% 48%, rgba(255,255,255,.14), transparent 58%),
+    linear-gradient(180deg,rgba(11,31,58,.88) 0%,rgba(2,5,11,.94) 100%);
+  background-size:240% 240%;
+  animation:tileGlowShift 6.5s ease-in-out infinite;
+  border:1px solid rgba(255,255,255,.58);
+  padding:2px;
+  box-shadow:
+    inset 0 0 0 1px rgba(0,0,0,.86),
+    inset 0 1px 0 rgba(255,255,255,.08);
+}
+.team::before{
+  content:"";
+  position:absolute;
+  inset:6px;
+  border-radius:10px;
+  background:
+    radial-gradient(circle at center, rgba(255,255,255,.42), rgba(97,184,255,.25) 38%, rgba(255,255,255,.07) 58%, transparent 76%);
+  z-index:0;
+  pointer-events:none;
+  animation:logoLift 3.8s ease-in-out infinite alternate;
+}
+.team img{
+  position:relative;
+  z-index:1;
+  width:76%;
+  height:76%;
+  object-fit:contain;
+  filter:
+    drop-shadow(0 2px 7px rgba(0,0,0,1))
+    drop-shadow(0 0 2px rgba(255,255,255,.95))
+    drop-shadow(0 0 10px rgba(255,255,255,.48))
+    brightness(1.42)
+    contrast(1.28)
+    saturate(1.14);
+}
+.team.sold img{
+  filter:grayscale(100%) brightness(.5);
+  opacity:.75;
+}
+.team.sold::after{
+  content:"✕";
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  font-size:26px;
+  font-weight:900;
+  color:#ff2f2f;
+  text-shadow:none;
+  pointer-events:none;
+  z-index:4;
+}
+.team.logo-missing::after{
+  content:attr(data-label);
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  font-size:24px;
+  font-weight:1000;
+  color:#fff;
+  text-shadow:0 0 10px rgba(97,184,255,.65);
+}
+.team.sold.logo-missing::after{
+  content:"✕";
+}
+
+.team.just-sold{
+  animation:soldPop .55s ease-out, energyFlash 1.05s ease-out;
+}
+.team.just-sold::before{
+  inset:0;
+  border-radius:0;
+  background:
+    radial-gradient(circle at center, rgba(255,255,255,.78), rgba(64,152,255,.48) 28%, rgba(229,57,53,.28) 48%, transparent 72%);
+  animation:energyBurst 1.05s ease-out forwards;
+  z-index:3;
+}
+.team.just-sold img{
+  animation:assignedLogoHit .85s ease-out;
+}
+@keyframes soldPop{
+  0%{transform:scale(.92)}
+  55%{transform:scale(1.06)}
+  100%{transform:scale(1)}
+}
+@keyframes energyFlash{
+  0%{box-shadow:0 0 0 rgba(64,152,255,0), inset 0 0 0 1px rgba(255,255,255,.2);}
+  18%{box-shadow:0 0 26px rgba(64,152,255,.95), 0 0 44px rgba(255,255,255,.38), inset 0 0 18px rgba(255,255,255,.32);}
+  100%{box-shadow:inset 0 0 0 1px rgba(0,0,0,.86), inset 0 1px 0 rgba(255,255,255,.08);}
+}
+@keyframes energyBurst{
+  0%{opacity:0; transform:scale(.2) rotate(0deg);}
+  18%{opacity:1; transform:scale(.75) rotate(8deg);}
+  100%{opacity:0; transform:scale(1.9) rotate(18deg);}
+}
+@keyframes assignedLogoHit{
+  0%{transform:scale(.86); filter:brightness(2) contrast(1.25) drop-shadow(0 0 18px rgba(255,255,255,.9));}
+  40%{transform:scale(1.18);}
+  100%{transform:scale(1);}
+}
+.team-code{
+  position:absolute;
+  z-index:2;
+  top:2px;
+  left:4px;
+  font-size:8px;
+  font-weight:1000;
+  color:var(--muted);
+  letter-spacing:.4px;
+}
+.team-username{
+  position:absolute;
+  z-index:3;
+  bottom:2px;
+  left:50%;
+  transform:translateX(-50%);
+  max-width:92%;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  font-size:7px;
+  font-weight:1000;
+  background:rgba(0,0,0,.88);
+  color:#fff;
+  padding:1px 4px;
+  border-radius:3px;
+  border:1px solid var(--line-soft);
+}
+.center-logo{
+  grid-column:4 / span 4;
+  grid-row:2 / span 2;
+  background:
+    radial-gradient(circle at center, rgba(255,255,255,.22), transparent 42%),
+    radial-gradient(circle at 18% 20%, rgba(64,152,255,.48), transparent 38%),
+    radial-gradient(circle at 86% 78%, rgba(255,61,61,.32), transparent 42%),
+    linear-gradient(180deg,rgba(11,31,58,.92) 0%,rgba(2,5,11,.96) 100%);
+  background-size:260% 260%;
+  animation:tileGlowShift 5.2s ease-in-out infinite;
+  border:1px solid rgba(255,255,255,.62);
+  box-shadow:
+    inset 0 0 0 1px rgba(0,0,0,.85),
+    inset 0 1px 0 rgba(255,255,255,.12),
+    0 0 16px rgba(0,0,0,.55);
+}
+.center-logo::before{
+  content:"";
+  position:absolute;
+  inset:-30%;
+  background:
+    conic-gradient(from 0deg,
+      rgba(64,152,255,.0),
+      rgba(64,152,255,.40),
+      rgba(255,255,255,.18),
+      rgba(229,57,53,.28),
+      rgba(64,152,255,.0));
+  animation:logoAura 8s linear infinite;
+  mix-blend-mode:screen;
+  opacity:.78;
+  z-index:0;
+  pointer-events:none;
+}
+.center-logo img{
+  position:relative;
+  z-index:1;
+  width:58%;
+  height:58%;
+  object-fit:contain;
+  animation:logoPulse 3.1s ease-in-out infinite;
+  filter:
+    drop-shadow(0 4px 12px rgba(0,0,0,.75))
+    drop-shadow(0 0 8px rgba(255,255,255,.48))
+    drop-shadow(0 0 20px rgba(64,152,255,.62))
+    drop-shadow(0 0 34px rgba(64,152,255,.34))
+    brightness(1.18)
+    contrast(1.12);
+}
+@keyframes logoPulse{
+  0%{
+    transform:scale(1);
+    filter:
+      drop-shadow(0 4px 12px rgba(0,0,0,.75))
+      drop-shadow(0 0 7px rgba(255,255,255,.34))
+      drop-shadow(0 0 14px rgba(64,152,255,.42))
+      brightness(1.12)
+      contrast(1.08);
+  }
+  50%{
+    transform:scale(1.055);
+    filter:
+      drop-shadow(0 4px 12px rgba(0,0,0,.75))
+      drop-shadow(0 0 13px rgba(255,255,255,.68))
+      drop-shadow(0 0 28px rgba(64,152,255,.9))
+      drop-shadow(0 0 44px rgba(229,57,53,.28))
+      brightness(1.28)
+      contrast(1.16);
+  }
+  100%{
+    transform:scale(1);
+    filter:
+      drop-shadow(0 4px 12px rgba(0,0,0,.75))
+      drop-shadow(0 0 7px rgba(255,255,255,.34))
+      drop-shadow(0 0 14px rgba(64,152,255,.42))
+      brightness(1.12)
+      contrast(1.08);
+  }
+}
+@keyframes logoAura{
+  0%{transform:rotate(0deg) scale(1); opacity:.55;}
+  50%{transform:rotate(180deg) scale(1.08); opacity:.95;}
+  100%{transform:rotate(360deg) scale(1); opacity:.55;}
+}
+.ticker{
+  display:grid;
+  grid-template-columns:76px 1fr;
+  align-items:stretch;
+  padding:0;
+  overflow:hidden;
+}
+.live-pill{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  font-size:22px;
+  font-weight:1000;
+  letter-spacing:.3px;
+  letter-spacing:.9px;
+  text-transform:uppercase;
+  background:linear-gradient(180deg,#d12626 0%,#8f1111 100%);
+  border-right:1px solid rgba(255,255,255,.62);
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.45);
+  z-index:2;
+}
+.ticker-window{
+  position:relative;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  min-width:0;
+  background:linear-gradient(180deg,#071120 0%,#03070f 100%);
+}
+#tickerText{
+  white-space:nowrap;
+  display:inline-block;
+  animation:ticker 24s linear infinite;
+  font-size:22px;
+  font-weight:1000;
+  letter-spacing:.3px;
+  padding-left:100%;
+}
+@keyframes ticker{
+  from{transform:translateX(0)}
+  to{transform:translateX(-100%)}
+}
+.recap{
+  position:absolute;
+  inset:0;
+  display:none;
+  justify-content:center;
+  align-items:center;
+  z-index:10;
+  pointer-events:none;
+}
+.recap.show{
+  display:flex;
+  animation:fade .45s;
+}
+.recap-card{
+  padding:16px 24px;
+  border-radius:16px;
+  background:#071120;
+  border:1px solid var(--line);
+  box-shadow:0 18px 40px rgba(0,0,0,.38);
+  font-size:32px;
+  font-weight:1000;
+  letter-spacing:1px;
+}
+@keyframes fade{
+  from{opacity:0; transform:translateY(-14px) scale(.96)}
+  to{opacity:1; transform:translateY(0) scale(1)}
+}
+</style>
+</head>
+<body>
+<div class="overlay" id="overlay">
+  <div class="bar title-bar">
+    <div id="title">BREAK</div>
+    <div class="alive-box">
+      <div class="alive-label">Teams Alive</div>
+      <div class="alive-value" id="count">32</div>
+    </div>
+  </div>
+
+  <div class="bar board" id="board">
+    <div class="center-logo">
+      <img src="./logo.png" alt="SMJ Logo">
+    </div>
+  </div>
+
+  <div class="bar ticker">
+    <div class="live-pill">LIVE</div>
+    <div class="ticker-window">
+      <div id="tickerText">Welcome to SMJ Sports Cards & Collectibles!</div>
+    </div>
+  </div>
+
+  <div class="recap" id="recap">
+    <div class="recap-card">RECAP MODE</div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAP5JIYtql-4YB-wAgNT2Urja4DUOFoRws",
+  authDomain: "smj-overlay.firebaseapp.com",
+  databaseURL: "https://smj-overlay-default-rtdb.firebaseio.com",
+  projectId: "smj-overlay",
+  storageBucket: "smj-overlay.firebasestorage.app",
+  messagingSenderId: "1034121319902",
+  appId: "1:1034121319902:web:2b88ce1cc3ccf79766794f",
+  measurementId: "G-511F87E4GE"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+const LEAGUES = {
+  "nfl": {
+    "title": "NFL BREAK NIGHT",
+    "total": 32,
+    "logoPath": "./logo.png",
+    "teams": {
+      "ari": {
+        "label": "ARI",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/ari.png"
+      },
+      "atl": {
+        "label": "ATL",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/atl.png"
+      },
+      "bal": {
+        "label": "BAL",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/bal.png"
+      },
+      "buf": {
+        "label": "BUF",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/buf.png"
+      },
+      "car": {
+        "label": "CAR",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/car.png"
+      },
+      "chi": {
+        "label": "CHI",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/chi.png"
+      },
+      "cin": {
+        "label": "CIN",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/cin.png"
+      },
+      "cle": {
+        "label": "CLE",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/cle.png"
+      },
+      "dal": {
+        "label": "DAL",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/dal.png"
+      },
+      "den": {
+        "label": "DEN",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/den.png"
+      },
+      "det": {
+        "label": "DET",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/det.png"
+      },
+      "gb": {
+        "label": "GB",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/gb.png"
+      },
+      "hou": {
+        "label": "HOU",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/hou.png"
+      },
+      "ind": {
+        "label": "IND",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/ind.png"
+      },
+      "jax": {
+        "label": "JAX",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/jax.png"
+      },
+      "kc": {
+        "label": "KC",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/kc.png"
+      },
+      "lv": {
+        "label": "LV",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/lv.png"
+      },
+      "lac": {
+        "label": "LAC",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/lac.png"
+      },
+      "lar": {
+        "label": "LAR",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/lar.png"
+      },
+      "mia": {
+        "label": "MIA",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/mia.png"
+      },
+      "min": {
+        "label": "MIN",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/min.png"
+      },
+      "ne": {
+        "label": "NE",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/ne.png"
+      },
+      "no": {
+        "label": "NO",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/no.png"
+      },
+      "nyg": {
+        "label": "NYG",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/nyg.png"
+      },
+      "nyj": {
+        "label": "NYJ",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/nyj.png"
+      },
+      "phi": {
+        "label": "PHI",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/phi.png"
+      },
+      "pit": {
+        "label": "PIT",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/pit.png"
+      },
+      "sf": {
+        "label": "SF",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/sf.png"
+      },
+      "sea": {
+        "label": "SEA",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/sea.png"
+      },
+      "tb": {
+        "label": "TB",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/tb.png"
+      },
+      "ten": {
+        "label": "TEN",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/ten.png"
+      },
+      "was": {
+        "label": "WAS",
+        "logo": "https://a.espncdn.com/i/teamlogos/nfl/500/was.png"
+      }
+    },
+    "positions": [
+      [
+        "ari",
+        1,
+        1
+      ],
+      [
+        "atl",
+        2,
+        1
+      ],
+      [
+        "bal",
+        3,
+        1
+      ],
+      [
+        "buf",
+        4,
+        1
+      ],
+      [
+        "car",
+        5,
+        1
+      ],
+      [
+        "chi",
+        6,
+        1
+      ],
+      [
+        "cin",
+        7,
+        1
+      ],
+      [
+        "cle",
+        8,
+        1
+      ],
+      [
+        "dal",
+        9,
+        1
+      ],
+      [
+        "den",
+        10,
+        1
+      ],
+      [
+        "det",
+        1,
+        2
+      ],
+      [
+        "gb",
+        2,
+        2
+      ],
+      [
+        "hou",
+        3,
+        2
+      ],
+      [
+        "ind",
+        8,
+        2
+      ],
+      [
+        "jax",
+        9,
+        2
+      ],
+      [
+        "kc",
+        10,
+        2
+      ],
+      [
+        "lv",
+        1,
+        3
+      ],
+      [
+        "lac",
+        2,
+        3
+      ],
+      [
+        "lar",
+        3,
+        3
+      ],
+      [
+        "mia",
+        8,
+        3
+      ],
+      [
+        "min",
+        9,
+        3
+      ],
+      [
+        "ne",
+        10,
+        3
+      ],
+      [
+        "no",
+        1,
+        4
+      ],
+      [
+        "nyg",
+        2,
+        4
+      ],
+      [
+        "nyj",
+        3,
+        4
+      ],
+      [
+        "phi",
+        4,
+        4
+      ],
+      [
+        "pit",
+        5,
+        4
+      ],
+      [
+        "sf",
+        6,
+        4
+      ],
+      [
+        "sea",
+        7,
+        4
+      ],
+      [
+        "tb",
+        8,
+        4
+      ],
+      [
+        "ten",
+        9,
+        4
+      ],
+      [
+        "was",
+        10,
+        4
+      ]
+    ]
+  },
+  "nba": {
+    "title": "NBA BREAK NIGHT",
+    "total": 30,
+    "logoPath": "./logo.png",
+    "teams": {
+      "atl": {
+        "label": "ATL",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/atl.png"
+      },
+      "bos": {
+        "label": "BOS",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/bos.png"
+      },
+      "bkn": {
+        "label": "BKN",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/bkn.png"
+      },
+      "cha": {
+        "label": "CHA",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/cha.png"
+      },
+      "chi": {
+        "label": "CHI",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/chi.png"
+      },
+      "cle": {
+        "label": "CLE",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/cle.png"
+      },
+      "dal": {
+        "label": "DAL",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/dal.png"
+      },
+      "den": {
+        "label": "DEN",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/den.png"
+      },
+      "det": {
+        "label": "DET",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/det.png"
+      },
+      "gsw": {
+        "label": "GSW",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/gs.png"
+      },
+      "hou": {
+        "label": "HOU",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/hou.png"
+      },
+      "ind": {
+        "label": "IND",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/ind.png"
+      },
+      "lac": {
+        "label": "LAC",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/lac.png"
+      },
+      "lal": {
+        "label": "LAL",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/lal.png"
+      },
+      "mem": {
+        "label": "MEM",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/mem.png"
+      },
+      "mia": {
+        "label": "MIA",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/mia.png"
+      },
+      "mil": {
+        "label": "MIL",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/mil.png"
+      },
+      "min": {
+        "label": "MIN",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/min.png"
+      },
+      "nop": {
+        "label": "NOP",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/no.png"
+      },
+      "nyk": {
+        "label": "NYK",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/ny.png"
+      },
+      "okc": {
+        "label": "OKC",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/okc.png"
+      },
+      "orl": {
+        "label": "ORL",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/orl.png"
+      },
+      "phi": {
+        "label": "PHI",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/phi.png"
+      },
+      "phx": {
+        "label": "PHX",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/phx.png"
+      },
+      "por": {
+        "label": "POR",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/por.png"
+      },
+      "sac": {
+        "label": "SAC",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/sac.png"
+      },
+      "sas": {
+        "label": "SAS",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/sa.png"
+      },
+      "tor": {
+        "label": "TOR",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/tor.png"
+      },
+      "uta": {
+        "label": "UTA",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/utah.png"
+      },
+      "was": {
+        "label": "WAS",
+        "logo": "https://a.espncdn.com/i/teamlogos/nba/500/wsh.png"
+      }
+    },
+    "positions": [
+      [
+        "atl",
+        1,
+        1
+      ],
+      [
+        "bos",
+        2,
+        1
+      ],
+      [
+        "bkn",
+        3,
+        1
+      ],
+      [
+        "cha",
+        4,
+        1
+      ],
+      [
+        "chi",
+        5,
+        1
+      ],
+      [
+        "cle",
+        6,
+        1
+      ],
+      [
+        "dal",
+        7,
+        1
+      ],
+      [
+        "den",
+        8,
+        1
+      ],
+      [
+        "det",
+        9,
+        1
+      ],
+      [
+        "gsw",
+        1,
+        2
+      ],
+      [
+        "hou",
+        2,
+        2
+      ],
+      [
+        "ind",
+        3,
+        2
+      ],
+      [
+        "lac",
+        8,
+        2
+      ],
+      [
+        "lal",
+        9,
+        2
+      ],
+      [
+        "mem",
+        10,
+        2
+      ],
+      [
+        "mia",
+        1,
+        3
+      ],
+      [
+        "mil",
+        2,
+        3
+      ],
+      [
+        "min",
+        3,
+        3
+      ],
+      [
+        "nop",
+        8,
+        3
+      ],
+      [
+        "nyk",
+        9,
+        3
+      ],
+      [
+        "okc",
+        10,
+        3
+      ],
+      [
+        "orl",
+        1,
+        4
+      ],
+      [
+        "phi",
+        2,
+        4
+      ],
+      [
+        "phx",
+        3,
+        4
+      ],
+      [
+        "por",
+        4,
+        4
+      ],
+      [
+        "sac",
+        5,
+        4
+      ],
+      [
+        "sas",
+        6,
+        4
+      ],
+      [
+        "tor",
+        7,
+        4
+      ],
+      [
+        "uta",
+        8,
+        4
+      ],
+      [
+        "was",
+        9,
+        4
+      ]
+    ]
+  },
+  "mlb": {
+    "title": "MLB BREAK NIGHT",
+    "total": 30,
+    "logoPath": "./logo.png",
+    "teams": {
+      "ari": {
+        "label": "ARI",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/ari.png"
+      },
+      "atl": {
+        "label": "ATL",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/atl.png"
+      },
+      "bal": {
+        "label": "BAL",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/bal.png"
+      },
+      "bos": {
+        "label": "BOS",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/bos.png"
+      },
+      "chc": {
+        "label": "CHC",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/chc.png"
+      },
+      "cws": {
+        "label": "CWS",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/cws.png"
+      },
+      "cin": {
+        "label": "CIN",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/cin.png"
+      },
+      "cle": {
+        "label": "CLE",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/cle.png"
+      },
+      "col": {
+        "label": "COL",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/col.png"
+      },
+      "det": {
+        "label": "DET",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/det.png"
+      },
+      "hou": {
+        "label": "HOU",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/hou.png"
+      },
+      "kc": {
+        "label": "KC",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/kc.png"
+      },
+      "laa": {
+        "label": "LAA",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/laa.png"
+      },
+      "lad": {
+        "label": "LAD",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/lad.png"
+      },
+      "mia": {
+        "label": "MIA",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/mia.png"
+      },
+      "mil": {
+        "label": "MIL",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/mil.png"
+      },
+      "min": {
+        "label": "MIN",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/min.png"
+      },
+      "nym": {
+        "label": "NYM",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/nym.png"
+      },
+      "nyy": {
+        "label": "NYY",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/nyy.png"
+      },
+      "oak": {
+        "label": "ATH",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/oak.png"
+      },
+      "phi": {
+        "label": "PHI",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/phi.png"
+      },
+      "pit": {
+        "label": "PIT",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/pit.png"
+      },
+      "sd": {
+        "label": "SD",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/sd.png"
+      },
+      "sf": {
+        "label": "SF",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/sf.png"
+      },
+      "sea": {
+        "label": "SEA",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/sea.png"
+      },
+      "stl": {
+        "label": "STL",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/stl.png"
+      },
+      "tb": {
+        "label": "TB",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/tb.png"
+      },
+      "tex": {
+        "label": "TEX",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/tex.png"
+      },
+      "tor": {
+        "label": "TOR",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/tor.png"
+      },
+      "wsh": {
+        "label": "WSH",
+        "logo": "https://a.espncdn.com/i/teamlogos/mlb/500/wsh.png"
+      }
+    },
+    "positions": [
+      [
+        "ari",
+        1,
+        1
+      ],
+      [
+        "atl",
+        2,
+        1
+      ],
+      [
+        "bal",
+        3,
+        1
+      ],
+      [
+        "bos",
+        4,
+        1
+      ],
+      [
+        "chc",
+        5,
+        1
+      ],
+      [
+        "cws",
+        6,
+        1
+      ],
+      [
+        "cin",
+        7,
+        1
+      ],
+      [
+        "cle",
+        8,
+        1
+      ],
+      [
+        "col",
+        9,
+        1
+      ],
+      [
+        "det",
+        1,
+        2
+      ],
+      [
+        "hou",
+        2,
+        2
+      ],
+      [
+        "kc",
+        3,
+        2
+      ],
+      [
+        "laa",
+        8,
+        2
+      ],
+      [
+        "lad",
+        9,
+        2
+      ],
+      [
+        "mia",
+        10,
+        2
+      ],
+      [
+        "mil",
+        1,
+        3
+      ],
+      [
+        "min",
+        2,
+        3
+      ],
+      [
+        "nym",
+        3,
+        3
+      ],
+      [
+        "nyy",
+        8,
+        3
+      ],
+      [
+        "oak",
+        9,
+        3
+      ],
+      [
+        "phi",
+        10,
+        3
+      ],
+      [
+        "pit",
+        1,
+        4
+      ],
+      [
+        "sd",
+        2,
+        4
+      ],
+      [
+        "sf",
+        3,
+        4
+      ],
+      [
+        "sea",
+        4,
+        4
+      ],
+      [
+        "stl",
+        5,
+        4
+      ],
+      [
+        "tb",
+        6,
+        4
+      ],
+      [
+        "tex",
+        7,
+        4
+      ],
+      [
+        "tor",
+        8,
+        4
+      ],
+      [
+        "wsh",
+        9,
+        4
+      ]
+    ]
+  },
+  "nhl": {
+    "title": "NHL BREAK NIGHT",
+    "total": 32,
+    "logoPath": "./logo.png",
+    "teams": {
+      "ana": {
+        "label": "ANA",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/ana.png"
+      },
+      "bos": {
+        "label": "BOS",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/bos.png"
+      },
+      "buf": {
+        "label": "BUF",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/buf.png"
+      },
+      "cgy": {
+        "label": "CGY",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/cgy.png"
+      },
+      "car": {
+        "label": "CAR",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/car.png"
+      },
+      "chi": {
+        "label": "CHI",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/chi.png"
+      },
+      "col": {
+        "label": "COL",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/col.png"
+      },
+      "cbj": {
+        "label": "CBJ",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/cbj.png"
+      },
+      "dal": {
+        "label": "DAL",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/dal.png"
+      },
+      "det": {
+        "label": "DET",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/det.png"
+      },
+      "edm": {
+        "label": "EDM",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/edm.png"
+      },
+      "fla": {
+        "label": "FLA",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/fla.png"
+      },
+      "la": {
+        "label": "LA",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/la.png"
+      },
+      "min": {
+        "label": "MIN",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/min.png"
+      },
+      "mtl": {
+        "label": "MTL",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/mtl.png"
+      },
+      "nsh": {
+        "label": "NSH",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/nsh.png"
+      },
+      "nj": {
+        "label": "NJ",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/nj.png"
+      },
+      "nyi": {
+        "label": "NYI",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/nyi.png"
+      },
+      "nyr": {
+        "label": "NYR",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/nyr.png"
+      },
+      "ott": {
+        "label": "OTT",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/ott.png"
+      },
+      "phi": {
+        "label": "PHI",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/phi.png"
+      },
+      "pit": {
+        "label": "PIT",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/pit.png"
+      },
+      "sj": {
+        "label": "SJ",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/sj.png"
+      },
+      "sea": {
+        "label": "SEA",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/sea.png"
+      },
+      "stl": {
+        "label": "STL",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/stl.png"
+      },
+      "tb": {
+        "label": "TB",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/tb.png"
+      },
+      "tor": {
+        "label": "TOR",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/tor.png"
+      },
+      "utah": {
+        "label": "UTA",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/utah.png"
+      },
+      "van": {
+        "label": "VAN",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/van.png"
+      },
+      "vgk": {
+        "label": "VGK",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/vgk.png"
+      },
+      "wsh": {
+        "label": "WSH",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/wsh.png"
+      },
+      "wpg": {
+        "label": "WPG",
+        "logo": "https://a.espncdn.com/i/teamlogos/nhl/500/wpg.png"
+      }
+    },
+    "positions": [
+      [
+        "ana",
+        1,
+        1
+      ],
+      [
+        "bos",
+        2,
+        1
+      ],
+      [
+        "buf",
+        3,
+        1
+      ],
+      [
+        "cgy",
+        4,
+        1
+      ],
+      [
+        "car",
+        5,
+        1
+      ],
+      [
+        "chi",
+        6,
+        1
+      ],
+      [
+        "col",
+        7,
+        1
+      ],
+      [
+        "cbj",
+        8,
+        1
+      ],
+      [
+        "dal",
+        9,
+        1
+      ],
+      [
+        "det",
+        10,
+        1
+      ],
+      [
+        "edm",
+        1,
+        2
+      ],
+      [
+        "fla",
+        2,
+        2
+      ],
+      [
+        "la",
+        3,
+        2
+      ],
+      [
+        "min",
+        8,
+        2
+      ],
+      [
+        "mtl",
+        9,
+        2
+      ],
+      [
+        "nsh",
+        10,
+        2
+      ],
+      [
+        "nj",
+        1,
+        3
+      ],
+      [
+        "nyi",
+        2,
+        3
+      ],
+      [
+        "nyr",
+        3,
+        3
+      ],
+      [
+        "ott",
+        8,
+        3
+      ],
+      [
+        "phi",
+        9,
+        3
+      ],
+      [
+        "pit",
+        10,
+        3
+      ],
+      [
+        "sj",
+        1,
+        4
+      ],
+      [
+        "sea",
+        2,
+        4
+      ],
+      [
+        "stl",
+        3,
+        4
+      ],
+      [
+        "tb",
+        4,
+        4
+      ],
+      [
+        "tor",
+        5,
+        4
+      ],
+      [
+        "utah",
+        6,
+        4
+      ],
+      [
+        "van",
+        7,
+        4
+      ],
+      [
+        "vgk",
+        8,
+        4
+      ],
+      [
+        "wsh",
+        9,
+        4
+      ],
+      [
+        "wpg",
+        10,
+        4
+      ]
+    ]
+  },
+  "wnba": {
+    "title": "WNBA BREAK NIGHT",
+    "total": 15,
+    "logoPath": "./logo.png",
+    "teams": {
+      "atl": {
+        "label": "ATL",
+        "logo": "https://a.espncdn.com/i/teamlogos/wnba/500/atl.png"
+      },
+      "chi": {
+        "label": "CHI",
+        "logo": "https://a.espncdn.com/i/teamlogos/wnba/500/chi.png"
+      },
+      "con": {
+        "label": "CON",
+        "logo": "https://a.espncdn.com/i/teamlogos/wnba/500/con.png"
+      },
+      "dal": {
+        "label": "DAL",
+        "logo": "https://a.espncdn.com/i/teamlogos/wnba/500/dal.png"
+      },
+      "gs": {
+        "label": "GS",
+        "logo": "https://a.espncdn.com/i/teamlogos/wnba/500/gs.png"
+      },
+      "ind": {
+        "label": "IND",
+        "logo": "https://a.espncdn.com/i/teamlogos/wnba/500/ind.png"
+      },
+      "lv": {
+        "label": "LV",
+        "logo": "https://a.espncdn.com/i/teamlogos/wnba/500/lv.png"
+      },
+      "la": {
+        "label": "LA",
+        "logo": "https://a.espncdn.com/i/teamlogos/wnba/500/la.png"
+      },
+      "min": {
+        "label": "MIN",
+        "logo": "https://a.espncdn.com/i/teamlogos/wnba/500/min.png"
+      },
+      "ny": {
+        "label": "NY",
+        "logo": "https://a.espncdn.com/i/teamlogos/wnba/500/ny.png"
+      },
+      "phx": {
+        "label": "PHX",
+        "logo": "https://a.espncdn.com/i/teamlogos/wnba/500/phx.png"
+      },
+      "por": {
+        "label": "POR",
+        "logo": "https://a.espncdn.com/i/teamlogos/wnba/500/por.png"
+      },
+      "sea": {
+        "label": "SEA",
+        "logo": "https://a.espncdn.com/i/teamlogos/wnba/500/sea.png"
+      },
+      "tor": {
+        "label": "TOR",
+        "logo": "https://a.espncdn.com/i/teamlogos/wnba/500/tor.png"
+      },
+      "was": {
+        "label": "WAS",
+        "logo": "https://a.espncdn.com/i/teamlogos/wnba/500/was.png"
+      }
+    },
+    "positions": [
+      [
+        "atl",
+        3,
+        1
+      ],
+      [
+        "chi",
+        4,
+        1
+      ],
+      [
+        "con",
+        5,
+        1
+      ],
+      [
+        "dal",
+        6,
+        1
+      ],
+      [
+        "gs",
+        7,
+        1
+      ],
+      [
+        "ind",
+        1,
+        2
+      ],
+      [
+        "lv",
+        10,
+        2
+      ],
+      [
+        "la",
+        1,
+        3
+      ],
+      [
+        "min",
+        10,
+        3
+      ],
+      [
+        "ny",
+        3,
+        4
+      ],
+      [
+        "phx",
+        4,
+        4
+      ],
+      [
+        "por",
+        5,
+        4
+      ],
+      [
+        "sea",
+        6,
+        4
+      ],
+      [
+        "tor",
+        7,
+        4
+      ],
+      [
+        "was",
+        8,
+        4
+      ]
+    ]
+  }
+};
+
+let prevSold = {};
+let lastRecapMode = false;
+let recapTimer = null;
+
+function getLeagueData(league){
+  return LEAGUES[league] || LEAGUES.nfl;
+}
+
+function buildTicker(soldTeams, leagueData){
+  const all = Object.entries(soldTeams || {}).map(([key, info]) => {
+    const label = leagueData.teams[key]?.label || key.toUpperCase();
+    const buyer = typeof info === "string" ? info : info.buyer;
+    return `${label}: ${buyer}`;
+  });
+  const welcome = "Welcome to SMJ Sports Cards & Collectibles!";
+  return all.length ? all.join(" • ") + " • " + welcome : welcome;
+}
+
+function showRecapSplash(){
+  const recap = document.getElementById("recap");
+  recap.classList.remove("show");
+  void recap.offsetWidth;
+  recap.classList.add("show");
+  if (recapTimer) clearTimeout(recapTimer);
+  recapTimer = setTimeout(() => recap.classList.remove("show"), 1400);
+}
+
+function fitTitle(text){
+  const el = document.getElementById("title");
+  el.textContent = text || "BREAK";
+  let size = 28;
+  el.style.fontSize = size + "px";
+  while (el.scrollWidth > el.clientWidth && size > 18) {
+    size -= 1;
+    el.style.fontSize = size + "px";
+  }
+}
+
+function makeTeamCell(teamKey, soldTeams, leagueData){
+  const wrap = document.createElement("div");
+  const team = leagueData.teams[teamKey];
+  if (!team) return wrap;
+
+  const label = team.label;
+  const soldInfo = soldTeams?.[teamKey];
+  const buyer = soldInfo ? (typeof soldInfo === "string" ? soldInfo : soldInfo.buyer) : "";
+
+  wrap.className = "team" + (soldInfo ? " sold" : "");
+  wrap.dataset.label = team.label;
+  if (soldInfo && !prevSold[teamKey]) wrap.classList.add("just-sold");
+
+  const code = document.createElement("div");
+  code.className = "team-code";
+  code.textContent = label;
+  wrap.appendChild(code);
+
+  const img = document.createElement("img");
+  img.src = team.logo;
+  img.alt = label;
+  wrap.appendChild(img);
+
+
+  if (buyer) {
+    const tag = document.createElement("div");
+    tag.className = "team-username";
+    tag.textContent = buyer;
+    wrap.appendChild(tag);
+  }
+
+  return wrap;
+}
+
+function renderBoard(soldTeams, leagueData){
+  const board = document.getElementById("board");
+  board.querySelectorAll(".team").forEach(el => el.remove());
+
+  const centerLogo = board.querySelector(".center-logo img");
+  if (centerLogo) centerLogo.src = leagueData.logoPath || "./logo.png";
+
+  let assignedCount = 0;
+
+  leagueData.positions.forEach(([key, col, row]) => {
+    const cell = makeTeamCell(key, soldTeams, leagueData);
+    cell.style.gridColumn = String(col);
+    cell.style.gridRow = String(row);
+    board.appendChild(cell);
+
+    const soldInfo = soldTeams?.[key];
+    if (soldInfo) assignedCount += 1;
+  });
+
+  document.getElementById("count").textContent = String(leagueData.total - assignedCount);
+  prevSold = { ...(soldTeams || {}) };
+}
+
+onValue(ref(db, "overlayState/main"), snap => {
+  const s = snap.val() || {};
+  const league = s.league || "nfl";
+  const leagueData = getLeagueData(league);
+  const soldTeams = s.soldTeams || {};
+
+  fitTitle(s.title || leagueData.title || "BREAK");
+  renderBoard(soldTeams, leagueData);
+
+  document.getElementById("tickerText").textContent =
+    s.tickerMode === "default"
+      ? (s.defaultTicker || "Welcome to SMJ Sports Cards & Collectibles!")
+      : buildTicker(soldTeams, leagueData);
+
+  if (s.recapMode && !lastRecapMode) showRecapSplash();
+  lastRecapMode = !!s.recapMode;
+});
+</script>
+</body>
+</html>
