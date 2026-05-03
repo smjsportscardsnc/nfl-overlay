@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=1080, initial-scale=1.0" />
-<title>SMJ Break Board</title>
+<title>SMJ Break Board 900x240</title>
 <style>
 :root{
   --text:#ffffff;
@@ -26,14 +26,14 @@ html,body{
   color:var(--text);
 }
 .overlay{
-  width:960px;
-  margin:0 auto;
+  width:900px;
   height:360px;
+  margin:0 auto;
   box-sizing:border-box;
-  padding:5px;
+  padding:4px;
   display:grid;
-  grid-template-rows:42px 1fr 44px;
-  gap:3px;
+  grid-template-rows:30px 1fr 26px;
+  gap:2px;
   position:relative;
   background:
     linear-gradient(135deg, rgba(2,5,12,.98), rgba(8,23,49,.98) 32%, rgba(2,5,12,.98) 62%, rgba(25,8,12,.95));
@@ -88,16 +88,16 @@ html,body{
 }
 .title-bar{
   display:grid;
-  grid-template-columns:1fr 170px;
+  grid-template-columns:1fr 140px;
   align-items:center;
-  padding:0 20px;
+  padding:0 8px;
 }
 #title{
   text-align:left;
-  padding-left:10px;
+  padding-left:8px;
   font-weight:1000;
-  font-size:28px;
-  letter-spacing:.7px;
+  font-size:20px;
+  letter-spacing:.45px;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
@@ -107,26 +107,26 @@ html,body{
   display:grid;
   grid-template-columns:1fr auto;
   align-items:center;
-  gap:10px;
+  gap:6px;
   background:linear-gradient(180deg,#d12626 0%,#8f1111 100%);
   border:1px solid rgba(255,255,255,.72);
   box-shadow:inset 0 0 0 1px rgba(0,0,0,.5);
   border-radius:3px;
-  padding:4px 10px;
+  padding:3px 8px;
 }
 .alive-label{
-  font-size:10px;
+  font-size:8px;
   font-weight:1000;
   text-transform:uppercase;
   letter-spacing:.8px;
 }
 .alive-value{
-  font-size:18px;
+  font-size:15px;
   font-weight:1000;
 }
 .board{
   position:relative;
-  padding:4px 8px;
+  padding:2px;
   display:grid;
   grid-template-columns:repeat(10, minmax(0,1fr));
   grid-template-rows:repeat(4, minmax(0,1fr));
@@ -225,8 +225,8 @@ html,body{
 .team img{
   position:relative;
   z-index:1;
-  width:76%;
-  height:76%;
+  width:78%;
+  height:78%;
   object-fit:contain;
   filter:
     drop-shadow(0 2px 7px rgba(0,0,0,1))
@@ -246,7 +246,7 @@ html,body{
   top:50%;
   left:50%;
   transform:translate(-50%,-50%);
-  font-size:26px;
+  font-size:22px;
   font-weight:900;
   color:#ff2f2f;
   text-shadow:none;
@@ -259,7 +259,7 @@ html,body{
   left:50%;
   top:50%;
   transform:translate(-50%,-50%);
-  font-size:24px;
+  font-size:18px;
   font-weight:1000;
   color:#fff;
   text-shadow:0 0 10px rgba(97,184,255,.65);
@@ -307,7 +307,7 @@ html,body{
   z-index:2;
   top:2px;
   left:4px;
-  font-size:8px;
+  font-size:7px;
   font-weight:1000;
   color:var(--muted);
   letter-spacing:.4px;
@@ -366,10 +366,10 @@ html,body{
 .center-logo img{
   position:relative;
   z-index:1;
-  width:58%;
-  height:58%;
+  width:64%;
+  height:64%;
   object-fit:contain;
-  animation:logoPulse 3.1s ease-in-out infinite;
+  
   filter:
     drop-shadow(0 4px 12px rgba(0,0,0,.75))
     drop-shadow(0 0 8px rgba(255,255,255,.48))
@@ -378,16 +378,7 @@ html,body{
     brightness(1.18)
     contrast(1.12);
 }
-@keyframes logoPulse{
-  0%{
-    transform:scale(1);
-    filter:
-      drop-shadow(0 4px 12px rgba(0,0,0,.75))
-      drop-shadow(0 0 7px rgba(255,255,255,.34))
-      drop-shadow(0 0 14px rgba(64,152,255,.42))
-      brightness(1.12)
-      contrast(1.08);
-  }
+
   50%{
     transform:scale(1.055);
     filter:
@@ -415,7 +406,7 @@ html,body{
 }
 .ticker{
   display:grid;
-  grid-template-columns:76px 1fr;
+  grid-template-columns:70px 1fr;
   align-items:stretch;
   padding:0;
   overflow:hidden;
@@ -425,10 +416,9 @@ html,body{
   align-items:center;
   justify-content:center;
   color:#fff;
-  font-size:22px;
+  font-size:12px;
   font-weight:1000;
-  letter-spacing:.3px;
-  letter-spacing:.9px;
+  letter-spacing:.8px;
   text-transform:uppercase;
   background:linear-gradient(180deg,#d12626 0%,#8f1111 100%);
   border-right:1px solid rgba(255,255,255,.62);
@@ -449,7 +439,7 @@ html,body{
   animation:ticker 24s linear infinite;
   font-size:22px;
   font-weight:1000;
-  letter-spacing:.3px;
+  letter-spacing:.25px;
   padding-left:100%;
 }
 @keyframes ticker{
