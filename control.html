@@ -10,45 +10,66 @@
   <div class="control-shell">
     <header class="control-header">
       <div>
-        <h1>SMJ Compact Scoreboard + Full-Screen Animation Control</h1>
-        <p>Use this page from a tablet or second browser window. The scoreboard stays compact while triggered graphics fill the full OBS canvas.</p>
+        <h1>SMJ Overlay Control</h1>
+        <p>Compact scoreboard + full-screen animated graphics</p>
       </div>
-      <button id="resetBtn" class="danger-btn">Clear Break</button>
+      <button id="clearAll" class="danger">Clear Animations</button>
     </header>
 
-    <section class="control-grid">
-      <div class="control-card wide">
-        <h2>Break Info</h2>
-        <label>Break Title <input id="titleInput" value="SMJ NFL Mixer Break" /></label>
-        <label>Ticker Text <input id="tickerInput" value="Welcome to SMJ Sports Cards & Collectibles!" /></label>
-        <button id="saveInfoBtn">Update Overlay</button>
+    <section class="control-card">
+      <h2>Break Info</h2>
+      <div class="form-grid">
+        <label>Break Title <input id="breakTitleInput" value="SMJ Sports Cards & Collectibles"></label>
+        <label>Subtitle <input id="breakSubtitleInput" value="Singles • Rips • Breaks"></label>
+        <label>Ticker <input id="tickerInput" value="Welcome to SMJ Sports Cards & Collectibles!"></label>
       </div>
+      <button id="saveInfo">Update Overlay</button>
+    </section>
 
-      <div class="control-card">
-        <h2>Full-Screen Animated Moments</h2>
-        <button data-event="stash" class="big-action">Stash or Pass</button>
-        <button data-event="full" class="big-action">Break Full</button>
-        <button data-event="giveaway" class="big-action">Giveaway Winner</button>
-        <button data-event="fire" class="big-action">🔥 Big Hit</button>
-        <button id="clearEventBtn" class="secondary-btn">Clear Animation</button>
-      </div>
-
-      <div class="control-card">
-        <h2>Spin 2 Choose 1</h2>
-        <label>Option A <input id="spinA" value="Stash" /></label>
-        <label>Option B <input id="spinB" value="Pass" /></label>
-        <button id="spinBtn" class="big-action full">Run Full-Screen Spin</button>
-      </div>
-
-      <div class="control-card wide">
-        <h2>NFL Teams</h2>
-        <p class="small-note">Check sold, then enter the buyer username. Team logos display on the live overlay.</p>
-        <div id="teamControls" class="team-controls"></div>
+    <section class="control-card">
+      <h2>Full-Screen Graphics</h2>
+      <div class="button-grid">
+        <button data-trigger="stash-pass">Stash or Pass</button>
+        <button data-trigger="spin-choose">Spin 2 Choose 1</button>
+        <button data-trigger="big-hit">Big Hit</button>
+        <button data-trigger="giveaway">Giveaway</button>
+        <button data-trigger="break-full">Break Full</button>
       </div>
     </section>
-  </div>
 
-  <script src="firebase.js"></script>
-  <script src="app.js"></script>
+    <section class="control-card">
+      <h2>Lower Third</h2>
+      <div class="form-grid">
+        <label>Title <input id="lowerTitleInput" value="SMJ BREAKS"></label>
+        <label>Text <input id="lowerTextInput" value="Follow @smjsportscardsnc"></label>
+      </div>
+      <button id="showLower">Show Lower Third</button>
+    </section>
+
+    <section class="control-card">
+      <h2>Auction Countdown</h2>
+      <div class="form-grid small">
+        <label>Seconds <input id="secondsInput" type="number" min="5" max="300" value="30"></label>
+      </div>
+      <button id="startCountdown">Start Countdown</button>
+      <button id="stopCountdown" class="secondary">Stop Countdown</button>
+    </section>
+
+    <section class="control-card">
+      <h2>Recent Hits</h2>
+      <div class="form-grid">
+        <label>Hit Text <input id="hitInput" value="Downtown hit!"></label>
+      </div>
+      <button id="addHit">Add Hit</button>
+      <button id="clearHits" class="secondary">Clear Hits</button>
+    </section>
+
+    <section class="control-card">
+      <h2>Teams</h2>
+      <div id="teamControls" class="team-controls"></div>
+    </section>
+  </div>
+  <script src="teams.js"></script>
+  <script src="control.js"></script>
 </body>
 </html>

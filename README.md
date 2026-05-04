@@ -1,34 +1,105 @@
-# SMJ Compact Scoreboard + Full-Screen Animated Break Overlay
+# SMJ Advanced Whatnot Break Overlay
 
-This version separates the layout into two layers:
+## OBS setup
+Use `index.html` as a Browser Source at **1920 x 1080**.
 
-1. **Compact scoreboard** — fixed at 900px wide by 360px tall, matching the older Whatnot-safe design size.
-2. **Full-screen animations** — Stash or Pass, Spin 2 Choose 1, Break Full, Giveaway Winner, and Big Hit fill the entire OBS browser-source canvas.
+The scoreboard remains compact at **900 x 360** near the top of the canvas, while triggered animations fill the full screen.
 
-## OBS Setup
+## Logo
+Place your logo here:
 
-Use `index.html` as a Browser Source. Recommended OBS browser-source size:
+```text
+assets/logo.png
+```
 
-- Width: `1920`
-- Height: `1080`
+Name it exactly:
 
-The scoreboard is intentionally only 900x360 and is centered at the top. The animated graphics use the full 1920x1080 browser source.
+```text
+logo.png
+```
 
-## Control Page
+Recommended: transparent PNG, square, at least 1000x1000.
 
-Open `control.html` in a second browser window or on a tablet. You can:
+## Team logos
+Put team logo PNGs in:
 
-- Update break title and ticker
-- Assign buyer usernames to NFL teams
-- Mark teams sold
-- Trigger full-screen Stash or Pass
-- Trigger full-screen Spin 2 Choose 1
-- Trigger Break Full, Giveaway Winner, and Big Hit animations
+```text
+assets/teams/
+```
 
-## Team Logos
+Use these exact lowercase file names:
 
-This package uses ESPN-hosted NFL logo URLs so the ZIP stays small. Internet access is required for logos to load. If you want fully offline logos, place PNGs in `assets/logos/` and update the `logoUrl()` function in `app.js`.
+```text
+cardinals.png
+falcons.png
+ravens.png
+bills.png
+panthers.png
+bears.png
+bengals.png
+browns.png
+cowboys.png
+broncos.png
+lions.png
+packers.png
+texans.png
+colts.png
+jaguars.png
+chiefs.png
+raiders.png
+chargers.png
+rams.png
+dolphins.png
+vikings.png
+patriots.png
+saints.png
+giants.png
+jets.png
+eagles.png
+steelers.png
+forty-niners.png
+seahawks.png
+buccaneers.png
+titans.png
+commanders.png
+```
 
-## Hosting
+If a logo is missing, the overlay shows a clean initials placeholder automatically.
 
-This can run locally, on GitHub Pages, or any static host. Firebase is stubbed in `firebase.js` for future cloud syncing, but local browser storage and BroadcastChannel are already wired in.
+## Control panel
+Open `control.html` on the same computer or tablet browser.
+
+It uses browser localStorage BroadcastChannel syncing. For local OBS use, this works without Firebase.
+
+## Included features
+- Compact 900x360 scoreboard
+- Full-screen animated graphics
+- Automatic NFL team logo loading
+- Metallic/glass scoreboard styling
+- Lower-third announcement banner
+- Touchscreen-friendly control page
+- Auction countdown timer
+- Recent hits panel
+- Animated ticker
+- Trigger buttons for:
+  - Stash or Pass
+  - Spin 2 Choose 1 graphic, without spinning wheel animation
+  - Big Hit
+  - Giveaway
+  - Break Full
+  - Lower Third
+  - Countdown
+  - Clear animations
+- Sound-effect hooks in `assets/sfx/`
+
+## Optional sound files
+Add these if desired:
+
+```text
+assets/sfx/stash-pass.mp3
+assets/sfx/spin-choose.mp3
+assets/sfx/big-hit.mp3
+assets/sfx/giveaway.mp3
+assets/sfx/break-full.mp3
+```
+

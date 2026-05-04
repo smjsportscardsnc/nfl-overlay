@@ -1,226 +1,77 @@
-const NFL_TEAMS = [
-  { name: 'Cardinals', city: 'Arizona', abbr: 'ari', color: '#97233F' },
-  { name: 'Falcons', city: 'Atlanta', abbr: 'atl', color: '#A71930' },
-  { name: 'Ravens', city: 'Baltimore', abbr: 'bal', color: '#241773' },
-  { name: 'Bills', city: 'Buffalo', abbr: 'buf', color: '#00338D' },
-  { name: 'Panthers', city: 'Carolina', abbr: 'car', color: '#0085CA' },
-  { name: 'Bears', city: 'Chicago', abbr: 'chi', color: '#0B162A' },
-  { name: 'Bengals', city: 'Cincinnati', abbr: 'cin', color: '#FB4F14' },
-  { name: 'Browns', city: 'Cleveland', abbr: 'cle', color: '#311D00' },
-  { name: 'Cowboys', city: 'Dallas', abbr: 'dal', color: '#041E42' },
-  { name: 'Broncos', city: 'Denver', abbr: 'den', color: '#FB4F14' },
-  { name: 'Lions', city: 'Detroit', abbr: 'det', color: '#0076B6' },
-  { name: 'Packers', city: 'Green Bay', abbr: 'gb', color: '#203731' },
-  { name: 'Texans', city: 'Houston', abbr: 'hou', color: '#03202F' },
-  { name: 'Colts', city: 'Indianapolis', abbr: 'ind', color: '#002C5F' },
-  { name: 'Jaguars', city: 'Jacksonville', abbr: 'jax', color: '#006778' },
-  { name: 'Chiefs', city: 'Kansas City', abbr: 'kc', color: '#E31837' },
-  { name: 'Raiders', city: 'Las Vegas', abbr: 'lv', color: '#000000' },
-  { name: 'Chargers', city: 'Los Angeles', abbr: 'lac', color: '#0080C6' },
-  { name: 'Rams', city: 'Los Angeles', abbr: 'lar', color: '#003594' },
-  { name: 'Dolphins', city: 'Miami', abbr: 'mia', color: '#008E97' },
-  { name: 'Vikings', city: 'Minnesota', abbr: 'min', color: '#4F2683' },
-  { name: 'Patriots', city: 'New England', abbr: 'ne', color: '#002244' },
-  { name: 'Saints', city: 'New Orleans', abbr: 'no', color: '#D3BC8D' },
-  { name: 'Giants', city: 'New York', abbr: 'nyg', color: '#0B2265' },
-  { name: 'Jets', city: 'New York', abbr: 'nyj', color: '#125740' },
-  { name: 'Eagles', city: 'Philadelphia', abbr: 'phi', color: '#004C54' },
-  { name: 'Steelers', city: 'Pittsburgh', abbr: 'pit', color: '#FFB612' },
-  { name: '49ers', city: 'San Francisco', abbr: 'sf', color: '#AA0000' },
-  { name: 'Seahawks', city: 'Seattle', abbr: 'sea', color: '#002244' },
-  { name: 'Buccaneers', city: 'Tampa Bay', abbr: 'tb', color: '#D50A0A' },
-  { name: 'Titans', city: 'Tennessee', abbr: 'ten', color: '#0C2340' },
-  { name: 'Commanders', city: 'Washington', abbr: 'wsh', color: '#5A1414' }
-];
+const channel = new BroadcastChannel('smj-overlay');
+const state = JSON.parse(localStorage.getItem('smjOverlayState') || '{}');
+const sold = state.sold || {};
+const hits = state.hits || [];
+let countdownTimer = null;
 
-const logoUrl = abbr => `https://a.espncdn.com/i/teamlogos/nfl/500/${abbr}.png`;
+function saveState(patch){ Object.assign(state, patch); localStorage.setItem('smjOverlayState', JSON.stringify(state)); }
+function $(id){ return document.getElementById(id); }
 
-const DEFAULT_STATE = {
-  title: 'SMJ NFL Mixer Break',
-  ticker: 'Welcome to SMJ Sports Cards & Collectibles!',
-  teams: NFL_TEAMS.map(team => ({ ...team, buyer: '', sold: false })),
-  event: null,
-  spin: { active: false, a: 'Stash', b: 'Pass', winner: '' },
-  nonce: 0
-};
-
-let state = loadState();
-const channel = 'BroadcastChannel' in window ? new BroadcastChannel('smj-overlay') : null;
-
-function normalizeState(raw) {
-  const byName = new Map((raw?.teams || []).map(t => [t.name, t]));
-  return {
-    ...DEFAULT_STATE,
-    ...raw,
-    teams: NFL_TEAMS.map(team => ({ ...team, buyer: byName.get(team.name)?.buyer || '', sold: Boolean(byName.get(team.name)?.sold) })),
-    spin: { ...DEFAULT_STATE.spin, ...(raw?.spin || {}) }
-  };
+function renderTeams(){
+  const grid = $('teamGrid'); grid.innerHTML = '';
+  window.SMJ_TEAMS.forEach(t => {
+    const card = document.createElement('div');
+    card.className = 'team-card' + (sold[t.id]?.buyer ? ' sold' : '');
+    const img = document.createElement('img'); img.className='team-logo'; img.src=t.logo; img.alt=t.name;
+    img.onerror = () => { img.replaceWith(Object.assign(document.createElement('div'), {className:'logo-fallback', textContent:t.abbr})); };
+    const info = document.createElement('div'); info.className='team-info';
+    info.innerHTML = `<div class="team-abbr">${t.abbr}</div><div class="buyer">${sold[t.id]?.buyer || 'Available'}</div>`;
+    card.append(img, info); grid.append(card);
+  });
 }
-
-function loadState() {
-  try { return normalizeState(JSON.parse(localStorage.getItem('smjOverlayState') || '{}')); }
-  catch { return structuredClone(DEFAULT_STATE); }
+function renderInfo(){
+  $('breakTitle').textContent = state.title || 'SMJ Sports Cards & Collectibles';
+  $('breakSubtitle').textContent = state.subtitle || 'Singles • Rips • Breaks';
+  $('ticker').innerHTML = `<span>${state.ticker || 'Welcome to SMJ Sports Cards & Collectibles!'}</span>`;
 }
-
-function saveState(next) {
-  state = normalizeState({ ...next, nonce: Date.now() });
-  localStorage.setItem('smjOverlayState', JSON.stringify(state));
-  channel?.postMessage(state);
-  render();
+function renderHits(){
+  const panel = $('recentHits'); const list = $('hitList'); list.innerHTML='';
+  if(!hits.length){ panel.classList.add('hidden'); return; }
+  panel.classList.remove('hidden');
+  hits.slice(0,5).forEach(h=>{ const d=document.createElement('div'); d.className='hit-item'; d.textContent=h; list.append(d); });
 }
-
-channel?.addEventListener('message', event => {
-  state = normalizeState(event.data);
-  localStorage.setItem('smjOverlayState', JSON.stringify(state));
-  render();
-});
-
-window.addEventListener('storage', event => {
-  if (event.key === 'smjOverlayState') {
-    state = loadState();
-    render();
-  }
-});
-
-const $ = selector => document.querySelector(selector);
-const $$ = selector => Array.from(document.querySelectorAll(selector));
-const on = (selector, event, handler) => $$(selector).forEach(el => el.addEventListener(event, handler));
-
-function renderOverlay() {
-  const title = $('#breakTitle');
-  if (!title) return;
-
-  title.textContent = state.title;
-  $('#tickerText').textContent = state.ticker;
-
-  const grid = $('#teamsGrid');
-  grid.innerHTML = state.teams.map((team, i) => `
-    <div class="team-tile ${team.sold ? 'sold' : ''}" data-team-index="${i}" style="--team-color:${team.color}">
-      <div class="logo-plate"><img src="${logoUrl(team.abbr)}" alt="${escapeAttr(team.city)} ${escapeAttr(team.name)} logo" /></div>
-      <div class="team-copy">
-        <div class="team-city">${escapeHtml(team.city)}</div>
-        <div class="team-name">${escapeHtml(team.name)}</div>
-        <div class="buyer-name">${escapeHtml(team.buyer || 'Available')}</div>
-      </div>
-    </div>
-  `).join('');
-
-  const sold = state.teams.filter(t => t.sold).length;
-  $('#soldCount').textContent = `${sold}/32`;
-  $('#statusText').textContent = sold === 32 ? 'Full' : 'Live';
-
-  renderEventLayer();
-  renderSpinnerLayer();
+function playSfx(name){
+  const audio = new Audio(`assets/sfx/${name}.mp3`);
+  audio.volume = 0.55;
+  audio.play().catch(()=>{});
 }
-
-function renderEventLayer() {
-  const layer = $('#eventLayer');
-  if (!layer) return;
-  if (!state.event) {
-    layer.classList.add('hidden');
-    return;
-  }
-
+function trigger(name){
+  const layer = $('animationLayer'); layer.className='animation-layer'; layer.innerHTML='';
   const copy = {
-    stash: ['SMJ MINI GAME', 'STASH OR PASS', 'Lock it in or let it ride!'],
-    full: ['BREAK STATUS', 'BREAK FULL', 'Let’s rip!'],
-    giveaway: ['SMJ GIVEAWAY', 'WINNER!', 'Congrats from SMJ!'],
-    fire: ['SMJ HIT CAM', 'BIG HIT!', 'That one is going on the board!']
-  }[state.event] || ['SMJ', String(state.event).toUpperCase(), 'Let’s go!'];
-
-  $('#eventKicker').textContent = copy[0];
-  $('#eventTitle').textContent = copy[1];
-  $('#eventSubtitle').textContent = copy[2];
-  layer.classList.remove('hidden');
-
-  clearTimeout(window.__eventTimer);
-  window.__eventTimer = setTimeout(() => {
-    const current = loadState();
-    if (current.event === state.event) saveState({ ...current, event: null });
-  }, 5200);
+    'stash-pass':['STASH OR PASS','MAKE THE CALL','KEEP IT OR MOVE IT?','stash'],
+    'spin-choose':['SPIN 2 CHOOSE 1','PICK YOUR SIDE','NO WHEEL — JUST THE DECISION','choose'],
+    'big-hit':['BIG HIT','SMJ HEATER','LET’S GOOOO!','hit'],
+    'giveaway':['GIVEAWAY','FOLLOW • BOOKMARK • SHARE','GOOD LUCK!','giveaway'],
+    'break-full':['BREAK FULL','LOCKED & LOADED','TIME TO RIP!','full']
+  }[name] || ['SMJ','SPORTS CARDS','COLLECTIBLES',''];
+  layer.innerHTML = `<div class="splash ${copy[3]}"><div class="kicker">${copy[0]}</div><div class="main">${copy[1]}</div><div class="sub">${copy[2]}</div></div>`;
+  playSfx(name);
+  setTimeout(()=>layer.classList.add('hidden'), 4500);
 }
-
-function renderSpinnerLayer() {
-  const layer = $('#spinnerLayer');
-  if (!layer) return;
-  if (!state.spin?.active) {
-    layer.classList.add('hidden');
-    return;
-  }
-  $('#spinOptionA').textContent = state.spin.a;
-  $('#spinOptionB').textContent = state.spin.b;
-  $('#spinWinner').textContent = state.spin.winner ? `Winner: ${state.spin.winner}` : 'Spinning...';
-  layer.classList.remove('hidden');
-
-  clearTimeout(window.__spinWinnerTimer);
-  window.__spinWinnerTimer = setTimeout(() => {
-    const current = loadState();
-    if (current.spin?.active && !current.spin.winner) {
-      const winner = Math.random() > 0.5 ? current.spin.a : current.spin.b;
-      saveState({ ...current, spin: { ...current.spin, winner } });
-    }
-  }, 2600);
-
-  clearTimeout(window.__spinClearTimer);
-  window.__spinClearTimer = setTimeout(() => {
-    const current = loadState();
-    if (current.spin?.active) saveState({ ...current, spin: { ...current.spin, active: false } });
-  }, 7800);
+function lower(title,text){
+  $('lowerTitle').textContent = title || 'SMJ BREAKS'; $('lowerText').textContent = text || 'Follow @smjsportscardsnc';
+  $('lowerThird').classList.remove('hidden');
+  setTimeout(()=>$('lowerThird').classList.add('hidden'), 6000);
 }
-
-function renderControl() {
-  if (!$('#teamControls')) return;
-
-  $('#titleInput').value = state.title;
-  $('#tickerInput').value = state.ticker;
-  $('#spinA').value = state.spin?.a || 'Stash';
-  $('#spinB').value = state.spin?.b || 'Pass';
-
-  $('#teamControls').innerHTML = state.teams.map((team, i) => `
-    <div class="team-control" style="--team-color:${team.color}">
-      <div class="team-control-title">
-        <img src="${logoUrl(team.abbr)}" alt="" />
-        <span>${escapeHtml(team.city)} ${escapeHtml(team.name)}</span>
-        <input type="checkbox" data-sold="${i}" ${team.sold ? 'checked' : ''}>
-      </div>
-      <input placeholder="Buyer username" data-buyer="${i}" value="${escapeAttr(team.buyer)}">
-    </div>
-  `).join('');
-
-  bindControlEvents();
+function startCountdown(seconds){
+  clearInterval(countdownTimer);
+  let remaining = Number(seconds)||30; const el=$('countdown'); el.classList.remove('hidden');
+  const draw=()=>{ const m=String(Math.floor(remaining/60)).padStart(2,'0'); const s=String(remaining%60).padStart(2,'0'); el.textContent=`${m}:${s}`; };
+  draw(); countdownTimer=setInterval(()=>{ remaining--; draw(); if(remaining<=0){ clearInterval(countdownTimer); trigger('big-hit'); setTimeout(()=>el.classList.add('hidden'),1000); }},1000);
 }
+function stopCountdown(){ clearInterval(countdownTimer); $('countdown').classList.add('hidden'); }
 
-function bindControlEvents() {
-  $('#saveInfoBtn')?.addEventListener('click', () => saveState({ ...state, title: $('#titleInput').value, ticker: $('#tickerInput').value }));
-  $('#resetBtn')?.addEventListener('click', () => saveState(structuredClone(DEFAULT_STATE)));
-  $('#clearEventBtn')?.addEventListener('click', () => saveState({ ...state, event: null, spin: { ...state.spin, active: false } }));
-  $('#spinBtn')?.addEventListener('click', () => saveState({ ...state, spin: { active: true, a: $('#spinA').value || 'Option A', b: $('#spinB').value || 'Option B', winner: '' } }));
-
-  on('[data-event]', 'click', e => saveState({ ...state, event: e.currentTarget.dataset.event }));
-
-  on('[data-buyer]', 'input', e => {
-    const i = Number(e.currentTarget.dataset.buyer);
-    const teams = [...state.teams];
-    teams[i] = { ...teams[i], buyer: e.currentTarget.value };
-    saveState({ ...state, teams });
-  });
-
-  on('[data-sold]', 'change', e => {
-    const i = Number(e.currentTarget.dataset.sold);
-    const teams = [...state.teams];
-    teams[i] = { ...teams[i], sold: e.currentTarget.checked };
-    saveState({ ...state, teams });
-  });
+function handle(msg){
+  if(msg.type==='info'){ saveState({title:msg.title,subtitle:msg.subtitle,ticker:msg.ticker}); renderInfo(); }
+  if(msg.type==='team'){ sold[msg.id]={buyer:msg.buyer}; saveState({sold}); renderTeams(); }
+  if(msg.type==='clearTeam'){ delete sold[msg.id]; saveState({sold}); renderTeams(); }
+  if(msg.type==='trigger') trigger(msg.name);
+  if(msg.type==='clear') $('animationLayer').classList.add('hidden');
+  if(msg.type==='lower') lower(msg.title,msg.text);
+  if(msg.type==='countdown') startCountdown(msg.seconds);
+  if(msg.type==='stopCountdown') stopCountdown();
+  if(msg.type==='hit'){ hits.unshift(msg.text); hits.splice(8); saveState({hits}); renderHits(); }
+  if(msg.type==='clearHits'){ hits.length=0; saveState({hits}); renderHits(); }
 }
-
-function render() {
-  renderOverlay();
-  renderControl();
-}
-
-function escapeHtml(value) {
-  return String(value ?? '').replace(/[&<>'"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[c]));
-}
-function escapeAttr(value) { return escapeHtml(value).replace(/`/g, '&#96;'); }
-
-render();
+channel.onmessage = e => handle(e.data);
+renderInfo(); renderTeams(); renderHits();

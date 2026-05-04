@@ -3,68 +3,40 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>SMJ Compact Scoreboard + Full Screen Animations</title>
+  <title>SMJ Advanced Break Overlay</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body class="overlay-body">
-  <main id="overlay" class="overlay-frame">
-    <section class="scoreboard-panel">
-      <div class="scoreboard-bg"></div>
-      <div class="animated-bg"></div>
-      <div class="light-sweep"></div>
-      <div class="stadium-lines"></div>
-
-      <section class="top-bar">
-        <div class="brand-lockup">
-          <div class="smj-badge">SMJ</div>
-          <div class="title-stack">
-            <div id="breakTitle" class="break-title">SMJ NFL Mixer Break</div>
-            <div class="break-subtitle">singles • rips • breaks</div>
-          </div>
+  <main id="stage">
+    <section id="scoreboard" class="scoreboard glass">
+      <div class="score-header">
+        <img src="assets/logo.png" class="brand-logo" onerror="this.style.display='none'" />
+        <div class="title-wrap">
+          <div id="breakTitle" class="break-title">SMJ Sports Cards & Collectibles</div>
+          <div id="breakSubtitle" class="break-subtitle">Singles • Rips • Breaks</div>
         </div>
-        <div class="stats-strip">
-          <div class="stat-card"><span>Sold</span><strong id="soldCount">0/32</strong></div>
-          <div class="stat-card"><span>Status</span><strong id="statusText">Live</strong></div>
-        </div>
-      </section>
-
-      <section class="teams-stage">
-        <div id="teamsGrid" class="teams-grid"></div>
-      </section>
-
-      <footer class="ticker-wrap">
-        <div class="ticker-label">SMJ LIVE</div>
-        <div class="ticker-window">
-          <div id="tickerText" class="ticker-text">Welcome to SMJ Sports Cards & Collectibles!</div>
-        </div>
-      </footer>
+        <div class="live-badge">LIVE</div>
+      </div>
+      <div id="teamGrid" class="team-grid"></div>
+      <div class="score-footer">
+        <div id="ticker" class="ticker"><span>Welcome to SMJ Sports Cards & Collectibles!</span></div>
+        <div id="countdown" class="countdown hidden">00:00</div>
+      </div>
     </section>
 
-    <div id="eventLayer" class="event-layer hidden">
-      <div class="event-shockwave"></div>
-      <div class="event-video-bars"></div>
-      <div id="eventCard" class="event-card">
-        <div id="eventKicker" class="event-kicker">SMJ MINI GAME</div>
-        <div id="eventTitle" class="event-title">STASH OR PASS</div>
-        <div id="eventSubtitle" class="event-subtitle">Lock it in or let it ride!</div>
-      </div>
-    </div>
+    <aside id="recentHits" class="recent-hits glass hidden">
+      <div class="panel-title">Recent Hits</div>
+      <div id="hitList" class="hit-list"></div>
+    </aside>
 
-    <div id="spinnerLayer" class="spinner-layer hidden">
-      <div class="spin-glow"></div>
-      <div class="spin-card">
-        <div class="spin-title">SPIN 2 CHOOSE 1</div>
-        <div class="spinner-wheel">
-          <div class="wheel-half left"><span id="spinOptionA">Option A</span></div>
-          <div class="wheel-half right"><span id="spinOptionB">Option B</span></div>
-          <div class="wheel-center">SMJ</div>
-        </div>
-        <div id="spinWinner" class="spin-winner">Spinning...</div>
-      </div>
-    </div>
+    <section id="lowerThird" class="lower-third hidden">
+      <div id="lowerTitle">SMJ BREAKS</div>
+      <div id="lowerText">Follow @smjsportscardsnc</div>
+    </section>
+
+    <section id="animationLayer" class="animation-layer hidden"></section>
   </main>
-
-  <script src="firebase.js"></script>
+  <script src="teams.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
