@@ -1,77 +1,204 @@
+* { box-sizing: border-box; }
 
-body{
-  margin:0;
-  overflow:hidden;
-  background:transparent;
-  font-family:Arial,sans-serif;
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  background: transparent;
+  overflow: hidden;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
-#scoreboard{
-  position:absolute;
-  top:20px;
-  left:50%;
-  transform:translateX(-50%);
-  width:900px;
-  height:360px;
-  background:rgba(10,15,30,.82);
-  border-radius:24px;
-  border:2px solid rgba(255,255,255,.18);
-  backdrop-filter:blur(10px);
-  box-shadow:0 0 40px rgba(0,140,255,.35);
-  padding:18px;
-  color:white;
+#stage {
+  position: relative;
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  background: transparent;
 }
 
-.header{
-  margin-bottom:12px;
+#scoreboard {
+  position: absolute;
+  top: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 900px;
+  height: 360px;
+  padding: 14px 16px 12px;
+  color: #fff;
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(0, 140, 255, .24), transparent 45%),
+    linear-gradient(135deg, rgba(8, 14, 30, .90), rgba(18, 27, 52, .78));
+  border: 2px solid rgba(255, 255, 255, .18);
+  box-shadow:
+    0 0 32px rgba(0, 135, 255, .35),
+    inset 0 0 22px rgba(255, 255, 255, .07);
+  backdrop-filter: blur(10px);
+  z-index: 2;
 }
 
-.title{
-  font-size:34px;
-  font-weight:bold;
+.scoreboard-header {
+  height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4px 8px;
 }
 
-.subtitle{
-  color:#8ecbff;
+.eyebrow {
+  font-size: 12px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: #8ccfff;
 }
 
-#teams{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:10px;
+.title {
+  font-size: 28px;
+  font-weight: 900;
+  line-height: 1;
+  text-transform: uppercase;
+  text-shadow: 0 0 12px rgba(0, 157, 255, .6);
 }
 
-.team{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  background:rgba(255,255,255,.06);
-  border-radius:14px;
-  padding:8px;
+.badge {
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 900;
+  background: linear-gradient(135deg, #f7062a, #ff7d00);
+  box-shadow: 0 0 18px rgba(255, 60, 40, .65);
 }
 
-.team img{
-  width:42px;
-  height:42px;
-  object-fit:contain;
+.teams-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-auto-rows: 56px;
+  gap: 7px;
 }
 
-.team-name{
-  font-size:15px;
+.team {
+  position: relative;
+  overflow: hidden;
+  border-radius: 14px;
+  background: rgba(255,255,255,.065);
+  border: 1px solid rgba(255,255,255,.14);
+  display: grid;
+  grid-template-columns: 38px 1fr;
+  gap: 6px;
+  align-items: center;
+  padding: 6px 7px;
+  box-shadow: 0 0 12px var(--teamGlow, rgba(0, 140, 255, .25));
 }
 
-.lower-third{
-  position:absolute;
-  bottom:30px;
-  left:50%;
-  transform:translateX(-50%);
-  width:1400px;
-  height:80px;
-  border-radius:18px;
-  background:rgba(0,0,0,.7);
-  display:flex;
-  align-items:center;
-  padding:0 30px;
-  color:white;
-  font-size:32px;
+.team::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--teamColor), transparent 55%);
+  opacity: .22;
+  pointer-events: none;
 }
+
+.team img {
+  position: relative;
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 6px var(--teamColor));
+}
+
+.team-info {
+  position: relative;
+  min-width: 0;
+}
+
+.team-city {
+  font-size: 9px;
+  color: rgba(255,255,255,.72);
+  line-height: 1.05;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.team-name {
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1.05;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.buyer {
+  font-size: 9px;
+  color: #8de1ff;
+  line-height: 1.05;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.team.sold {
+  opacity: .55;
+  filter: grayscale(.35);
+}
+
+.team.sold::after {
+  content: "SOLD";
+  position: absolute;
+  right: -18px;
+  top: 8px;
+  transform: rotate(28deg);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .12em;
+  color: rgba(255, 255, 255, .9);
+  background: rgba(255,0,35,.85);
+  padding: 3px 24px;
+  box-shadow: 0 0 14px rgba(255,0,35,.65);
+}
+
+.ticker {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 10px;
+  height: 26px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(0,0,0,.42);
+  border: 1px solid rgba(255,255,255,.11);
+}
+
+#tickerText {
+  position: absolute;
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: 800;
+  color: #e8f7ff;
+  line-height: 26px;
+  animation: tickerMove 18s linear infinite;
+}
+
+@keyframes tickerMove {
+  from { transform: translateX(900px); }
+  to { transform: translateX(-100%); }
+}
+
+.video-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  background: transparent;
+}
+
+.video-layer video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hidden { display: none; }

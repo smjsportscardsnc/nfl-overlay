@@ -1,25 +1,35 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>SMJ ESPN CDN Overlay</title>
-<link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SMJ Break Scoreboard</title>
+  <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-<div id="scoreboard">
-  <div class="header">
-    <div class="title">SMJ NFL BREAK</div>
-    <div class="subtitle">@smjsportscardsnc</div>
-  </div>
+  <main id="stage">
+    <section id="scoreboard" aria-label="SMJ Break Scoreboard">
+      <div class="scoreboard-header">
+        <div>
+          <div class="eyebrow">SMJ Sports Cards & Collectibles</div>
+          <div class="title" id="breakTitle">NFL BREAK</div>
+        </div>
+        <div class="badge">LIVE</div>
+      </div>
 
-  <div id="teams"></div>
-</div>
+      <div id="teams" class="teams-grid"></div>
 
-<div class="lower-third">
-  LIVE NOW • SINGLES • RIPS • BREAKS
-</div>
+      <div class="ticker">
+        <span id="tickerText">Welcome to SMJ Sports Cards & Collectibles • Singles • Rips • Breaks</span>
+      </div>
+    </section>
 
-<script src="js/app.js"></script>
+    <section id="videoLayer" class="video-layer hidden">
+      <video id="animationVideo" playsinline></video>
+    </section>
+  </main>
+
+  <script src="js/teams.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>
