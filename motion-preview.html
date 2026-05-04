@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>SMJ Motion Preview</title>
+<link rel="stylesheet" href="css/style.css"/>
+<style>
+body{background:#06101f}
+.preview-controls{position:fixed;left:24px;bottom:24px;z-index:999;background:rgba(0,0,0,.72);padding:16px;border-radius:18px;border:1px solid rgba(255,255,255,.2)}
+.preview-controls button{font:900 16px Arial;border:0;border-radius:12px;padding:12px 14px;margin:5px;background:#078cff;color:white;cursor:pointer}
+</style>
+</head>
+<body>
+<main class="overlay-frame">
+<section id="motionLayer" class="motion-layer">
+<canvas id="motionCanvas" width="1920" height="1080"></canvas>
+<div id="motionHud" class="motion-hud">
+<div id="motionKicker" class="motion-kicker">SMJ LIVE</div>
+<div id="motionTitle" class="motion-title">MONSTER HIT</div>
+<div id="motionSubtitle" class="motion-subtitle">BOOM!</div>
+</div>
+</section>
+<div class="preview-controls">
+<button onclick="SMJMotion.trigger('stash')">Stash/Pass</button>
+<button onclick="SMJMotion.trigger('choose')">Choose 1</button>
+<button onclick="SMJMotion.trigger('full')">Break Full</button>
+<button onclick="SMJMotion.trigger('hit')">Monster Hit</button>
+<button onclick="SMJMotion.trigger('giveaway')">Giveaway</button>
+<button onclick="SMJMotion.trigger('starting')">Starting</button>
+</div>
+</main>
+<script src="js/motion.js"></script>
+<script>SMJMotion.trigger('hit')</script>
+</body>
+</html>

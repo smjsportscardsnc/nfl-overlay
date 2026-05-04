@@ -1,24 +1,31 @@
 *{box-sizing:border-box}
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent;font-family:Arial,Helvetica,sans-serif}
 .overlay-frame{position:relative;width:1920px;height:1080px;background:transparent;overflow:hidden}
-.scoreboard-panel{position:absolute;top:20px;left:50%;transform:translateX(-50%);width:900px;height:360px;overflow:hidden;border-radius:28px;background:linear-gradient(135deg,rgba(10,18,40,.92),rgba(18,28,58,.82));border:2px solid rgba(255,255,255,.15);box-shadow:0 0 40px rgba(0,140,255,.35),inset 0 0 24px rgba(255,255,255,.06);backdrop-filter:blur(10px);z-index:2}
-.animated-bg{position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,rgba(0,170,255,.18),transparent 50%);animation:pulse 6s infinite linear}
-.light-sweep{position:absolute;top:-30%;left:-20%;width:40%;height:180%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);transform:rotate(20deg);animation:sweep 7s infinite linear}
-.top-bar{position:relative;z-index:2;padding:14px 16px 10px;display:flex;align-items:center;justify-content:space-between}
-.brand-lockup{display:flex;gap:14px;align-items:center}.smj-badge{width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;box-shadow:0 0 24px rgba(0,170,255,.75);overflow:hidden;border:2px solid rgba(255,255,255,.2)}
+.scoreboard-panel{position:absolute;top:20px;left:50%;transform:translateX(-50%);width:900px;height:360px;overflow:hidden;border-radius:30px;background:linear-gradient(135deg,rgba(6,14,32,.92),rgba(18,29,58,.82));border:2px solid rgba(255,255,255,.18);box-shadow:0 0 42px rgba(0,140,255,.38),inset 0 0 28px rgba(255,255,255,.07);backdrop-filter:blur(12px);z-index:2}
+.panel-depth{position:absolute;inset:8px;border-radius:24px;border:1px solid rgba(255,255,255,.08);box-shadow:inset 0 0 30px rgba(0,0,0,.4)}
+.animated-bg{position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,rgba(0,170,255,.22),transparent 50%),linear-gradient(120deg,transparent,rgba(255,255,255,.045),transparent);animation:pulse 6s infinite linear}
+.light-sweep{position:absolute;top:-30%;left:-20%;width:40%;height:180%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);transform:rotate(20deg);animation:sweep 5.5s infinite linear}
+.top-bar{position:relative;z-index:2;padding:13px 16px 9px;display:flex;align-items:center;justify-content:space-between}
+.brand-lockup{display:flex;gap:13px;align-items:center}.smj-badge{width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;box-shadow:0 0 24px rgba(0,170,255,.75);overflow:hidden;border:2px solid rgba(255,255,255,.24)}
 .smj-badge img{width:100%;height:100%;object-fit:contain}
-.break-title{font-size:27px;font-weight:900;color:white;line-height:1;text-transform:uppercase;text-shadow:0 0 14px rgba(0,157,255,.65);max-width:520px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.break-title{font-size:27px;font-weight:900;color:white;line-height:1;text-transform:uppercase;text-shadow:0 0 14px rgba(0,157,255,.65);max-width:510px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .break-subtitle{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#8dd8ff;margin-top:5px}
-.stats-strip{display:flex;gap:8px}.stat-card{min-width:72px;border-radius:14px;padding:8px 10px;text-align:center;background:rgba(0,0,0,.38);border:1px solid rgba(255,255,255,.13)}
+.stats-strip{display:flex;gap:8px}.stat-card{min-width:72px;border-radius:14px;padding:8px 10px;text-align:center;background:rgba(0,0,0,.42);border:1px solid rgba(255,255,255,.14)}
 .stat-card span{display:block;font-size:10px;text-transform:uppercase;color:#8dd8ff;letter-spacing:.12em}.stat-card strong{display:block;font-size:16px;color:white;margin-top:2px}
 .teams-stage{position:relative;padding:0 16px 16px;z-index:2}.teams-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:8px}
-.team-box{height:54px;border-radius:15px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;box-shadow:0 0 12px var(--teamGlow)}
-.team-box::before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,var(--teamColor),transparent 60%);opacity:.24}
-.team-box img{position:relative;width:42px;height:42px;object-fit:contain;filter:drop-shadow(0 0 10px rgba(255,255,255,.45)) drop-shadow(0 0 12px var(--teamColor))}
-.team-box .logo-plate{position:relative;width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.90);display:flex;align-items:center;justify-content:center;box-shadow:inset 0 0 8px rgba(0,0,0,.18),0 0 12px var(--teamColor)}
+.team-box{height:54px;border-radius:15px;background:rgba(255,255,255,.065);border:1px solid rgba(255,255,255,.13);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;box-shadow:0 0 12px var(--teamGlow)}
+.team-box::before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,var(--teamColor),transparent 60%);opacity:.27}
+.logo-plate{position:relative;width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center;box-shadow:inset 0 0 8px rgba(0,0,0,.18),0 0 12px var(--teamColor)}
+.team-box img{position:relative;width:42px;height:42px;object-fit:contain;filter:drop-shadow(0 0 7px rgba(0,0,0,.3))}
 .team-box.sold{opacity:.43;filter:grayscale(.3)}.team-box.sold::after{content:"";position:absolute;width:125%;height:7px;background:#ff0033;transform:rotate(43deg);box-shadow:0 0 14px #ff0033}
-.ticker-wrap{position:absolute;left:16px;right:16px;bottom:10px;height:28px;display:flex;z-index:3;border-radius:999px;overflow:hidden;border:1px solid rgba(255,255,255,.13);background:rgba(0,0,0,.45)}
+.ticker-wrap{position:absolute;left:16px;right:16px;bottom:10px;height:28px;display:flex;z-index:3;border-radius:999px;overflow:hidden;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.48)}
 .ticker-label{width:92px;background:linear-gradient(135deg,#008cff,#00d4ff);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;letter-spacing:.08em;color:white}
 .ticker-window{position:relative;flex:1;overflow:hidden}.ticker-text{position:absolute;white-space:nowrap;line-height:28px;font-size:14px;font-weight:800;color:#e8f7ff;animation:tickerMove 18s linear infinite}
-.video-layer{position:absolute;inset:0;z-index:10;background:transparent}.video-layer video{width:100%;height:100%;object-fit:cover}.hidden{display:none}
+.motion-layer{position:absolute;inset:0;z-index:20;overflow:hidden;background:rgba(0,0,0,.02)}
+.motion-layer.hidden{display:none}
+#motionCanvas{position:absolute;inset:0;width:100%;height:100%}
+.motion-hud{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;transform:translateY(-6px)}
+.motion-kicker{font-size:34px;font-weight:900;letter-spacing:.32em;text-transform:uppercase;color:#9cecff;text-shadow:0 0 18px rgba(0,200,255,.8);margin-bottom:24px;opacity:.95}
+.motion-title{font-size:126px;font-weight:1000;letter-spacing:.04em;text-transform:uppercase;color:white;text-shadow:0 0 22px rgba(0,170,255,.85),0 0 60px rgba(0,170,255,.35);line-height:.95}
+.motion-subtitle{font-size:52px;font-weight:900;text-transform:uppercase;color:#ffd75a;text-shadow:0 0 20px rgba(255,215,0,.65);margin-top:28px}
 @keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.04)}100%{transform:scale(1)}}@keyframes sweep{0%{transform:translateX(-120%) rotate(20deg)}100%{transform:translateX(600%) rotate(20deg)}}@keyframes tickerMove{from{transform:translateX(820px)}to{transform:translateX(-100%)}}

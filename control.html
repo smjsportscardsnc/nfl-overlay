@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>SMJ Firebase Control</title>
+<title>SMJ Cinematic Control</title>
 <link rel="stylesheet" href="css/control.css"/>
 </head>
 <body>
@@ -16,14 +16,16 @@
 </header>
 
 <section class="panel">
-  <h2>Fullscreen Graphic Triggers</h2>
+  <h2>Cinematic Graphic Triggers</h2>
   <div class="buttons">
-    <button type="button" data-video="stash">Stash or Pass</button>
-    <button type="button" data-video="spin">Spin 2 Choose 1</button>
-    <button type="button" data-video="full">Break Full</button>
-    <button type="button" data-video="hit">Monster Hit</button>
+    <button type="button" data-motion="stash">Stash or Pass</button>
+    <button type="button" data-motion="choose">Spin 2 Choose 1</button>
+    <button type="button" data-motion="full">Break Full</button>
+    <button type="button" data-motion="hit">Monster Hit</button>
+    <button type="button" data-motion="giveaway">Giveaway Winner</button>
+    <button type="button" data-motion="starting">Starting Soon</button>
   </div>
-  <p class="hint">These write a unique video command to Firebase, so the same graphic can be triggered repeatedly.</p>
+  <p class="hint">These trigger real-time canvas motion graphics on the OBS overlay. No MP4 playback required.</p>
 </section>
 
 <section class="panel">
@@ -36,7 +38,7 @@
 
 <section class="panel">
   <h2>Assign Teams as Sold</h2>
-  <p class="hint">Tap any team below. Red/orange means sold. Normal blue means available.</p>
+  <p class="hint">Tap any team. Sold teams are marked on the stream with a red slash.</p>
   <div id="teamControls" class="team-controls"></div>
 </section>
 

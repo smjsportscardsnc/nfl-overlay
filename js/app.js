@@ -1,19 +1,13 @@
 const OVERLAY_PATH="smjOverlay/current";
-const DEFAULT_STATE={title:"SMJ NFL MIXER BREAK",status:"Live",ticker:"Welcome to SMJ Sports Cards & Collectibles!",sold:{},videoCommand:null};
+const DEFAULT_STATE={title:"SMJ NFL MIXER BREAK",status:"Live",ticker:"Welcome to SMJ Sports Cards & Collectibles!",sold:{},motionCommand:null};
 let state={...DEFAULT_STATE};
-let lastVideoId=null;
+let lastMotionId=null;
 
 const grid=document.getElementById("teamsGrid");
 const soldCount=document.getElementById("soldCount");
 const statusText=document.getElementById("statusText");
 const tickerText=document.getElementById("tickerText");
 const breakTitle=document.getElementById("breakTitle");
-const videoLayer=document.getElementById("videoLayer");
-const overlayVideo=document.getElementById("overlayVideo");
-overlayVideo.muted = true;
-overlayVideo.playsInline = true;
-
-const videos={stash:"assets/videos/stash-or-pass.mp4",spin:"assets/videos/spin-2-choose-1.mp4",full:"assets/videos/break-full.mp4",hit:"assets/videos/big-hit.mp4"};
 
 function logo(abbr){return `https://a.espncdn.com/i/teamlogos/nfl/500/${abbr}.png`}
 
@@ -35,31 +29,10 @@ function render(){
   });
 }
 
-function playVideo(key){
-  if(!videos[key]) return;
-  overlayVideo.pause();
-  overlayVideo.removeAttribute("src");
-  overlayVideo.src=videos[key] + "?v=" + Date.now();
-  videoLayer.classList.remove("hidden");
-  overlayVideo.currentTime=0;
-  const playPromise = overlayVideo.play();
-  if (playPromise && typeof playPromise.catch === "function") {
-    playPromise.catch(err=>{
-      console.error("Video play failed:", err);
-      // Keep the layer hidden if the browser blocks playback.
-      videoLayer.classList.add("hidden");
-    });
-  }
-  overlayVideo.onended=()=>{
-    videoLayer.classList.add("hidden");
-    overlayVideo.removeAttribute("src");
-  };
-}
-
-function handleVideoCommand(cmd){
-  if(!cmd || !cmd.id || cmd.id===lastVideoId) return;
-  lastVideoId=cmd.id;
-  playVideo(cmd.key);
+function handleMotionCommand(cmd){
+  if(!cmd || !cmd.id || cmd.id===lastMotionId) return;
+  lastMotionId=cmd.id;
+  window.SMJMotion.trigger(cmd.key || "hit");
 }
 
 render();
@@ -74,10 +47,10 @@ if(window.SMJFIREBASE_READY && window.smjDB){
     }
     state={...DEFAULT_STATE,...data,sold:{...(data.sold||{})}};
     render();
-    handleVideoCommand(state.videoCommand);
+    handleMotionCommand(state.motionCommand || state.videoCommand);
   }, err => console.error("Firebase listener error:", err));
 } else {
   console.error("Firebase not ready:", window.SMJFIREBASE_ERROR);
 }
 
-window.SMJOverlay={playVideo};
+window.SMJOverlay={triggerMotion:(key)=>window.SMJMotion.trigger(key)};

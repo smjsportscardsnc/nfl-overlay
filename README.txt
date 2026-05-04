@@ -1,33 +1,33 @@
-SMJ Firebase Overlay - Fixed Controls
-====================================
+SMJ Cinematic Motion Overlay
+============================
 
 OBS:
-- Use index.html as browser source.
+- Use index.html as Browser Source.
 - Width: 1920
 - Height: 1080.
 
 Control:
 - Open control.html.
-- It now always renders:
-  - Fullscreen graphic trigger buttons
-  - Full 32-team sold/available grid
-  - Break title control
-  - Status control
-  - Ticker control
-  - Reset sold teams button
+- Trigger full-screen cinematic graphics.
+- Mark teams sold/available.
+- Update title, status, and ticker.
+- Reset sold teams.
+
+Preview:
+- Open motion-preview.html to test the motion graphics without OBS or Firebase.
+
+This version does NOT rely on MP4 playback.
+It uses real-time canvas motion graphics:
+- particles
+- shockwaves
+- stadium lighting
+- chrome panels
+- light sweeps
+- kinetic broadcast title cards
 
 Firebase:
-- Paste your existing Firebase web app config into js/firebase.js.
-- Realtime Database must be enabled.
-- Database path used: smjOverlay/current.
+- Your Firebase config is already included in js/firebase.js.
+- Realtime Database path: smjOverlay/current.
 
-Important:
-If the Firebase config is still placeholder text, the control page will still show the controls,
-but the buttons will not affect OBS until js/firebase.js is filled in.
-
-
-Polish update:
-- assets/logo.png is now included and displayed in the scoreboard.
-- Replace assets/logo.png with your real transparent SMJ logo when ready.
-- Video playback is muted/preloaded and cache-busted for more reliable OBS triggering.
-- NFL logos now sit on a bright circular backing plate so dark logos are easier to see.
+Logo:
+- Replace assets/logo.png with your real transparent SMJ logo if desired.

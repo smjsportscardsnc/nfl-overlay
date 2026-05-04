@@ -1,5 +1,5 @@
 const OVERLAY_PATH="smjOverlay/current";
-const DEFAULT_STATE={title:"SMJ NFL MIXER BREAK",status:"Live",ticker:"Welcome to SMJ Sports Cards & Collectibles!",sold:{},videoCommand:null};
+const DEFAULT_STATE={title:"SMJ NFL MIXER BREAK",status:"Live",ticker:"Welcome to SMJ Sports Cards & Collectibles!",sold:{},motionCommand:null};
 let state={...DEFAULT_STATE};
 let ref=null;
 
@@ -48,9 +48,9 @@ async function firebaseUpdate(payload){
   await ref.update(payload);
 }
 
-function triggerVideo(key){
+function triggerMotion(key){
   firebaseUpdate({
-    videoCommand:{
+    motionCommand:{
       key,
       id: Date.now()+"-"+Math.random().toString(16).slice(2)
     }
@@ -80,8 +80,8 @@ function saveText(){
   firebaseUpdate(payload);
 }
 
-document.querySelectorAll("[data-video]").forEach(btn=>{
-  btn.addEventListener("click",()=>triggerVideo(btn.dataset.video));
+document.querySelectorAll("[data-motion]").forEach(btn=>{
+  btn.addEventListener("click",()=>triggerMotion(btn.dataset.motion));
 });
 document.getElementById("saveTextBtn").addEventListener("click",saveText);
 document.getElementById("resetAllBtn").addEventListener("click",resetSold);

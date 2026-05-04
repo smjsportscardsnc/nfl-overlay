@@ -1,6 +1,4 @@
 // SMJ Firebase config
-// Firebase Realtime Database control bridge for SMJ overlay.
-
 const firebaseConfig = {
   apiKey: "AIzaSyAP5JIYtql-4YB-wAgNT2Urja4DUOFoRws",
   authDomain: "smj-overlay.firebaseapp.com",
