@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SMJ Animated Break Overlay</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="overlay-body">
+  <main id="overlay" class="overlay-frame">
+    <div class="bg-grid"></div>
+    <div class="stadium-glow"></div>
+
+    <section class="header-bar">
+      <div class="brand-lockup">
+        <div class="smj-mark">SMJ</div>
+        <div>
+          <div id="breakTitle" class="break-title">SMJ Sports Cards & Collectibles</div>
+          <div class="break-subtitle">singles • rips • breaks</div>
+        </div>
+      </div>
+      <div id="statusPill" class="status-pill">LIVE BREAK</div>
+    </section>
+
+    <section class="main-layout">
+      <div class="teams-panel">
+        <div id="teamsGrid" class="teams-grid"></div>
+      </div>
+
+      <aside class="side-panel">
+        <div class="logo-orb">
+          <div class="orb-ring"></div>
+          <div class="orb-text">SMJ</div>
+        </div>
+        <div class="mini-card">
+          <span>Sold</span>
+          <strong id="soldCount">0/32</strong>
+        </div>
+        <div class="mini-card chaser-card">
+          <span>Chasers</span>
+          <strong id="chaserCount">0/9</strong>
+        </div>
+      </aside>
+    </section>
+
+    <footer class="ticker-wrap">
+      <div class="ticker-label">SMJ LIVE</div>
+      <div class="ticker-window">
+        <div id="tickerText" class="ticker-text">Welcome to SMJ Sports Cards & Collectibles!</div>
+      </div>
+    </footer>
+
+    <div id="eventLayer" class="event-layer hidden">
+      <div class="event-backdrop"></div>
+      <div id="eventCard" class="event-card">
+        <div id="eventKicker" class="event-kicker">SMJ</div>
+        <div id="eventTitle" class="event-title">STASH OR PASS</div>
+        <div id="eventSubtitle" class="event-subtitle">Lock it in!</div>
+      </div>
+    </div>
+
+    <div id="spinnerLayer" class="spinner-layer hidden">
+      <div class="spin-card">
+        <div class="spin-title">SPIN 2 CHOOSE 1</div>
+        <div class="spinner-wheel">
+          <div class="wheel-half left"><span id="spinOptionA">Option A</span></div>
+          <div class="wheel-half right"><span id="spinOptionB">Option B</span></div>
+          <div class="wheel-center">SMJ</div>
+        </div>
+        <div id="spinWinner" class="spin-winner">Ready?</div>
+      </div>
+    </div>
+  </main>
+
+  <script src="firebase.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
