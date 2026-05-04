@@ -10,7 +10,7 @@
   <div class="control-shell">
     <header class="control-header">
       <div>
-        <h1>SMJ Break Overlay Control</h1>
+        <h1>SMJ Full Screen Overlay Control</h1>
         <p>Use this page from a tablet or second browser window while OBS shows index.html.</p>
       </div>
       <button id="resetBtn" class="danger-btn">Clear Break</button>
@@ -25,30 +25,25 @@
       </div>
 
       <div class="control-card">
-        <h2>Animated Moments</h2>
+        <h2>Full-Screen Animated Moments</h2>
         <button data-event="stash" class="big-action">Stash or Pass</button>
-        <button data-event="spin" class="big-action">Spin 2 Choose 1</button>
-        <button data-event="chaser" class="big-action">Chaser Hit</button>
         <button data-event="full" class="big-action">Break Full</button>
         <button data-event="giveaway" class="big-action">Giveaway Winner</button>
+        <button data-event="fire" class="big-action">🔥 Big Hit</button>
         <button id="clearEventBtn" class="secondary-btn">Clear Animation</button>
       </div>
 
       <div class="control-card">
-        <h2>Spin Options</h2>
+        <h2>Spin 2 Choose 1</h2>
         <label>Option A <input id="spinA" value="Stash" /></label>
         <label>Option B <input id="spinB" value="Pass" /></label>
-        <button id="spinBtn">Run Spin</button>
+        <button id="spinBtn" class="big-action full">Run Full-Screen Spin</button>
       </div>
 
       <div class="control-card wide">
-        <h2>Teams</h2>
+        <h2>NFL Teams</h2>
+        <p class="small-note">Check sold, then enter the buyer username. Team logos display on the live overlay.</p>
         <div id="teamControls" class="team-controls"></div>
-      </div>
-
-      <div class="control-card wide">
-        <h2>Chaser Tracker</h2>
-        <div id="chaserControls" class="chaser-controls"></div>
       </div>
     </section>
   </div>

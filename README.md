@@ -1,51 +1,44 @@
-# SMJ Animated Break Overlay
+# SMJ Full Screen Animated Break Overlay
 
-A self-contained OBS / Whatnot overlay package for SMJ Sports Cards & Collectibles.
+This package is a full-screen OBS browser-source overlay for SMJ Sports Cards & Collectibles Whatnot breaks.
 
 ## Files
 
-- `index.html` — OBS browser-source overlay
-- `control.html` — tablet/desktop control panel
-- `style.css` — visual design and animations
-- `app.js` — overlay state, team controls, ticker, and animation triggers
-- `firebase.js` — optional Firebase config placeholder
+- `index.html` — live overlay for OBS/browser source
+- `control.html` — control panel for a tablet, laptop, or second browser window
+- `style.css` — full-screen layout and animation styling
+- `app.js` — team state, logo mapping, sold status, ticker, and animation triggers
+- `firebase.js` — placeholder file for future Firebase sync
 
 ## OBS Setup
 
-1. Add a new **Browser Source** in OBS.
-2. Choose **Local File**.
-3. Select `index.html`.
-4. Set width to **900** and height to **360**.
-5. Position it at the top of your Whatnot layout.
+1. Add a Browser Source in OBS.
+2. Choose `index.html` as a local file.
+3. Set width to `1920` and height to `1080` for full-screen use.
+4. If you are streaming vertical Whatnot video, crop or transform the browser source in OBS to fit your canvas.
 
-## Control Setup
+## Control Page
 
-Open `control.html` in Chrome on the same computer. Changes will update the OBS overlay through local browser storage/BroadcastChannel.
+Open `control.html` in Chrome. It controls the live overlay using local browser storage and BroadcastChannel.
 
-For tablet control from another device, host the folder on GitHub Pages, Netlify, or Firebase Hosting and wire the Firebase config in `firebase.js`.
+Controls include:
 
-## Included Animated Moments
+- Break title
+- Ticker text
+- Sold team status
+- Buyer usernames
+- Full-screen Stash or Pass animation
+- Full-screen Spin 2 Choose 1 animation
+- Break Full animation
+- Giveaway Winner animation
+- Big Hit animation
 
-- Stash or Pass
-- Spin 2 Choose 1
-- Chaser Hit
-- Break Full
-- Giveaway Winner
-- Sold/team pulse animation
-- Animated ticker
-- Rotating SMJ orb
-- Broadcast-style event splash graphics
+## Team Logos
 
-## Optional Real Video Overlays
-
-You can add transparent `.webm` animation files later inside `/assets`, then replace the CSS event cards with video elements. Recommended names:
-
-- `assets/stash-pass.webm`
-- `assets/spin-2-choose-1.webm`
-- `assets/chaser-hit.webm`
-- `assets/break-full.webm`
-- `assets/giveaway-winner.webm`
+The overlay uses ESPN-hosted NFL team logo URLs. An internet connection is required for logos to load. If you want this to be fully offline, place logo PNGs in `assets/logos/` and update the `logoUrl()` function in `app.js`.
 
 ## Notes
 
-This version intentionally uses CSS/HTML animations first so it runs light in OBS and does not require large video files.
+- All references to chasers have been removed.
+- Animations are CSS/HTML-based placeholders designed to behave like full-screen broadcast graphics.
+- True transparent `.webm` animated videos can be added later by placing them in `assets/` and triggering them from the control page.
