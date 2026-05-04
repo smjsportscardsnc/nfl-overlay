@@ -24,3 +24,10 @@ Firebase:
 Important:
 If the Firebase config is still placeholder text, the control page will still show the controls,
 but the buttons will not affect OBS until js/firebase.js is filled in.
+
+
+Polish update:
+- assets/logo.png is now included and displayed in the scoreboard.
+- Replace assets/logo.png with your real transparent SMJ logo when ready.
+- Video playback is muted/preloaded and cache-busted for more reliable OBS triggering.
+- NFL logos now sit on a bright circular backing plate so dark logos are easier to see.

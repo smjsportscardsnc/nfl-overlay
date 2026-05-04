@@ -10,6 +10,8 @@ const tickerText=document.getElementById("tickerText");
 const breakTitle=document.getElementById("breakTitle");
 const videoLayer=document.getElementById("videoLayer");
 const overlayVideo=document.getElementById("overlayVideo");
+overlayVideo.muted = true;
+overlayVideo.playsInline = true;
 
 const videos={stash:"assets/videos/stash-or-pass.mp4",spin:"assets/videos/spin-2-choose-1.mp4",full:"assets/videos/break-full.mp4",hit:"assets/videos/big-hit.mp4"};
 
@@ -28,7 +30,7 @@ function render(){
     box.style.setProperty("--teamColor",team.color);
     box.style.setProperty("--teamGlow",`${team.color}80`);
     box.title=`${team.city} ${team.name}`;
-    box.innerHTML=`<img src="${logo(team.abbr)}" alt="${team.city} ${team.name}" />`;
+    box.innerHTML=`<div class="logo-plate"><img src="${logo(team.abbr)}" alt="${team.city} ${team.name}" /></div>`;
     grid.appendChild(box);
   });
 }
@@ -37,13 +39,17 @@ function playVideo(key){
   if(!videos[key]) return;
   overlayVideo.pause();
   overlayVideo.removeAttribute("src");
-  overlayVideo.src=videos[key];
+  overlayVideo.src=videos[key] + "?v=" + Date.now();
   videoLayer.classList.remove("hidden");
   overlayVideo.currentTime=0;
-  overlayVideo.play().catch(err=>{
-    console.error("Video play failed:", err);
-    videoLayer.classList.add("hidden");
-  });
+  const playPromise = overlayVideo.play();
+  if (playPromise && typeof playPromise.catch === "function") {
+    playPromise.catch(err=>{
+      console.error("Video play failed:", err);
+      // Keep the layer hidden if the browser blocks playback.
+      videoLayer.classList.add("hidden");
+    });
+  }
   overlayVideo.onended=()=>{
     videoLayer.classList.add("hidden");
     overlayVideo.removeAttribute("src");
