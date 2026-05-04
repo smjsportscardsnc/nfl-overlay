@@ -8,31 +8,35 @@
 </head>
 <body>
 <header>
-  <div><h1>SMJ Overlay Control</h1><p>Firebase live control for OBS overlay.</p></div>
-  <button class="danger" id="resetAllBtn">Reset Sold Teams</button>
+  <div>
+    <h1>SMJ Overlay Control</h1>
+    <p id="connectionStatus" class="connection warning">Loading Firebase…</p>
+  </div>
+  <button class="danger" id="resetAllBtn" type="button">Reset Sold Teams</button>
 </header>
 
 <section class="panel">
-  <h2>Fullscreen Video Triggers</h2>
+  <h2>Fullscreen Graphic Triggers</h2>
   <div class="buttons">
-    <button data-video="stash">Stash or Pass</button>
-    <button data-video="spin">Spin 2 Choose 1</button>
-    <button data-video="full">Break Full</button>
-    <button data-video="hit">Monster Hit</button>
+    <button type="button" data-video="stash">Stash or Pass</button>
+    <button type="button" data-video="spin">Spin 2 Choose 1</button>
+    <button type="button" data-video="full">Break Full</button>
+    <button type="button" data-video="hit">Monster Hit</button>
   </div>
+  <p class="hint">These write a unique video command to Firebase, so the same graphic can be triggered repeatedly.</p>
 </section>
 
 <section class="panel">
   <h2>Overlay Text Controls</h2>
-  <label>Break Title<input id="titleInput" type="text"/></label>
-  <label>Status<input id="statusInput" type="text"/></label>
-  <label>Ticker Text<input id="tickerInput" type="text"/></label>
-  <button id="saveTextBtn">Update Overlay Text</button>
+  <label>Break Title<input id="titleInput" type="text" value="SMJ NFL MIXER BREAK"/></label>
+  <label>Status<input id="statusInput" type="text" value="Live"/></label>
+  <label>Ticker Text<input id="tickerInput" type="text" value="Welcome to SMJ Sports Cards & Collectibles!"/></label>
+  <button id="saveTextBtn" type="button">Update Overlay Text</button>
 </section>
 
 <section class="panel">
-  <h2>Team Sold Controls</h2>
-  <p class="hint">Tap a team to toggle sold/available. Overlay team boxes remain logo-only.</p>
+  <h2>Assign Teams as Sold</h2>
+  <p class="hint">Tap any team below. Red/orange means sold. Normal blue means available.</p>
   <div id="teamControls" class="team-controls"></div>
 </section>
 

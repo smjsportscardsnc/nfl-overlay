@@ -1,25 +1,26 @@
-SMJ Firebase Live-Control Overlay
-=================================
+SMJ Firebase Overlay - Fixed Controls
+====================================
 
-OBS Browser Source:
-- index.html
+OBS:
+- Use index.html as browser source.
 - Width: 1920
-- Height: 1080
+- Height: 1080.
 
-Control Panel:
-- control.html
-- Trigger fullscreen videos
-- Mark teams sold/available
-- Update break title, status, and ticker
-- Reset sold teams
+Control:
+- Open control.html.
+- It now always renders:
+  - Fullscreen graphic trigger buttons
+  - Full 32-team sold/available grid
+  - Break title control
+  - Status control
+  - Ticker control
+  - Reset sold teams button
 
 Firebase:
-1. Open js/firebase.js
-2. Paste your existing Firebase web app config.
-3. Make sure Realtime Database is enabled.
-4. Host the whole folder together, such as GitHub Pages.
+- Paste your existing Firebase web app config into js/firebase.js.
+- Realtime Database must be enabled.
+- Database path used: smjOverlay/current.
 
-Database path used:
-smjOverlay/current
-
-This version uses Firebase Realtime Database, not localStorage.
+Important:
+If the Firebase config is still placeholder text, the control page will still show the controls,
+but the buttons will not affect OBS until js/firebase.js is filled in.

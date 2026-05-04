@@ -1,6 +1,6 @@
-// Paste your existing Firebase web app config here.
-// This package uses Firebase Realtime Database.
-// Keep the variable name exactly: firebaseConfig
+// SMJ Firebase config
+// Paste your existing Firebase web app config below.
+// This overlay uses Firebase Realtime Database.
 
 const firebaseConfig = {
   apiKey: "PASTE_YOUR_API_KEY",
@@ -12,5 +12,18 @@ const firebaseConfig = {
   appId: "PASTE_APP_ID"
 };
 
-firebase.initializeApp(firebaseConfig);
-window.smjDB = firebase.database();
+window.SMJFIREBASE_READY = false;
+window.SMJFIREBASE_ERROR = null;
+
+try {
+  const hasPlaceholder = Object.values(firebaseConfig).some(v => String(v).includes("PASTE_"));
+  if (hasPlaceholder) {
+    throw new Error("Firebase config still has placeholder values in js/firebase.js");
+  }
+  firebase.initializeApp(firebaseConfig);
+  window.smjDB = firebase.database();
+  window.SMJFIREBASE_READY = true;
+} catch (err) {
+  console.error("SMJ Firebase setup error:", err);
+  window.SMJFIREBASE_ERROR = err.message || String(err);
+}

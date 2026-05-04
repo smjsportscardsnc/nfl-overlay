@@ -40,7 +40,10 @@ function playVideo(key){
   overlayVideo.src=videos[key];
   videoLayer.classList.remove("hidden");
   overlayVideo.currentTime=0;
-  overlayVideo.play().catch(()=>videoLayer.classList.add("hidden"));
+  overlayVideo.play().catch(err=>{
+    console.error("Video play failed:", err);
+    videoLayer.classList.add("hidden");
+  });
   overlayVideo.onended=()=>{
     videoLayer.classList.add("hidden");
     overlayVideo.removeAttribute("src");
@@ -53,17 +56,22 @@ function handleVideoCommand(cmd){
   playVideo(cmd.key);
 }
 
-const ref=window.smjDB.ref(OVERLAY_PATH);
-ref.on("value", snapshot=>{
-  const data=snapshot.val();
-  if(!data){
-    ref.set(DEFAULT_STATE);
-    return;
-  }
-  state={...DEFAULT_STATE,...data,sold:{...(data.sold||{})}};
-  render();
-  handleVideoCommand(state.videoCommand);
-});
-
 render();
+
+if(window.SMJFIREBASE_READY && window.smjDB){
+  const ref=window.smjDB.ref(OVERLAY_PATH);
+  ref.on("value", snapshot=>{
+    const data=snapshot.val();
+    if(!data){
+      ref.set(DEFAULT_STATE);
+      return;
+    }
+    state={...DEFAULT_STATE,...data,sold:{...(data.sold||{})}};
+    render();
+    handleVideoCommand(state.videoCommand);
+  }, err => console.error("Firebase listener error:", err));
+} else {
+  console.error("Firebase not ready:", window.SMJFIREBASE_ERROR);
+}
+
 window.SMJOverlay={playVideo};
