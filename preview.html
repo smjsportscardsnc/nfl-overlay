@@ -1,0 +1,48 @@
+
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>SMJ Preview</title>
+<link rel="stylesheet" href="css/style.css"/>
+<style>
+body{background:#06101f}
+.controls{
+position:fixed;
+left:24px;
+bottom:24px;
+z-index:999;
+background:rgba(0,0,0,.7);
+padding:16px;
+border-radius:20px;
+}
+button{
+margin:5px;
+}
+</style>
+</head>
+<body>
+
+<section id="swoopLayer" class="swoop-layer">
+  <div class="flash"></div>
+
+  <div class="swoop-content">
+    <div id="swoopKicker" class="swoop-kicker">SMJ LIVE</div>
+    <div id="swoopTitle" class="swoop-title">MONSTER HIT</div>
+    <div id="swoopSubtitle" class="swoop-subtitle">BOOM!</div>
+  </div>
+
+  <audio id="swoopAudio" preload="auto"></audio>
+</section>
+
+<div class="controls">
+<button onclick="SMJSwoop.trigger('hit')">Monster Hit</button>
+<button onclick="SMJSwoop.trigger('full')">Break Full</button>
+<button onclick="SMJSwoop.trigger('stash')">Stash</button>
+<button onclick="SMJSwoop.trigger('winner')">Winner</button>
+</div>
+
+<script src="js/swoop.js"></script>
+
+</body>
+</html>

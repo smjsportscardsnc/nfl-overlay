@@ -1,51 +1,44 @@
 <!doctype html>
-<html lang="en">
+<html>
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>SMJ Cinematic Control</title>
+<title>SMJ Control</title>
 <link rel="stylesheet" href="css/control.css"/>
 </head>
 <body>
-<header>
-  <div>
-    <h1>SMJ Overlay Control</h1>
-    <p id="connectionStatus" class="connection warning">Loading Firebase…</p>
-  </div>
-  <button class="danger" id="resetAllBtn" type="button">Reset Sold Teams</button>
-</header>
 
-<section class="panel">
-  <h2>Cinematic Graphic Triggers</h2>
+<h1>SMJ Swoop Control Panel</h1>
+
+<div class="panel">
+  <h2>Trigger Graphics</h2>
+
   <div class="buttons">
-    <button type="button" data-motion="stash">Stash or Pass</button>
-    <button type="button" data-motion="choose">Spin 2 Choose 1</button>
-    <button type="button" data-motion="full">Break Full</button>
-    <button type="button" data-motion="hit">Monster Hit</button>
-    <button type="button" data-motion="giveaway">Giveaway Winner</button>
-    <button type="button" data-motion="starting">Starting Soon</button>
+    <button onclick="triggerMotion('hit')">Monster Hit</button>
+    <button onclick="triggerMotion('full')">Break Full</button>
+    <button onclick="triggerMotion('stash')">Stash or Pass</button>
+    <button onclick="triggerMotion('winner')">Winner</button>
   </div>
-  <p class="hint">These trigger real-time canvas motion graphics on the OBS overlay. No MP4 playback required.</p>
-</section>
+</div>
 
-<section class="panel">
-  <h2>Overlay Text Controls</h2>
-  <label>Break Title<input id="titleInput" type="text" value="SMJ NFL MIXER BREAK"/></label>
-  <label>Status<input id="statusInput" type="text" value="Live"/></label>
-  <label>Ticker Text<input id="tickerInput" type="text" value="Welcome to SMJ Sports Cards & Collectibles!"/></label>
-  <button id="saveTextBtn" type="button">Update Overlay Text</button>
-</section>
+<div class="panel">
+  <h2>Overlay Text</h2>
 
-<section class="panel">
-  <h2>Assign Teams as Sold</h2>
-  <p class="hint">Tap any team. Sold teams are marked on the stream with a red slash.</p>
-  <div id="teamControls" class="team-controls"></div>
-</section>
+  <label>Break Title</label>
+  <input id="titleInput" value="SMJ NFL BREAK"/>
+
+  <label>Status</label>
+  <input id="statusInput" value="LIVE"/>
+
+  <label>Ticker</label>
+  <input id="tickerInput" value="Welcome to SMJ Sports Cards & Collectibles!"/>
+
+  <button onclick="saveOverlay()">Save Overlay</button>
+</div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script src="js/firebase.js"></script>
-<script src="js/teams.js"></script>
 <script src="js/control.js"></script>
 </body>
 </html>
