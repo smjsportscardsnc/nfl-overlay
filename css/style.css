@@ -1,136 +1,22 @@
-
-html,body{
-margin:0;
-width:100%;
-height:100%;
-overflow:hidden;
-background:transparent;
-font-family:Arial,sans-serif;
-}
-.overlay-frame{
-position:relative;
-width:1920px;
-height:1080px;
-}
-.scoreboard-panel{
-position:absolute;
-top:20px;
-left:50%;
-transform:translateX(-50%);
-width:900px;
-height:360px;
-overflow:hidden;
-border-radius:28px;
-background:linear-gradient(135deg,rgba(10,18,40,.92),rgba(18,28,58,.82));
-border:2px solid rgba(255,255,255,.15);
-box-shadow:0 0 40px rgba(0,140,255,.35);
-backdrop-filter:blur(10px);
-z-index:2;
-}
-.animated-bg{
-position:absolute;
-inset:0;
-background:radial-gradient(circle at 50% 0%, rgba(0,170,255,.18), transparent 50%);
-animation:pulse 6s infinite linear;
-}
-.light-sweep{
-position:absolute;
-top:-30%;
-left:-20%;
-width:40%;
-height:180%;
-background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);
-transform:rotate(20deg);
-animation:sweep 7s infinite linear;
-}
-.top-bar{
-position:relative;
-z-index:2;
-padding:18px;
-display:flex;
-align-items:center;
-}
-.brand-lockup{
-display:flex;
-gap:14px;
-align-items:center;
-}
-.smj-badge{
-width:58px;
-height:58px;
-border-radius:50%;
-background:linear-gradient(135deg,#008cff,#00d4ff);
-display:flex;
-align-items:center;
-justify-content:center;
-font-weight:900;
-font-size:20px;
-color:white;
-box-shadow:0 0 22px rgba(0,170,255,.7);
-}
-.break-title{
-font-size:28px;
-font-weight:900;
-color:white;
-}
-.break-subtitle{
-font-size:13px;
-letter-spacing:.18em;
-text-transform:uppercase;
-color:#8dd8ff;
-}
-.teams-stage{
-position:relative;
-padding:0 16px 16px;
-z-index:2;
-}
-.teams-grid{
-display:grid;
-grid-template-columns:repeat(8,1fr);
-gap:10px;
-}
-.team-box{
-height:58px;
-border-radius:16px;
-background:rgba(255,255,255,.06);
-border:1px solid rgba(255,255,255,.12);
-display:flex;
-align-items:center;
-justify-content:center;
-position:relative;
-overflow:hidden;
-}
-.team-box::before{
-content:"";
-position:absolute;
-inset:0;
-background:linear-gradient(135deg,var(--teamColor),transparent 60%);
-opacity:.24;
-}
-.team-box img{
-position:relative;
-width:42px;
-height:42px;
-object-fit:contain;
-filter:drop-shadow(0 0 12px var(--teamColor));
-}
-.video-layer{
-position:absolute;
-inset:0;
-z-index:10;
-}
-.video-layer video{
-width:100%;
-height:100%;
-object-fit:cover;
-}
-.hidden{display:none;}
-@keyframes pulse{
-0%{transform:scale(1)}
-50%{transform:scale(1.04)}
-100%{transform:scale(1)}
-}
-@keyframes sweep{
-0%{transform:translateX(-120%) rotate(20deg)}
-100%{transform:translateX(600%) rotate(20deg)}
-}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent;font-family:Arial,Helvetica,sans-serif}
+.overlay-frame{position:relative;width:1920px;height:1080px;background:transparent;overflow:hidden}
+.scoreboard-panel{position:absolute;top:20px;left:50%;transform:translateX(-50%);width:900px;height:360px;overflow:hidden;border-radius:28px;background:linear-gradient(135deg,rgba(10,18,40,.92),rgba(18,28,58,.82));border:2px solid rgba(255,255,255,.15);box-shadow:0 0 40px rgba(0,140,255,.35),inset 0 0 24px rgba(255,255,255,.06);backdrop-filter:blur(10px);z-index:2}
+.animated-bg{position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,rgba(0,170,255,.18),transparent 50%);animation:pulse 6s infinite linear}
+.light-sweep{position:absolute;top:-30%;left:-20%;width:40%;height:180%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);transform:rotate(20deg);animation:sweep 7s infinite linear}
+.top-bar{position:relative;z-index:2;padding:14px 16px 10px;display:flex;align-items:center;justify-content:space-between}
+.brand-lockup{display:flex;gap:14px;align-items:center}.smj-badge{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#008cff,#00d4ff);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:20px;color:white;box-shadow:0 0 22px rgba(0,170,255,.7)}
+.break-title{font-size:27px;font-weight:900;color:white;line-height:1;text-transform:uppercase;text-shadow:0 0 14px rgba(0,157,255,.65);max-width:520px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.break-subtitle{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#8dd8ff;margin-top:5px}
+.stats-strip{display:flex;gap:8px}.stat-card{min-width:72px;border-radius:14px;padding:8px 10px;text-align:center;background:rgba(0,0,0,.38);border:1px solid rgba(255,255,255,.13)}
+.stat-card span{display:block;font-size:10px;text-transform:uppercase;color:#8dd8ff;letter-spacing:.12em}.stat-card strong{display:block;font-size:16px;color:white;margin-top:2px}
+.teams-stage{position:relative;padding:0 16px 16px;z-index:2}.teams-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:8px}
+.team-box{height:54px;border-radius:15px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;box-shadow:0 0 12px var(--teamGlow)}
+.team-box::before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,var(--teamColor),transparent 60%);opacity:.24}
+.team-box img{position:relative;width:40px;height:40px;object-fit:contain;filter:drop-shadow(0 0 12px var(--teamColor))}
+.team-box.sold{opacity:.43;filter:grayscale(.3)}.team-box.sold::after{content:"";position:absolute;width:125%;height:7px;background:#ff0033;transform:rotate(43deg);box-shadow:0 0 14px #ff0033}
+.ticker-wrap{position:absolute;left:16px;right:16px;bottom:10px;height:28px;display:flex;z-index:3;border-radius:999px;overflow:hidden;border:1px solid rgba(255,255,255,.13);background:rgba(0,0,0,.45)}
+.ticker-label{width:92px;background:linear-gradient(135deg,#008cff,#00d4ff);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;letter-spacing:.08em;color:white}
+.ticker-window{position:relative;flex:1;overflow:hidden}.ticker-text{position:absolute;white-space:nowrap;line-height:28px;font-size:14px;font-weight:800;color:#e8f7ff;animation:tickerMove 18s linear infinite}
+.video-layer{position:absolute;inset:0;z-index:10;background:transparent}.video-layer video{width:100%;height:100%;object-fit:cover}.hidden{display:none}
+@keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.04)}100%{transform:scale(1)}}@keyframes sweep{0%{transform:translateX(-120%) rotate(20deg)}100%{transform:translateX(600%) rotate(20deg)}}@keyframes tickerMove{from{transform:translateX(820px)}to{transform:translateX(-100%)}}

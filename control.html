@@ -3,54 +3,43 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>SMJ Control</title>
-<style>
-body{
-background:#08111f;
-color:white;
-font-family:Arial,sans-serif;
-padding:30px;
-}
-h1{margin-top:0}
-.panel{
-background:rgba(255,255,255,.06);
-padding:20px;
-border-radius:20px;
-margin-bottom:20px;
-border:1px solid rgba(255,255,255,.1);
-}
-button{
-padding:16px 22px;
-font-size:18px;
-font-weight:700;
-border:none;
-border-radius:14px;
-background:#0a84ff;
-color:white;
-cursor:pointer;
-margin:8px;
-}
-.note{
-color:#8fd8ff;
-line-height:1.6;
-}
-</style>
+<title>SMJ Firebase Control</title>
+<link rel="stylesheet" href="css/control.css"/>
 </head>
 <body>
-<h1>SMJ Overlay Control Panel</h1>
+<header>
+  <div><h1>SMJ Overlay Control</h1><p>Firebase live control for OBS overlay.</p></div>
+  <button class="danger" id="resetAllBtn">Reset Sold Teams</button>
+</header>
 
-<div class="panel">
-<h2>Animation Triggers</h2>
-<button onclick="alert(`Trigger in overlay browser source console:\nSMJOverlay.playVideo('stash')`)">Stash or Pass</button>
-<button onclick="alert(`Trigger in overlay browser source console:\nSMJOverlay.playVideo('spin')`)">Spin 2 Choose 1</button>
-<button onclick="alert(`Trigger in overlay browser source console:\nSMJOverlay.playVideo('full')`)">Break Full</button>
-<button onclick="alert(`Trigger in overlay browser source console:\nSMJOverlay.playVideo('hit')`)">Big Hit</button>
-<p class="note">
-OBS Browser Source: 1920x1080<br>
-Scoreboard remains 900x360.<br>
-Fullscreen videos overlay entire stream.
-</p>
-</div>
+<section class="panel">
+  <h2>Fullscreen Video Triggers</h2>
+  <div class="buttons">
+    <button data-video="stash">Stash or Pass</button>
+    <button data-video="spin">Spin 2 Choose 1</button>
+    <button data-video="full">Break Full</button>
+    <button data-video="hit">Monster Hit</button>
+  </div>
+</section>
 
+<section class="panel">
+  <h2>Overlay Text Controls</h2>
+  <label>Break Title<input id="titleInput" type="text"/></label>
+  <label>Status<input id="statusInput" type="text"/></label>
+  <label>Ticker Text<input id="tickerInput" type="text"/></label>
+  <button id="saveTextBtn">Update Overlay Text</button>
+</section>
+
+<section class="panel">
+  <h2>Team Sold Controls</h2>
+  <p class="hint">Tap a team to toggle sold/available. Overlay team boxes remain logo-only.</p>
+  <div id="teamControls" class="team-controls"></div>
+</section>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="js/firebase.js"></script>
+<script src="js/teams.js"></script>
+<script src="js/control.js"></script>
 </body>
 </html>
