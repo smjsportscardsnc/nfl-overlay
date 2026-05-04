@@ -1,44 +1,34 @@
-# SMJ Full Screen Animated Break Overlay
+# SMJ Compact Scoreboard + Full-Screen Animated Break Overlay
 
-This package is a full-screen OBS browser-source overlay for SMJ Sports Cards & Collectibles Whatnot breaks.
+This version separates the layout into two layers:
 
-## Files
-
-- `index.html` — live overlay for OBS/browser source
-- `control.html` — control panel for a tablet, laptop, or second browser window
-- `style.css` — full-screen layout and animation styling
-- `app.js` — team state, logo mapping, sold status, ticker, and animation triggers
-- `firebase.js` — placeholder file for future Firebase sync
+1. **Compact scoreboard** — fixed at 900px wide by 360px tall, matching the older Whatnot-safe design size.
+2. **Full-screen animations** — Stash or Pass, Spin 2 Choose 1, Break Full, Giveaway Winner, and Big Hit fill the entire OBS browser-source canvas.
 
 ## OBS Setup
 
-1. Add a Browser Source in OBS.
-2. Choose `index.html` as a local file.
-3. Set width to `1920` and height to `1080` for full-screen use.
-4. If you are streaming vertical Whatnot video, crop or transform the browser source in OBS to fit your canvas.
+Use `index.html` as a Browser Source. Recommended OBS browser-source size:
+
+- Width: `1920`
+- Height: `1080`
+
+The scoreboard is intentionally only 900x360 and is centered at the top. The animated graphics use the full 1920x1080 browser source.
 
 ## Control Page
 
-Open `control.html` in Chrome. It controls the live overlay using local browser storage and BroadcastChannel.
+Open `control.html` in a second browser window or on a tablet. You can:
 
-Controls include:
-
-- Break title
-- Ticker text
-- Sold team status
-- Buyer usernames
-- Full-screen Stash or Pass animation
-- Full-screen Spin 2 Choose 1 animation
-- Break Full animation
-- Giveaway Winner animation
-- Big Hit animation
+- Update break title and ticker
+- Assign buyer usernames to NFL teams
+- Mark teams sold
+- Trigger full-screen Stash or Pass
+- Trigger full-screen Spin 2 Choose 1
+- Trigger Break Full, Giveaway Winner, and Big Hit animations
 
 ## Team Logos
 
-The overlay uses ESPN-hosted NFL team logo URLs. An internet connection is required for logos to load. If you want this to be fully offline, place logo PNGs in `assets/logos/` and update the `logoUrl()` function in `app.js`.
+This package uses ESPN-hosted NFL logo URLs so the ZIP stays small. Internet access is required for logos to load. If you want fully offline logos, place PNGs in `assets/logos/` and update the `logoUrl()` function in `app.js`.
 
-## Notes
+## Hosting
 
-- All references to chasers have been removed.
-- Animations are CSS/HTML-based placeholders designed to behave like full-screen broadcast graphics.
-- True transparent `.webm` animated videos can be added later by placing them in `assets/` and triggering them from the control page.
+This can run locally, on GitHub Pages, or any static host. Firebase is stubbed in `firebase.js` for future cloud syncing, but local browser storage and BroadcastChannel are already wired in.

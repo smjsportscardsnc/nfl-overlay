@@ -3,39 +3,42 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>SMJ Full Screen Break Overlay</title>
+  <title>SMJ Compact Scoreboard + Full Screen Animations</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body class="overlay-body">
   <main id="overlay" class="overlay-frame">
-    <div class="animated-bg"></div>
-    <div class="light-sweep"></div>
-    <div class="stadium-lines"></div>
+    <section class="scoreboard-panel">
+      <div class="scoreboard-bg"></div>
+      <div class="animated-bg"></div>
+      <div class="light-sweep"></div>
+      <div class="stadium-lines"></div>
 
-    <section class="top-bar">
-      <div class="brand-lockup">
-        <div class="smj-badge">SMJ</div>
-        <div class="title-stack">
-          <div id="breakTitle" class="break-title">SMJ NFL Mixer Break</div>
-          <div class="break-subtitle">singles • rips • breaks</div>
+      <section class="top-bar">
+        <div class="brand-lockup">
+          <div class="smj-badge">SMJ</div>
+          <div class="title-stack">
+            <div id="breakTitle" class="break-title">SMJ NFL Mixer Break</div>
+            <div class="break-subtitle">singles • rips • breaks</div>
+          </div>
         </div>
-      </div>
-      <div class="stats-strip">
-        <div class="stat-card"><span>Sold</span><strong id="soldCount">0/32</strong></div>
-        <div class="stat-card"><span>Status</span><strong id="statusText">Live</strong></div>
-      </div>
-    </section>
+        <div class="stats-strip">
+          <div class="stat-card"><span>Sold</span><strong id="soldCount">0/32</strong></div>
+          <div class="stat-card"><span>Status</span><strong id="statusText">Live</strong></div>
+        </div>
+      </section>
 
-    <section class="teams-stage">
-      <div id="teamsGrid" class="teams-grid"></div>
-    </section>
+      <section class="teams-stage">
+        <div id="teamsGrid" class="teams-grid"></div>
+      </section>
 
-    <footer class="ticker-wrap">
-      <div class="ticker-label">SMJ LIVE</div>
-      <div class="ticker-window">
-        <div id="tickerText" class="ticker-text">Welcome to SMJ Sports Cards & Collectibles!</div>
-      </div>
-    </footer>
+      <footer class="ticker-wrap">
+        <div class="ticker-label">SMJ LIVE</div>
+        <div class="ticker-window">
+          <div id="tickerText" class="ticker-text">Welcome to SMJ Sports Cards & Collectibles!</div>
+        </div>
+      </footer>
+    </section>
 
     <div id="eventLayer" class="event-layer hidden">
       <div class="event-shockwave"></div>
