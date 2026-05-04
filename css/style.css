@@ -1,204 +1,136 @@
-* { box-sizing: border-box; }
 
-html, body {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  background: transparent;
-  overflow: hidden;
-  font-family: Arial, Helvetica, sans-serif;
+html,body{
+margin:0;
+width:100%;
+height:100%;
+overflow:hidden;
+background:transparent;
+font-family:Arial,sans-serif;
 }
-
-#stage {
-  position: relative;
-  width: 1920px;
-  height: 1080px;
-  overflow: hidden;
-  background: transparent;
+.overlay-frame{
+position:relative;
+width:1920px;
+height:1080px;
 }
-
-#scoreboard {
-  position: absolute;
-  top: 22px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 900px;
-  height: 360px;
-  padding: 14px 16px 12px;
-  color: #fff;
-  border-radius: 24px;
-  background:
-    radial-gradient(circle at 50% 0%, rgba(0, 140, 255, .24), transparent 45%),
-    linear-gradient(135deg, rgba(8, 14, 30, .90), rgba(18, 27, 52, .78));
-  border: 2px solid rgba(255, 255, 255, .18);
-  box-shadow:
-    0 0 32px rgba(0, 135, 255, .35),
-    inset 0 0 22px rgba(255, 255, 255, .07);
-  backdrop-filter: blur(10px);
-  z-index: 2;
+.scoreboard-panel{
+position:absolute;
+top:20px;
+left:50%;
+transform:translateX(-50%);
+width:900px;
+height:360px;
+overflow:hidden;
+border-radius:28px;
+background:linear-gradient(135deg,rgba(10,18,40,.92),rgba(18,28,58,.82));
+border:2px solid rgba(255,255,255,.15);
+box-shadow:0 0 40px rgba(0,140,255,.35);
+backdrop-filter:blur(10px);
+z-index:2;
 }
-
-.scoreboard-header {
-  height: 54px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 4px 8px;
+.animated-bg{
+position:absolute;
+inset:0;
+background:radial-gradient(circle at 50% 0%, rgba(0,170,255,.18), transparent 50%);
+animation:pulse 6s infinite linear;
 }
-
-.eyebrow {
-  font-size: 12px;
-  letter-spacing: .18em;
-  text-transform: uppercase;
-  color: #8ccfff;
+.light-sweep{
+position:absolute;
+top:-30%;
+left:-20%;
+width:40%;
+height:180%;
+background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);
+transform:rotate(20deg);
+animation:sweep 7s infinite linear;
 }
-
-.title {
-  font-size: 28px;
-  font-weight: 900;
-  line-height: 1;
-  text-transform: uppercase;
-  text-shadow: 0 0 12px rgba(0, 157, 255, .6);
+.top-bar{
+position:relative;
+z-index:2;
+padding:18px;
+display:flex;
+align-items:center;
 }
-
-.badge {
-  padding: 8px 14px;
-  border-radius: 999px;
-  font-size: 14px;
-  font-weight: 900;
-  background: linear-gradient(135deg, #f7062a, #ff7d00);
-  box-shadow: 0 0 18px rgba(255, 60, 40, .65);
+.brand-lockup{
+display:flex;
+gap:14px;
+align-items:center;
 }
-
-.teams-grid {
-  display: grid;
-  grid-template-columns: repeat(8, 1fr);
-  grid-auto-rows: 56px;
-  gap: 7px;
+.smj-badge{
+width:58px;
+height:58px;
+border-radius:50%;
+background:linear-gradient(135deg,#008cff,#00d4ff);
+display:flex;
+align-items:center;
+justify-content:center;
+font-weight:900;
+font-size:20px;
+color:white;
+box-shadow:0 0 22px rgba(0,170,255,.7);
 }
-
-.team {
-  position: relative;
-  overflow: hidden;
-  border-radius: 14px;
-  background: rgba(255,255,255,.065);
-  border: 1px solid rgba(255,255,255,.14);
-  display: grid;
-  grid-template-columns: 38px 1fr;
-  gap: 6px;
-  align-items: center;
-  padding: 6px 7px;
-  box-shadow: 0 0 12px var(--teamGlow, rgba(0, 140, 255, .25));
+.break-title{
+font-size:28px;
+font-weight:900;
+color:white;
 }
-
-.team::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, var(--teamColor), transparent 55%);
-  opacity: .22;
-  pointer-events: none;
+.break-subtitle{
+font-size:13px;
+letter-spacing:.18em;
+text-transform:uppercase;
+color:#8dd8ff;
 }
-
-.team img {
-  position: relative;
-  width: 34px;
-  height: 34px;
-  object-fit: contain;
-  filter: drop-shadow(0 0 6px var(--teamColor));
+.teams-stage{
+position:relative;
+padding:0 16px 16px;
+z-index:2;
 }
-
-.team-info {
-  position: relative;
-  min-width: 0;
+.teams-grid{
+display:grid;
+grid-template-columns:repeat(8,1fr);
+gap:10px;
 }
-
-.team-city {
-  font-size: 9px;
-  color: rgba(255,255,255,.72);
-  line-height: 1.05;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.team-box{
+height:58px;
+border-radius:16px;
+background:rgba(255,255,255,.06);
+border:1px solid rgba(255,255,255,.12);
+display:flex;
+align-items:center;
+justify-content:center;
+position:relative;
+overflow:hidden;
 }
-
-.team-name {
-  font-size: 12px;
-  font-weight: 900;
-  line-height: 1.05;
-  text-transform: uppercase;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.team-box::before{
+content:"";
+position:absolute;
+inset:0;
+background:linear-gradient(135deg,var(--teamColor),transparent 60%);
+opacity:.24;
 }
-
-.buyer {
-  font-size: 9px;
-  color: #8de1ff;
-  line-height: 1.05;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.team-box img{
+position:relative;
+width:42px;
+height:42px;
+object-fit:contain;
+filter:drop-shadow(0 0 12px var(--teamColor));
 }
-
-.team.sold {
-  opacity: .55;
-  filter: grayscale(.35);
+.video-layer{
+position:absolute;
+inset:0;
+z-index:10;
 }
-
-.team.sold::after {
-  content: "SOLD";
-  position: absolute;
-  right: -18px;
-  top: 8px;
-  transform: rotate(28deg);
-  font-size: 12px;
-  font-weight: 900;
-  letter-spacing: .12em;
-  color: rgba(255, 255, 255, .9);
-  background: rgba(255,0,35,.85);
-  padding: 3px 24px;
-  box-shadow: 0 0 14px rgba(255,0,35,.65);
+.video-layer video{
+width:100%;
+height:100%;
+object-fit:cover;
 }
-
-.ticker {
-  position: absolute;
-  left: 16px;
-  right: 16px;
-  bottom: 10px;
-  height: 26px;
-  border-radius: 999px;
-  overflow: hidden;
-  background: rgba(0,0,0,.42);
-  border: 1px solid rgba(255,255,255,.11);
+.hidden{display:none;}
+@keyframes pulse{
+0%{transform:scale(1)}
+50%{transform:scale(1.04)}
+100%{transform:scale(1)}
 }
-
-#tickerText {
-  position: absolute;
-  white-space: nowrap;
-  font-size: 14px;
-  font-weight: 800;
-  color: #e8f7ff;
-  line-height: 26px;
-  animation: tickerMove 18s linear infinite;
+@keyframes sweep{
+0%{transform:translateX(-120%) rotate(20deg)}
+100%{transform:translateX(600%) rotate(20deg)}
 }
-
-@keyframes tickerMove {
-  from { transform: translateX(900px); }
-  to { transform: translateX(-100%); }
-}
-
-.video-layer {
-  position: absolute;
-  inset: 0;
-  z-index: 10;
-  background: transparent;
-}
-
-.video-layer video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.hidden { display: none; }

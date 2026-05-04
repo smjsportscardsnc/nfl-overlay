@@ -1,85 +1,56 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>SMJ Overlay Control</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>SMJ Control</title>
 <style>
-body {
-  margin: 0;
-  background: #0b1020;
-  color: white;
-  font-family: Arial, Helvetica, sans-serif;
-  padding: 22px;
+body{
+background:#08111f;
+color:white;
+font-family:Arial,sans-serif;
+padding:30px;
 }
-h1 { margin-top: 0; }
-.panel {
-  background: rgba(255,255,255,.07);
-  border: 1px solid rgba(255,255,255,.12);
-  border-radius: 18px;
-  padding: 18px;
-  margin-bottom: 18px;
+h1{margin-top:0}
+.panel{
+background:rgba(255,255,255,.06);
+padding:20px;
+border-radius:20px;
+margin-bottom:20px;
+border:1px solid rgba(255,255,255,.1);
 }
-button {
-  font-size: 18px;
-  border-radius: 12px;
-  border: 0;
-  padding: 14px 18px;
-  margin: 6px;
-  background: #087bff;
-  color: white;
-  font-weight: 800;
-  cursor: pointer;
+button{
+padding:16px 22px;
+font-size:18px;
+font-weight:700;
+border:none;
+border-radius:14px;
+background:#0a84ff;
+color:white;
+cursor:pointer;
+margin:8px;
 }
-.grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(180px,1fr));
-  gap: 8px;
-}
-.teambox {
-  background: rgba(255,255,255,.08);
-  border-radius: 12px;
-  padding: 12px;
-}
-.note {
-  color: #9ed8ff;
-  line-height: 1.5;
+.note{
+color:#8fd8ff;
+line-height:1.6;
 }
 </style>
 </head>
 <body>
-<h1>SMJ Overlay Control</h1>
+<h1>SMJ Overlay Control Panel</h1>
 
 <div class="panel">
-  <h2>Fullscreen Video Animations Included</h2>
-  <p class="note">
-    These buttons are reference buttons. To trigger inside OBS browser source, use the browser console,
-    Streamer.bot, Advanced Scene Switcher, or your later Firebase control page to call:
-    <strong>SMJOverlay.playVideo("stash")</strong>,
-    <strong>SMJOverlay.playVideo("spin")</strong>,
-    <strong>SMJOverlay.playVideo("full")</strong>,
-    or <strong>SMJOverlay.playVideo("hit")</strong>.
-  </p>
-  <button>Stash or Pass</button>
-  <button>Spin 2 Choose 1</button>
-  <button>Break Full</button>
-  <button>Big Hit</button>
+<h2>Animation Triggers</h2>
+<button onclick="alert(`Trigger in overlay browser source console:\nSMJOverlay.playVideo('stash')`)">Stash or Pass</button>
+<button onclick="alert(`Trigger in overlay browser source console:\nSMJOverlay.playVideo('spin')`)">Spin 2 Choose 1</button>
+<button onclick="alert(`Trigger in overlay browser source console:\nSMJOverlay.playVideo('full')`)">Break Full</button>
+<button onclick="alert(`Trigger in overlay browser source console:\nSMJOverlay.playVideo('hit')`)">Big Hit</button>
+<p class="note">
+OBS Browser Source: 1920x1080<br>
+Scoreboard remains 900x360.<br>
+Fullscreen videos overlay entire stream.
+</p>
 </div>
 
-<div class="panel">
-  <h2>Teams Included</h2>
-  <div id="teamList" class="grid"></div>
-</div>
-
-<script src="js/teams.js"></script>
-<script>
-const list = document.getElementById("teamList");
-window.SMJ_TEAMS.forEach(t => {
-  const div = document.createElement("div");
-  div.className = "teambox";
-  div.textContent = `${t.city} ${t.name}`;
-  div.style.borderLeft = `8px solid ${t.color}`;
-  list.appendChild(div);
-});
-</script>
 </body>
 </html>
