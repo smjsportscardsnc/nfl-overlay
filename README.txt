@@ -18,3 +18,8 @@ Included:
 - title/status controls
 
 Your Firebase config is already included.
+
+
+Custom Stash Or Pass video:
+- assets/videos/stash-or-pass.mp4
+- Triggered automatically from the control panel.

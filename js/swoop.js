@@ -6,6 +6,8 @@ class SMJSwoop {
     this.subtitle = document.getElementById("swoopSubtitle");
     this.kicker = document.getElementById("swoopKicker");
     this.audio = document.getElementById("swoopAudio");
+    this.videoLayer = document.getElementById("videoLayer");
+    this.video = document.getElementById("overlayVideo");
 
     this.configs = {
       hit: {
@@ -26,7 +28,8 @@ class SMJSwoop {
         kicker: "SMJ MINI GAME",
         title: "STASH OR PASS",
         subtitle: "KEEP IT OR MOVE IT",
-        sound: "assets/sounds/swoosh.wav"
+        sound: "assets/sounds/swoosh.wav",
+        video: "assets/videos/stash-or-pass.mp4"
       },
 
       winner: {
@@ -51,6 +54,19 @@ class SMJSwoop {
 
     this.layer.classList.add("active");
 
+    if(cfg.video){
+      this.videoLayer.classList.remove("hidden");
+      this.video.pause();
+      this.video.currentTime = 0;
+      this.video.src = cfg.video + "?v=" + Date.now();
+      this.video.play().catch(()=>{});
+      this.video.onended = () => {
+        this.videoLayer.classList.add("hidden");
+      };
+    } else {
+      this.videoLayer.classList.add("hidden");
+    }
+
     this.audio.pause();
     this.audio.currentTime = 0;
     this.audio.src = cfg.sound;
@@ -60,6 +76,10 @@ class SMJSwoop {
     setTimeout(() => {
       this.layer.classList.remove("active");
       this.layer.classList.add("hidden");
+
+      if(!cfg.video){
+        this.videoLayer.classList.add("hidden");
+      }
     }, 3200);
   }
 }
