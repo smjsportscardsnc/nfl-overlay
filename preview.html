@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>SMJ Graphic Swoosh Preview</title>
+<link rel="stylesheet" href="css/style.css"/>
+<style>
+body{background:#06101f}
+.preview-controls{position:fixed;left:24px;bottom:24px;z-index:999;background:rgba(0,0,0,.72);padding:16px;border-radius:18px;border:1px solid rgba(255,255,255,.2)}
+.preview-controls button{font:900 16px Arial;border:0;border-radius:12px;padding:12px 14px;margin:5px;background:#078cff;color:white;cursor:pointer}
+</style>
+</head>
+<body>
+<main class="overlay-frame">
+<section id="graphicLayer" class="graphic-layer hidden">
+  <div class="graphic-flash"></div>
+  <div class="graphic-streak graphic-streak-a"></div>
+  <div class="graphic-streak graphic-streak-b"></div>
+  <img id="graphicImage" class="graphic-image" src="" alt="" />
+  <audio id="graphicAudio" preload="auto" src="assets/sounds/swoosh.wav"></audio>
+</section>
+<div class="preview-controls">
+<button onclick="SMJGraphicSwoosh.trigger('stash')">Stash/Pass</button>
+<button onclick="SMJGraphicSwoosh.trigger('choose')">Spin 2 Choose 1</button>
+</div>
+</main>
+<script src="js/graphic-swoosh.js"></script>
+</body>
+</html>
