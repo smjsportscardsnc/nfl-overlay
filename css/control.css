@@ -2,10 +2,10 @@
 body{margin:0;background:#07101f;color:white;font-family:Arial,Helvetica,sans-serif;padding:22px}
 header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}
 h1{margin:0;font-size:34px}p{margin:6px 0 0;color:#9fdcff}
-.connection{display:inline-block;padding:8px 12px;border-radius:999px;font-weight:800}
-.connection.ok{background:rgba(0,220,120,.14);color:#7dffbd;border:1px solid rgba(0,220,120,.35)}
-.connection.warning{background:rgba(255,185,0,.14);color:#ffd36b;border:1px solid rgba(255,185,0,.35)}
-.connection.bad{background:rgba(255,40,70,.14);color:#ff7f91;border:1px solid rgba(255,40,70,.35)}
+.connection,.command-status{display:inline-block;padding:8px 12px;border-radius:999px;font-weight:800;margin-top:8px}
+.connection.ok,.command-status.ok{background:rgba(0,220,120,.14);color:#7dffbd;border:1px solid rgba(0,220,120,.35)}
+.connection.warning,.command-status{background:rgba(255,185,0,.14);color:#ffd36b;border:1px solid rgba(255,185,0,.35)}
+.connection.bad,.command-status.bad{background:rgba(255,40,70,.14);color:#ff7f91;border:1px solid rgba(255,40,70,.35)}
 .panel{background:rgba(255,255,255,.065);border:1px solid rgba(255,255,255,.12);border-radius:22px;padding:18px;margin-bottom:18px;box-shadow:0 0 22px rgba(0,0,0,.25)}
 h2{margin:0 0 14px}.buttons{display:flex;flex-wrap:wrap;gap:10px}
 button{border:0;border-radius:14px;padding:14px 18px;font-size:16px;font-weight:900;cursor:pointer;background:linear-gradient(135deg,#087bff,#00c9ff);color:white;box-shadow:0 0 16px rgba(0,140,255,.25)}
@@ -17,13 +17,3 @@ input{display:block;width:100%;margin-top:6px;border:1px solid rgba(255,255,255,
 .team-btn img{width:36px;height:36px;object-fit:contain;background:rgba(255,255,255,.92);border-radius:50%;padding:3px}.team-btn.sold{background:linear-gradient(135deg,rgba(215,25,48,.78),rgba(255,125,0,.36));outline:2px solid rgba(255,70,70,.75)}
 .team-name{display:flex;flex-direction:column;text-align:left;line-height:1.05}.team-name strong{font-size:15px}.team-name span{font-size:11px;color:#b8def5;margin-top:2px}
 @media(max-width:900px){.team-controls{grid-template-columns:repeat(2,minmax(0,1fr))}header{align-items:flex-start;flex-direction:column}}
-.command-status{
-display:inline-block;
-margin-top:8px;
-padding:8px 12px;
-border-radius:999px;
-background:rgba(0,170,255,.12);
-border:1px solid rgba(0,170,255,.28);
-color:#9fdcff;
-font-weight:800;
-}

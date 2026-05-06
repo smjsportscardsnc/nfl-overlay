@@ -1,25 +1,10 @@
 <!doctype html>
-<html>
-<head>
-<meta charset="utf-8"/>
-<title>SMJ Video Preview</title>
-<style>
-body{background:#06101f;color:white;font-family:Arial;margin:0;padding:24px}
-button{border:0;border-radius:14px;padding:14px 18px;font-size:18px;font-weight:900;background:#078cff;color:white;margin:6px;cursor:pointer}
-video{display:block;width:960px;max-width:100%;margin-top:20px;border-radius:20px;box-shadow:0 0 30px rgba(0,170,255,.35)}
-</style>
-</head>
-<body>
-<h1>SMJ Uploaded Video Preview</h1>
+<html><head><meta charset="utf-8"/><title>Video Preview</title>
+<style>body{background:#06101f;color:white;font-family:Arial;padding:24px}button{padding:14px 18px;border:0;border-radius:14px;background:#078cff;color:white;font-weight:900;margin:6px}video{display:block;width:960px;max-width:100%;margin-top:20px}</style>
+</head><body>
+<h1>Uploaded Video Preview</h1>
 <button onclick="play('assets/videos/stash-or-pass.mp4')">Stash or Pass</button>
 <button onclick="play('assets/videos/spin-2-choose-1.mp4')">Spin 2 Choose 1</button>
-<video id="v" controls></video>
-<script>
-function play(src){
-  const v = document.getElementById('v');
-  v.src = src + '?v=' + Date.now();
-  v.play();
-}
-</script>
-</body>
-</html>
+<video id="v" controls muted></video>
+<script>function play(src){const v=document.getElementById('v');v.src=src+'?v='+Date.now();v.play();}</script>
+</body></html>

@@ -21,21 +21,10 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent
 .ticker-wrap{position:absolute;left:16px;right:16px;bottom:10px;height:28px;display:flex;z-index:3;border-radius:999px;overflow:hidden;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.48)}
 .ticker-label{width:92px;background:linear-gradient(135deg,#008cff,#00d4ff);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;letter-spacing:.08em;color:white}
 .ticker-window{position:relative;flex:1;overflow:hidden}.ticker-text{position:absolute;white-space:nowrap;line-height:28px;font-size:14px;font-weight:800;color:#e8f7ff;animation:tickerMove 18s linear infinite}
-.video-layer{position:absolute;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:transparent;pointer-events:none}
+.video-layer{position:absolute;inset:0;z-index:50;background:transparent;pointer-events:none}
 .video-layer.hidden{display:none}
-#overlayVideo{width:100%;height:100%;object-fit:cover}
-@keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.04)}100%{transform:scale(1)}}@keyframes sweep{0%{transform:translateX(-120%) rotate(20deg)}100%{transform:translateX(600%) rotate(20deg)}}@keyframes tickerMove{from{transform:translateX(820px)}to{transform:translateX(-100%)}}
-.debug-badge{
-position:absolute;
-left:24px;
-top:24px;
-z-index:999;
-padding:10px 14px;
-border-radius:999px;
-background:rgba(0,0,0,.78);
-color:#9ff;
-font:900 16px Arial;
-border:1px solid rgba(0,200,255,.45);
-box-shadow:0 0 18px rgba(0,200,255,.25);
-}
+.trigger-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;background:black}
+.trigger-video.active{display:block}
+.debug-badge{position:absolute;left:24px;top:24px;z-index:999;padding:10px 14px;border-radius:999px;background:rgba(0,0,0,.78);color:#9ff;font:900 16px Arial;border:1px solid rgba(0,200,255,.45);box-shadow:0 0 18px rgba(0,200,255,.25)}
 .debug-badge.hidden{display:none}
+@keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.04)}100%{transform:scale(1)}}@keyframes sweep{0%{transform:translateX(-120%) rotate(20deg)}100%{transform:translateX(600%) rotate(20deg)}}@keyframes tickerMove{from{transform:translateX(820px)}to{transform:translateX(-100%)}}

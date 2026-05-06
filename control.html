@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>SMJ Overlay Control</title>
+<title>SMJ Control</title>
 <link rel="stylesheet" href="css/control.css"/>
 </head>
 <body>
@@ -11,7 +11,7 @@
   <div>
     <h1>SMJ Overlay Control</h1>
     <p id="connectionStatus" class="connection warning">Loading Firebase…</p>
-    <p id="commandStatus" class="command-status">No video command sent yet.</p>
+    <p id="commandStatus" class="command-status">Ready.</p>
   </div>
   <button class="danger" id="resetAllBtn" type="button">Reset Sold Teams</button>
 </header>
@@ -19,10 +19,10 @@
 <section class="panel">
   <h2>Video Triggers</h2>
   <div class="buttons">
-    <button type="button" id="stashBtn" data-video="stash">Stash or Pass</button>
-    <button type="button" id="chooseBtn" data-video="choose">Spin 2 Choose 1</button>
+    <button type="button" id="stashBtn">Stash or Pass</button>
+    <button type="button" id="chooseBtn">Spin 2 Choose 1</button>
   </div>
-  <p class="hint">Only these two uploaded videos are wired to trigger.</p>
+  <p class="hint">These buttons send Firebase commands to the OBS overlay.</p>
 </section>
 
 <section class="panel">
@@ -35,7 +35,7 @@
 
 <section class="panel">
   <h2>Assign Teams as Sold</h2>
-  <p class="hint">Tap any team. Red/orange means sold. Normal blue means available.</p>
+  <p class="hint">Tap any team. Red/orange means sold.</p>
   <div id="teamControls" class="team-controls"></div>
 </section>
 

@@ -16,8 +16,7 @@ try {
   firebase.initializeApp(firebaseConfig);
   window.smjDB = firebase.database();
   window.SMJFIREBASE_READY = true;
-  console.log("SMJ Firebase connected");
 } catch (err) {
-  console.error("SMJ Firebase setup error:", err);
+  console.error("Firebase setup error:", err);
   window.SMJFIREBASE_ERROR = err.message || String(err);
 }

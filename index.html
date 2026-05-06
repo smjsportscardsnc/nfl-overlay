@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>SMJ Restored Team Overlay</title>
+<title>SMJ Team Overlay</title>
 <link rel="stylesheet" href="css/style.css"/>
 </head>
 <body>
@@ -40,9 +40,11 @@
     </footer>
   </section>
 
-  <div id="debugBadge" class="debug-badge hidden">Waiting</div>
+  <div id="debugBadge" class="debug-badge hidden">Ready</div>
+
   <section id="videoLayer" class="video-layer hidden">
-    <video id="overlayVideo" playsinline preload="auto"></video>
+    <video id="videoStash" class="trigger-video" src="assets/videos/stash-or-pass.mp4" playsinline muted preload="auto"></video>
+    <video id="videoChoose" class="trigger-video" src="assets/videos/spin-2-choose-1.mp4" playsinline muted preload="auto"></video>
   </section>
 </main>
 
