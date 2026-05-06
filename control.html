@@ -11,6 +11,7 @@
   <div>
     <h1>SMJ Overlay Control</h1>
     <p id="connectionStatus" class="connection warning">Loading Firebase…</p>
+    <p id="commandStatus" class="command-status">No video command sent yet.</p>
   </div>
   <button class="danger" id="resetAllBtn" type="button">Reset Sold Teams</button>
 </header>
@@ -18,8 +19,8 @@
 <section class="panel">
   <h2>Video Triggers</h2>
   <div class="buttons">
-    <button type="button" data-video="stash">Stash or Pass</button>
-    <button type="button" data-video="choose">Spin 2 Choose 1</button>
+    <button type="button" id="stashBtn" data-video="stash">Stash or Pass</button>
+    <button type="button" id="chooseBtn" data-video="choose">Spin 2 Choose 1</button>
   </div>
   <p class="hint">Only these two uploaded videos are wired to trigger.</p>
 </section>
