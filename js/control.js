@@ -1,6 +1,6 @@
 const OVERLAY_PATH = "smjOverlay/current";
 const GRAPHIC_COMMAND_PATH = "smjOverlay/graphicCommand";
-const DEFAULT_STATE = { title:"SMJ NFL MIXER BREAK", status:"Live", ticker:"Welcome to SMJ Sports Cards & Collectibles!", sold:{}, graphicCommand:null };
+const DEFAULT_STATE = { title:"SMJ NFL MIXER BREAK", status:"Live", ticker:"Welcome to SMJ Sports Cards & Collectibles!", sold:{}, graphicCommand:null, league:"nfl" };
 let state = {...DEFAULT_STATE};
 let ref = null;
 let graphicRef = null;
@@ -14,7 +14,12 @@ const commandStatus = document.getElementById("commandStatus");
 
 function setConn(text, cls){ connectionStatus.textContent = text; connectionStatus.className = `connection ${cls}`; }
 function setCmd(text, cls="ok"){ commandStatus.textContent = text; commandStatus.className = `command-status ${cls}`; }
-function logo(abbr){ return `https://a.espncdn.com/i/teamlogos/nfl/500/${abbr}.png`; }
+
+function logo(abbr){
+ const lg = window.SMJ_LEAGUES[state.league || "nfl"];
+ return lg.logos(abbr);
+}
+
 
 function hydrate(){
   titleInput.value = state.title || DEFAULT_STATE.title;
@@ -108,3 +113,15 @@ if(window.SMJFIREBASE_READY && window.smjDB){
   setConn("Firebase not connected", "bad");
   setCmd("Firebase not connected. Check js/firebase.js.", "bad");
 }
+
+
+document.querySelectorAll("[data-league]").forEach(btn=>{
+ btn.addEventListener("click", ()=>{
+   state.league = btn.dataset.league;
+   renderTeams();
+   if(ref){
+     ref.child("league").set(btn.dataset.league);
+     setCmd("League switched to " + btn.dataset.league.toUpperCase(), "ok");
+   }
+ });
+});

@@ -2,6 +2,17 @@
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent;font-family:Arial,Helvetica,sans-serif}
 .overlay-frame{position:relative;width:1920px;height:1080px;background:transparent;overflow:hidden}
 .scoreboard-panel{position:absolute;top:20px;left:50%;transform:translateX(-50%);width:900px;height:360px;overflow:hidden;border-radius:30px;background:linear-gradient(135deg,rgba(6,14,32,.92),rgba(18,29,58,.82));border:2px solid rgba(255,255,255,.18);box-shadow:0 0 42px rgba(0,140,255,.38),inset 0 0 28px rgba(255,255,255,.07);backdrop-filter:blur(12px);z-index:2}
+
+.scoreboard-panel::after{
+content:"";
+position:absolute;
+inset:0;
+background:url('../assets/background-logo.png') center center/520px no-repeat;
+opacity:.16;
+pointer-events:none;
+mix-blend-mode:screen;
+}
+
 .panel-depth{position:absolute;inset:8px;border-radius:24px;border:1px solid rgba(255,255,255,.08);box-shadow:inset 0 0 30px rgba(0,0,0,.4)}
 .animated-bg{position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,rgba(0,170,255,.22),transparent 50%),linear-gradient(120deg,transparent,rgba(255,255,255,.045),transparent);animation:pulse 6s infinite linear}
 .light-sweep{position:absolute;top:-30%;left:-20%;width:40%;height:180%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);transform:rotate(20deg);animation:sweep 5.5s infinite linear}
@@ -17,7 +28,34 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent
 .team-box::before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,var(--teamColor),transparent 60%);opacity:.27}
 .logo-plate{position:relative;width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center;box-shadow:inset 0 0 8px rgba(0,0,0,.18),0 0 12px var(--teamColor)}
 .team-box img{position:relative;width:42px;height:42px;object-fit:contain;filter:drop-shadow(0 0 7px rgba(0,0,0,.3))}
-.team-box.sold{opacity:.43;filter:grayscale(.3)}.team-box.sold::after{content:"";position:absolute;width:125%;height:7px;background:#ff0033;transform:rotate(43deg);box-shadow:0 0 14px #ff0033}
+.team-box.sold{
+opacity:.50;
+filter:grayscale(.35);
+}
+
+.team-box.sold::before{
+opacity:.12;
+}
+
+.team-box.sold::after{
+content:"✕";
+position:absolute;
+inset:0;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:56px;
+font-weight:1000;
+line-height:1;
+color:#ff0033;
+text-shadow:
+0 0 6px #fff,
+0 0 12px #ff0033,
+0 0 24px #ff0033;
+-webkit-text-stroke:3px rgba(255,255,255,.85);
+z-index:5;
+animation:redXPop .55s cubic-bezier(.18,.9,.12,1);
+}
 .ticker-wrap{position:absolute;left:16px;right:16px;bottom:10px;height:28px;display:flex;z-index:3;border-radius:999px;overflow:hidden;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.48)}
 .ticker-label{width:92px;background:linear-gradient(135deg,#008cff,#00d4ff);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;letter-spacing:.08em;color:white}
 .ticker-window{position:relative;flex:1;overflow:hidden}.ticker-text{position:absolute;white-space:nowrap;line-height:28px;font-size:14px;font-weight:800;color:#e8f7ff;animation:tickerMove 18s linear infinite}
@@ -44,3 +82,33 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent
 100%{transform:translateX(1450px) scale(.75) rotate(7deg);opacity:0;filter:blur(8px) drop-shadow(0 0 20px rgba(0,170,255,.7))}
 }
 @keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.04)}100%{transform:scale(1)}}@keyframes sweep{0%{transform:translateX(-120%) rotate(20deg)}100%{transform:translateX(600%) rotate(20deg)}}@keyframes tickerMove{from{transform:translateX(820px)}to{transform:translateX(-100%)}}
+.league-indicator{
+position:absolute;
+top:14px;
+right:160px;
+padding:8px 16px;
+border-radius:999px;
+background:rgba(0,0,0,.45);
+border:1px solid rgba(255,255,255,.15);
+color:#9cecff;
+font-weight:900;
+letter-spacing:.18em;
+font-size:12px;
+z-index:5;
+}
+
+@keyframes redXPop{
+0%{transform:scale(.2) rotate(-25deg);opacity:0}
+55%{transform:scale(1.25) rotate(6deg);opacity:1}
+100%{transform:scale(1) rotate(0deg);opacity:1}
+}
+
+.team-box.just-sold{
+animation:soldBoxPulse .7s ease-out;
+}
+
+@keyframes soldBoxPulse{
+0%{transform:scale(1);box-shadow:0 0 12px var(--teamGlow)}
+45%{transform:scale(1.14);box-shadow:0 0 34px #ff0033}
+100%{transform:scale(1);box-shadow:0 0 12px var(--teamGlow)}
+}

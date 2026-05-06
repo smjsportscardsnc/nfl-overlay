@@ -1,32 +1,43 @@
 const OVERLAY_PATH = "smjOverlay/current";
 const GRAPHIC_COMMAND_PATH = "smjOverlay/graphicCommand";
-const DEFAULT_STATE = { title:"SMJ NFL MIXER BREAK", status:"Live", ticker:"Welcome to SMJ Sports Cards & Collectibles!", sold:{}, graphicCommand:null };
+const DEFAULT_STATE = { title:"SMJ NFL MIXER BREAK", status:"Live", ticker:"Welcome to SMJ Sports Cards & Collectibles!", sold:{}, graphicCommand:null, league:"nfl" };
 let state = {...DEFAULT_STATE};
 let lastGraphicId = null;
+let previousSoldState = {};
 
 const grid = document.getElementById("teamsGrid");
 const soldCount = document.getElementById("soldCount");
 const statusText = document.getElementById("statusText");
 const tickerText = document.getElementById("tickerText");
 const breakTitle = document.getElementById("breakTitle");
+const leagueIndicator = document.getElementById("leagueIndicator");
 
-function logo(abbr){ return `https://a.espncdn.com/i/teamlogos/nfl/500/${abbr}.png`; }
+
+function logo(abbr){
+ const lg = window.SMJ_LEAGUES[state.league || "nfl"];
+ return lg.logos(abbr);
+}
+
 
 function render(){
   breakTitle.textContent = state.title || DEFAULT_STATE.title;
   statusText.textContent = state.status || DEFAULT_STATE.status;
   tickerText.textContent = state.ticker || DEFAULT_STATE.ticker;
+leagueIndicator.textContent = (state.league || "nfl").toUpperCase();
   soldCount.textContent = `${window.SMJ_TEAMS.filter(t => !!state.sold?.[t.abbr]).length}/32`;
 
   grid.innerHTML = "";
   window.SMJ_TEAMS.forEach(team => {
     const box = document.createElement("div");
-    box.className = `team-box ${state.sold?.[team.abbr] ? "sold" : ""}`;
+    const isSold = !!state.sold?.[team.abbr];
+    const wasSold = !!previousSoldState?.[team.abbr];
+    box.className = `team-box ${isSold ? "sold" : ""} ${isSold && !wasSold ? "just-sold" : ""}`;
     box.style.setProperty("--teamColor", team.color);
     box.style.setProperty("--teamGlow", `${team.color}80`);
     box.innerHTML = `<div class="logo-plate"><img src="${logo(team.abbr)}" alt="${team.city} ${team.name}" /></div>`;
     grid.appendChild(box);
   });
+  previousSoldState = {...(state.sold || {})};
 }
 
 function handleGraphicCommand(cmd){

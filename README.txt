@@ -38,3 +38,22 @@ IMPORTANT FOR SOUND IN OBS:
 If audio still does not play:
 - Interact once with the browser source (click inside preview)
 - Or reload the browser source after OBS starts
+
+
+NEW FEATURES:
+- Subdued SMJ logo watermark in scoreboard background
+- League switching:
+  NFL / NBA / MLB / NHL / WNBA
+- ESPN CDN auto logo loading per league
+- Improved OBS audio compatibility
+
+IMPORTANT:
+In OBS Browser Source:
+- Enable "Control audio via OBS"
+- Refresh browser source after loading
+
+
+SOLD TEAM UPDATE:
+- Sold teams now show a large red X.
+- The red X pops/animates when a team is newly marked sold.
+- Sold team box also gets a quick pulse effect.

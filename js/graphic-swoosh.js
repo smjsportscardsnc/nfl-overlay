@@ -11,6 +11,7 @@ class SMJGraphicSwoosh {
 
     // OBS/browser audio unlock
     this.audio.volume = 1.0;
+    this.audio.setAttribute("playsinline","true");
     this.audio.muted = false;
 
     window.addEventListener("click", () => {
