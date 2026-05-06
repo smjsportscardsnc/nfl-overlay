@@ -1,45 +1,47 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>SMJ Control</title>
+<title>SMJ Overlay Control</title>
 <link rel="stylesheet" href="css/control.css"/>
 </head>
 <body>
-
-<h1>SMJ Swoop Control Panel</h1>
-
-<div class="panel">
-  <h2>Trigger Graphics</h2>
-
-  <div class="buttons">
-    <button onclick="triggerMotion('hit')">Monster Hit</button>
-    <button onclick="triggerMotion('choose')">Spin 2 Choose 1</button>
-    <button onclick="triggerMotion('full')">Break Full</button>
-    <button onclick="triggerMotion('stash')">Stash or Pass</button>
-    <button onclick="triggerMotion('winner')">Winner</button>
+<header>
+  <div>
+    <h1>SMJ Overlay Control</h1>
+    <p id="connectionStatus" class="connection warning">Loading Firebase…</p>
   </div>
-</div>
+  <button class="danger" id="resetAllBtn" type="button">Reset Sold Teams</button>
+</header>
 
-<div class="panel">
-  <h2>Overlay Text</h2>
+<section class="panel">
+  <h2>Video Triggers</h2>
+  <div class="buttons">
+    <button type="button" data-video="stash">Stash or Pass</button>
+    <button type="button" data-video="choose">Spin 2 Choose 1</button>
+  </div>
+  <p class="hint">Only these two uploaded videos are wired to trigger.</p>
+</section>
 
-  <label>Break Title</label>
-  <input id="titleInput" value="SMJ NFL BREAK"/>
+<section class="panel">
+  <h2>Overlay Text Controls</h2>
+  <label>Break Title<input id="titleInput" type="text" value="SMJ NFL MIXER BREAK"/></label>
+  <label>Status<input id="statusInput" type="text" value="Live"/></label>
+  <label>Ticker Text<input id="tickerInput" type="text" value="Welcome to SMJ Sports Cards & Collectibles!"/></label>
+  <button id="saveTextBtn" type="button">Update Overlay Text</button>
+</section>
 
-  <label>Status</label>
-  <input id="statusInput" value="LIVE"/>
-
-  <label>Ticker</label>
-  <input id="tickerInput" value="Welcome to SMJ Sports Cards & Collectibles!"/>
-
-  <button onclick="saveOverlay()">Save Overlay</button>
-</div>
+<section class="panel">
+  <h2>Assign Teams as Sold</h2>
+  <p class="hint">Tap any team. Red/orange means sold. Normal blue means available.</p>
+  <div id="teamControls" class="team-controls"></div>
+</section>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script src="js/firebase.js"></script>
+<script src="js/teams.js"></script>
 <script src="js/control.js"></script>
 </body>
 </html>

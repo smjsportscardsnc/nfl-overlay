@@ -1,66 +1,54 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>SMJ Swoop Overlay</title>
+<title>SMJ Restored Team Overlay</title>
 <link rel="stylesheet" href="css/style.css"/>
 </head>
 <body>
+<main class="overlay-frame">
+  <section class="scoreboard-panel">
+    <div class="panel-depth"></div>
+    <div class="animated-bg"></div>
+    <div class="light-sweep"></div>
 
-<div class="overlay-wrap">
-
-<section class="scoreboard">
-  <div class="scoreboard-glow"></div>
-
-  <div class="header">
-    <div class="brand">
-      <img src="assets/logo.png"/>
-      <div>
-        <div id="breakTitle" class="title">SMJ NFL BREAK</div>
-        <div class="subtitle">singles • rips • breaks</div>
+    <section class="top-bar">
+      <div class="brand-lockup">
+        <div class="smj-badge"><img src="assets/logo.png" alt="SMJ logo"/></div>
+        <div class="title-stack">
+          <div id="breakTitle" class="break-title">SMJ NFL MIXER BREAK</div>
+          <div class="break-subtitle">singles • rips • breaks</div>
+        </div>
       </div>
-    </div>
 
-    <div class="status-card">
-      <span>Status</span>
-      <strong id="statusText">LIVE</strong>
-    </div>
-  </div>
-
-  <div class="ticker">
-    <div class="ticker-label">SMJ LIVE</div>
-    <div class="ticker-window">
-      <div id="tickerText" class="ticker-text">
-        Welcome to SMJ Sports Cards & Collectibles!
+      <div class="stats-strip">
+        <div class="stat-card"><span>Sold</span><strong id="soldCount">0/32</strong></div>
+        <div class="stat-card"><span>Status</span><strong id="statusText">Live</strong></div>
       </div>
-    </div>
-  </div>
-</section>
+    </section>
 
+    <section class="teams-stage">
+      <div id="teamsGrid" class="teams-grid"></div>
+    </section>
 
-<section id="videoLayer" class="video-layer hidden">
-  <video id="overlayVideo" playsinline muted preload="auto"></video>
-</section>
+    <footer class="ticker-wrap">
+      <div class="ticker-label">SMJ LIVE</div>
+      <div class="ticker-window">
+        <div id="tickerText" class="ticker-text">Welcome to SMJ Sports Cards & Collectibles!</div>
+      </div>
+    </footer>
+  </section>
 
-<section id="swoopLayer" class="swoop-layer hidden">
-  <div class="flash"></div>
-
-  <div class="swoop-content">
-    <div id="swoopKicker" class="swoop-kicker">SMJ LIVE</div>
-    <div id="swoopTitle" class="swoop-title">MONSTER HIT</div>
-    <div id="swoopSubtitle" class="swoop-subtitle">BOOM!</div>
-  </div>
-
-  <audio id="swoopAudio" preload="auto"></audio>
-</section>
-
-</div>
+  <section id="videoLayer" class="video-layer hidden">
+    <video id="overlayVideo" playsinline preload="auto"></video>
+  </section>
+</main>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script src="js/firebase.js"></script>
-<script src="js/swoop.js"></script>
+<script src="js/teams.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>

@@ -1,54 +1,25 @@
-
 <!doctype html>
 <html>
 <head>
 <meta charset="utf-8"/>
-<title>SMJ Preview</title>
-<link rel="stylesheet" href="css/style.css"/>
+<title>SMJ Video Preview</title>
 <style>
-body{background:#06101f}
-.controls{
-position:fixed;
-left:24px;
-bottom:24px;
-z-index:999;
-background:rgba(0,0,0,.7);
-padding:16px;
-border-radius:20px;
-}
-button{
-margin:5px;
-}
+body{background:#06101f;color:white;font-family:Arial;margin:0;padding:24px}
+button{border:0;border-radius:14px;padding:14px 18px;font-size:18px;font-weight:900;background:#078cff;color:white;margin:6px;cursor:pointer}
+video{display:block;width:960px;max-width:100%;margin-top:20px;border-radius:20px;box-shadow:0 0 30px rgba(0,170,255,.35)}
 </style>
 </head>
 <body>
-
-
-<section id="videoLayer" class="video-layer hidden">
-  <video id="overlayVideo" playsinline muted preload="auto"></video>
-</section>
-
-<section id="swoopLayer" class="swoop-layer">
-  <div class="flash"></div>
-
-  <div class="swoop-content">
-    <div id="swoopKicker" class="swoop-kicker">SMJ LIVE</div>
-    <div id="swoopTitle" class="swoop-title">MONSTER HIT</div>
-    <div id="swoopSubtitle" class="swoop-subtitle">BOOM!</div>
-  </div>
-
-  <audio id="swoopAudio" preload="auto"></audio>
-</section>
-
-<div class="controls">
-<button onclick="SMJSwoop.trigger('hit')">Monster Hit</button>
-<button onclick="SMJSwoop.trigger('choose')">Spin 2 Choose 1</button>
-<button onclick="SMJSwoop.trigger('full')">Break Full</button>
-<button onclick="SMJSwoop.trigger('stash')">Stash</button>
-<button onclick="SMJSwoop.trigger('winner')">Winner</button>
-</div>
-
-<script src="js/swoop.js"></script>
-
+<h1>SMJ Uploaded Video Preview</h1>
+<button onclick="play('assets/videos/stash-or-pass.mp4')">Stash or Pass</button>
+<button onclick="play('assets/videos/spin-2-choose-1.mp4')">Spin 2 Choose 1</button>
+<video id="v" controls></video>
+<script>
+function play(src){
+  const v = document.getElementById('v');
+  v.src = src + '?v=' + Date.now();
+  v.play();
+}
+</script>
 </body>
 </html>

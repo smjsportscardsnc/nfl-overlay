@@ -1,32 +1,27 @@
-SMJ Swoop Overlay Package
+SMJ Restored Team Overlay with Uploaded Videos
+=============================================
 
 OBS Browser Source:
-Width: 1920
-Height: 1080
+- index.html
+- Width: 1920
+- Height: 1080
 
-Files:
-- index.html = OBS overlay
-- control.html = Firebase control panel
-- preview.html = local animation testing
+Control Panel:
+- control.html
 
-Included:
-- cinematic swooping text animations
-- sound effects
-- Firebase integration
-- scoreboard
-- ticker
-- title/status controls
+Restored:
+- Full team scoreboard in index.html
+- Full 32-team sold/available control grid in control.html
+- Firebase connection status indicator
+- Break title, status, and ticker controls
 
-Your Firebase config is already included.
+Only video triggers:
+- Stash or Pass = assets/videos/stash-or-pass.mp4
+- Spin 2 Choose 1 = assets/videos/spin-2-choose-1.mp4
 
+Firebase:
+- Your Firebase config is included in js/firebase.js.
+- Database path used: smjOverlay/current
 
-Custom Stash Or Pass video:
-- assets/videos/stash-or-pass.mp4
-- Triggered automatically from the control panel.
-
-
-Added custom Spin 2 Choose 1 video:
-- assets/videos/spin-2-choose-1.mov
-- Triggered from control panel and preview page.
-
-Replaced Spin 2 Choose 1 video with latest uploaded version.
+Testing:
+- Open preview.html to test the two uploaded videos directly.
