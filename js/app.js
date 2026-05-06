@@ -23,6 +23,7 @@ function logo(abbr){const lg=currentLeague();return `https://a.espncdn.com/i/tea
 
 function render(){
   const lg=currentLeague();
+
   breakTitle.textContent=state.title||DEFAULT.title;
   tickerText.textContent=state.ticker||DEFAULT.ticker;
   leagueIndicator.textContent=lg.name;
@@ -39,6 +40,7 @@ function render(){
     box.innerHTML=`<div class="logo-plate"><img src="${logo(team.abbr)}" alt="${team.city} ${team.name}" onerror="this.parentElement.classList.add('logo-error')" /><span class="fallback-initials">${initials}</span></div>`;
     grid.appendChild(box);
   });
+
   previousSoldState={...(state.sold||{})};
 }
 
@@ -106,7 +108,6 @@ if(window.SMJFIREBASE_READY&&window.smjDB){
     state={...DEFAULT,...data,sold:{...(data.sold||{})}};
     render();
 
-    // Ignore stale command from current state on first page load.
     if(!currentReady){
       if(state.stingerCommand?.id) lastId=state.stingerCommand.id;
       currentReady=true;
@@ -119,7 +120,6 @@ if(window.SMJFIREBASE_READY&&window.smjDB){
   cmdRef.on("value",snap=>{
     const cmd=snap.val();
 
-    // Ignore stale dedicated command on first page load.
     if(!commandReady){
       if(cmd?.id) lastId=cmd.id;
       commandReady=true;

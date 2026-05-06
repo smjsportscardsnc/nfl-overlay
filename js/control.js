@@ -33,6 +33,7 @@ function renderTeams(){
 
 async function trigger(key){
   if(!ref||!cmdRef){setCmd("Firebase not connected.","bad");return}
+
   const label=key==="stash"?"Stash or Pass":"Spin 2 Choose 1";
   const cmd={key,id:`${Date.now()}-${Math.random().toString(16).slice(2)}`};
 
@@ -51,9 +52,11 @@ async function trigger(key){
 function switchLeague(league){
   state.league=league;
   state.sold={};
+
   const name=window.SMJ_LEAGUES[league].name,title=`SMJ ${name} BREAK`;
   titleInput.value=title;
   renderTeams();
+
   if(ref)ref.update({league,sold:{},title});
   setCmd(`League switched to ${name}`,"ok");
 }
@@ -90,6 +93,7 @@ renderTeams();
 if(window.SMJFIREBASE_READY&&window.smjDB){
   ref=window.smjDB.ref(PATH);
   cmdRef=window.smjDB.ref(CMD);
+
   setConn("Firebase connected","ok");
   setCmd("Ready.","ok");
 

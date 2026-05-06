@@ -1,25 +1,33 @@
-SMJ Overlay - WebM Stingers with Embedded Sound
+SMJ 9:16 Overlay Final Package
 
-OBS:
-- Use index.html
-- Browser Source size: 1920x1080
+OBS Browser Source:
+- index.html
+- Width: 1080
+- Height: 1920
+
+Main fixes:
+- Full vertical 9:16 overlay stage
+- Scoreboard remains 900px wide
+- Scoreboard positioned near top of vertical stream
+- Uploaded SMJ logo used in header
+- Subdued SMJ logo watermark behind scoreboard
+- Status/Live indicator removed
+- League badge moved into header
+- Ticker positioned below team grid
+- Multi-league switching retained:
+  NFL, NBA, MLB, NHL, WNBA
+- Sold teams use animated red X
+- Stash/Pass and Spin 2 Choose 1 WebM stingers retained
+- MP4 fallbacks retained
+- Stale Firebase command ignored on page load
+
+OBS audio:
+- Right-click Browser Source > Properties
 - Enable "Control audio via OBS"
 - Unmute browser source in OBS mixer
 - Refresh browser source after replacing files
 
-Fixes:
-- Uses WebM stingers with embedded swoosh audio.
-- Includes MP4 fallback stingers if WebM playback fails.
-- Prevents stale Firebase commands from firing on page load.
-- Stash or Pass should no longer appear immediately when the page loads.
-
 Files:
-- assets/stingers/stash-or-pass.webm
-- assets/stingers/spin-2-choose-1.webm
-- assets/stingers/stash-or-pass.mp4
-- assets/stingers/spin-2-choose-1.mp4
-
-If sound is still silent in OBS:
-- Confirm the Browser Source audio is visible in the OBS mixer.
-- Right-click Browser Source > Properties > enable Control audio via OBS.
-- Make sure that source is not muted in Advanced Audio Properties.
+- index.html = OBS overlay
+- control.html = control panel
+- preview.html = stinger test page
