@@ -17,6 +17,15 @@ class SMJSwoop {
         sound: "assets/sounds/hit.wav"
       },
 
+
+      choose: {
+        kicker: "SMJ DECISION TIME",
+        title: "SPIN 2 CHOOSE 1",
+        subtitle: "MAKE YOUR PICK",
+        sound: "assets/sounds/swoosh.wav",
+        video: "assets/videos/spin-2-choose-1.mov"
+      },
+
       full: {
         kicker: "SMJ BREAK STATUS",
         title: "BREAK FULL",

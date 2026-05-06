@@ -23,3 +23,10 @@ Your Firebase config is already included.
 Custom Stash Or Pass video:
 - assets/videos/stash-or-pass.mp4
 - Triggered automatically from the control panel.
+
+
+Added custom Spin 2 Choose 1 video:
+- assets/videos/spin-2-choose-1.mov
+- Triggered from control panel and preview page.
+
+Replaced Spin 2 Choose 1 video with latest uploaded version.
