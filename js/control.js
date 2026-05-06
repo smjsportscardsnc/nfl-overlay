@@ -1,9 +1,9 @@
 const OVERLAY_PATH = "smjOverlay/current";
-const VIDEO_COMMAND_PATH = "smjOverlay/videoCommand";
-const DEFAULT_STATE = { title:"SMJ NFL MIXER BREAK", status:"Live", ticker:"Welcome to SMJ Sports Cards & Collectibles!", sold:{}, videoCommand:null };
+const GRAPHIC_COMMAND_PATH = "smjOverlay/graphicCommand";
+const DEFAULT_STATE = { title:"SMJ NFL MIXER BREAK", status:"Live", ticker:"Welcome to SMJ Sports Cards & Collectibles!", sold:{}, graphicCommand:null };
 let state = {...DEFAULT_STATE};
 let ref = null;
-let videoRef = null;
+let graphicRef = null;
 
 const teamControls = document.getElementById("teamControls");
 const titleInput = document.getElementById("titleInput");
@@ -12,14 +12,8 @@ const tickerInput = document.getElementById("tickerInput");
 const connectionStatus = document.getElementById("connectionStatus");
 const commandStatus = document.getElementById("commandStatus");
 
-function setConn(text, cls){
-  connectionStatus.textContent = text;
-  connectionStatus.className = `connection ${cls}`;
-}
-function setCmd(text, cls="ok"){
-  commandStatus.textContent = text;
-  commandStatus.className = `command-status ${cls}`;
-}
+function setConn(text, cls){ connectionStatus.textContent = text; connectionStatus.className = `connection ${cls}`; }
+function setCmd(text, cls="ok"){ commandStatus.textContent = text; commandStatus.className = `command-status ${cls}`; }
 function logo(abbr){ return `https://a.espncdn.com/i/teamlogos/nfl/500/${abbr}.png`; }
 
 function hydrate(){
@@ -40,24 +34,23 @@ function renderTeams(){
   });
 }
 
-async function triggerVideo(key){
-  if(!ref || !videoRef){
+async function triggerGraphic(key){
+  if(!ref || !graphicRef){
     setCmd("Firebase not connected. Command not sent.", "bad");
     return;
   }
 
   const label = key === "stash" ? "Stash or Pass" : "Spin 2 Choose 1";
+  const cmd = { key, id: `${Date.now()}-${Math.random().toString(16).slice(2)}` };
   setCmd(`Sending ${label}...`, "warning");
 
-  const cmd = { key, id: `${Date.now()}-${Math.random().toString(16).slice(2)}` };
-
   try {
-    await videoRef.set(cmd);
-    await ref.child("videoCommand").set(cmd);
+    await graphicRef.set(cmd);
+    await ref.child("graphicCommand").set(cmd);
     setCmd(`Sent ${label} at ${new Date().toLocaleTimeString()}`, "ok");
   } catch(err) {
     console.error(err);
-    setCmd("Firebase write failed. Check database rules.", "bad");
+    setCmd("Firebase write failed. Check rules.", "bad");
   }
 }
 
@@ -86,8 +79,7 @@ function saveText(){
   if(ref) ref.update(payload).then(() => setCmd("Overlay text updated.", "ok"));
 }
 
-document.getElementById("stashBtn").addEventListener("click", () => triggerVideo("stash"));
-document.getElementById("chooseBtn").addEventListener("click", () => triggerVideo("choose"));
+document.querySelectorAll("[data-graphic]").forEach(btn => btn.addEventListener("click", () => triggerGraphic(btn.dataset.graphic)));
 document.getElementById("saveTextBtn").addEventListener("click", saveText);
 document.getElementById("resetAllBtn").addEventListener("click", resetSold);
 
@@ -96,9 +88,9 @@ renderTeams();
 
 if(window.SMJFIREBASE_READY && window.smjDB){
   ref = window.smjDB.ref(OVERLAY_PATH);
-  videoRef = window.smjDB.ref(VIDEO_COMMAND_PATH);
+  graphicRef = window.smjDB.ref(GRAPHIC_COMMAND_PATH);
   setConn("Firebase connected", "ok");
-  setCmd("Ready to send commands.", "ok");
+  setCmd("Ready to send graphic swooshes.", "ok");
 
   ref.once("value").then(snap => { if(!snap.exists()) return ref.set(DEFAULT_STATE); });
   ref.on("value", snap => {

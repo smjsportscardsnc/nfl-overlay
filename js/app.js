@@ -1,27 +1,14 @@
 const OVERLAY_PATH = "smjOverlay/current";
-const VIDEO_COMMAND_PATH = "smjOverlay/videoCommand";
-const DEFAULT_STATE = { title:"SMJ NFL MIXER BREAK", status:"Live", ticker:"Welcome to SMJ Sports Cards & Collectibles!", sold:{}, videoCommand:null };
+const GRAPHIC_COMMAND_PATH = "smjOverlay/graphicCommand";
+const DEFAULT_STATE = { title:"SMJ NFL MIXER BREAK", status:"Live", ticker:"Welcome to SMJ Sports Cards & Collectibles!", sold:{}, graphicCommand:null };
 let state = {...DEFAULT_STATE};
-let lastVideoId = null;
+let lastGraphicId = null;
 
 const grid = document.getElementById("teamsGrid");
 const soldCount = document.getElementById("soldCount");
 const statusText = document.getElementById("statusText");
 const tickerText = document.getElementById("tickerText");
 const breakTitle = document.getElementById("breakTitle");
-const videoLayer = document.getElementById("videoLayer");
-const videoStash = document.getElementById("videoStash");
-const videoChoose = document.getElementById("videoChoose");
-const debugBadge = document.getElementById("debugBadge");
-
-const videoEls = { stash: videoStash, choose: videoChoose, spin: videoChoose };
-
-function showDebug(msg, ms=3000){
-  debugBadge.textContent = msg;
-  debugBadge.classList.remove("hidden");
-  clearTimeout(window.__debugTimer);
-  window.__debugTimer = setTimeout(() => debugBadge.classList.add("hidden"), ms);
-}
 
 function logo(abbr){ return `https://a.espncdn.com/i/teamlogos/nfl/500/${abbr}.png`; }
 
@@ -42,77 +29,31 @@ function render(){
   });
 }
 
-async function playVideo(key){
-  const v = videoEls[key];
-  if(!v){ showDebug(`No video mapped for ${key}`, 6000); return; }
-
-  showDebug(`Playing ${key}`);
-  Object.values(videoEls).forEach(el => {
-    el.pause();
-    el.currentTime = 0;
-    el.classList.remove("active");
-  });
-
-  videoLayer.classList.remove("hidden");
-  v.classList.add("active");
-  v.muted = true; // reliable autoplay in OBS browser source
-  v.currentTime = 0;
-
-  v.onended = () => {
-    v.classList.remove("active");
-    videoLayer.classList.add("hidden");
-    showDebug(`${key} ended`, 1500);
-  };
-
-  v.onerror = () => {
-    showDebug(`${key} video error`, 6000);
-    v.classList.remove("active");
-    videoLayer.classList.add("hidden");
-  };
-
-  try {
-    await v.play();
-    showDebug(`${key} playing`, 2000);
-  } catch(err) {
-    console.error(err);
-    showDebug(`${key} playback blocked`, 6000);
-    v.classList.remove("active");
-    videoLayer.classList.add("hidden");
-  }
-}
-
-function handleVideoCommand(cmd, source){
-  if(!cmd || !cmd.id || cmd.id === lastVideoId) return;
-  lastVideoId = cmd.id;
-  showDebug(`Command received: ${cmd.key}`);
-  playVideo(cmd.key);
+function handleGraphicCommand(cmd){
+  if(!cmd || !cmd.id || cmd.id === lastGraphicId) return;
+  lastGraphicId = cmd.id;
+  window.SMJGraphicSwoosh.trigger(cmd.key || "stash");
 }
 
 render();
 
 if(window.SMJFIREBASE_READY && window.smjDB){
-  showDebug("Firebase ready");
   const ref = window.smjDB.ref(OVERLAY_PATH);
-  const videoRef = window.smjDB.ref(VIDEO_COMMAND_PATH);
+  const graphicRef = window.smjDB.ref(GRAPHIC_COMMAND_PATH);
 
   ref.on("value", snap => {
     const data = snap.val();
     if(!data){ ref.set(DEFAULT_STATE); return; }
-
     state = {...DEFAULT_STATE, ...data, sold:{...(data.sold || {})}};
     render();
-    handleVideoCommand(state.videoCommand, "current");
-  }, err => {
-    console.error(err);
-    showDebug("Firebase listener error", 8000);
-  });
+    handleGraphicCommand(state.graphicCommand);
+    handleGraphicCommand(state.flyCommand);
+    handleGraphicCommand(state.motionCommand);
+  }, err => console.error(err));
 
-  videoRef.on("value", snap => {
-    handleVideoCommand(snap.val(), "videoCommand");
-  });
+  graphicRef.on("value", snap => handleGraphicCommand(snap.val()));
 } else {
-  showDebug("Firebase not ready", 8000);
-  console.error(window.SMJFIREBASE_ERROR);
+  console.error("Firebase not ready:", window.SMJFIREBASE_ERROR);
 }
 
-window.SMJOverlay = { playVideo };
+window.SMJOverlay = { triggerGraphic:(key)=>window.SMJGraphicSwoosh.trigger(key) };

@@ -4,7 +4,7 @@ header{display:flex;align-items:center;justify-content:space-between;gap:16px;ma
 h1{margin:0;font-size:34px}p{margin:6px 0 0;color:#9fdcff}
 .connection,.command-status{display:inline-block;padding:8px 12px;border-radius:999px;font-weight:800;margin-top:8px}
 .connection.ok,.command-status.ok{background:rgba(0,220,120,.14);color:#7dffbd;border:1px solid rgba(0,220,120,.35)}
-.connection.warning,.command-status{background:rgba(255,185,0,.14);color:#ffd36b;border:1px solid rgba(255,185,0,.35)}
+.connection.warning,.command-status.warning{background:rgba(255,185,0,.14);color:#ffd36b;border:1px solid rgba(255,185,0,.35)}
 .connection.bad,.command-status.bad{background:rgba(255,40,70,.14);color:#ff7f91;border:1px solid rgba(255,40,70,.35)}
 .panel{background:rgba(255,255,255,.065);border:1px solid rgba(255,255,255,.12);border-radius:22px;padding:18px;margin-bottom:18px;box-shadow:0 0 22px rgba(0,0,0,.25)}
 h2{margin:0 0 14px}.buttons{display:flex;flex-wrap:wrap;gap:10px}
