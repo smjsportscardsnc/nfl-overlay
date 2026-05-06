@@ -1,33 +1,34 @@
-SMJ 9:16 Overlay Final Package
+SMJ 9:16 Overlay V2 - HARD-CODED DIMENSION LOCK
+
+USE THIS FILE IN OBS:
+- index-1080x1920.html
 
 OBS Browser Source:
-- index.html
 - Width: 1080
 - Height: 1920
 
-Main fixes:
-- Full vertical 9:16 overlay stage
-- Scoreboard remains 900px wide
-- Scoreboard positioned near top of vertical stream
-- Uploaded SMJ logo used in header
-- Subdued SMJ logo watermark behind scoreboard
-- Status/Live indicator removed
-- League badge moved into header
-- Ticker positioned below team grid
-- Multi-league switching retained:
-  NFL, NBA, MLB, NHL, WNBA
-- Sold teams use animated red X
-- Stash/Pass and Spin 2 Choose 1 WebM stingers retained
-- MP4 fallbacks retained
-- Stale Firebase command ignored on page load
+Do not use 1920x1080.
 
-OBS audio:
-- Right-click Browser Source > Properties
-- Enable "Control audio via OBS"
-- Unmute browser source in OBS mixer
-- Refresh browser source after replacing files
+Important:
+If OBS still looks unchanged, it is using the old cached file/source.
+Fix:
+1. Delete the old Browser Source entirely.
+2. Add a brand new Browser Source.
+3. Select index-1080x1920.html from this package.
+4. Set Width to 1080.
+5. Set Height to 1920.
+6. Check "Refresh browser when scene becomes active".
+7. Click OK.
 
-Files:
-- index.html = OBS overlay
-- control.html = control panel
-- preview.html = stinger test page
+Hard-coded layout:
+- Internal stage: 1080 x 1920
+- Scoreboard: 900 x 390
+- Scoreboard position: left 90px, top 70px
+- Stinger layer: 1080 x 1920
+
+Included:
+- uploaded SMJ logo
+- subdued SMJ watermark
+- multi-league switching
+- red X sold animation
+- WebM stingers with MP4 fallback
