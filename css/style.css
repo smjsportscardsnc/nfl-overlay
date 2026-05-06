@@ -41,7 +41,7 @@ body{
 
 .scoreboard-panel{
   position:absolute !important;
-  top:70px !important;
+  top:180px !important;
   left:90px !important;
   transform:none !important;
   width:900px !important;

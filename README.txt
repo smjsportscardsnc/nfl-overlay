@@ -32,3 +32,7 @@ Included:
 - multi-league switching
 - red X sold animation
 - WebM stingers with MP4 fallback
+
+
+Overlay adjusted lower for Whatnot UI.
+Scoreboard top offset: 180px.
