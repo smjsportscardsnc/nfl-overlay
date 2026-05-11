@@ -19,3 +19,5 @@ Changes:
 Files:
 - index-1080x1920.html = OBS overlay
 - control.html = control panel
+
+- Reduced spacing between bottom team row and ticker.

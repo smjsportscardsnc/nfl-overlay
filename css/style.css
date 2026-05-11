@@ -179,7 +179,7 @@ body{
 
 .teams-stage{
   position:relative;
-  padding:0 16px;
+  padding:0 16px 2px;
   z-index:4;
 }
 
@@ -273,7 +273,7 @@ body{
   position:absolute;
   left:16px;
   right:16px;
-  bottom:14px;
+  bottom:6px;
   height:46px;
   display:flex;
   z-index:5;
