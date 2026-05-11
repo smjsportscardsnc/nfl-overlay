@@ -21,3 +21,5 @@ Files:
 - control.html = control panel
 
 - Reduced spacing between bottom team row and ticker.
+
+- Removed the large gap between the bottom team row and ticker by positioning ticker at top:326px and reducing panel height.

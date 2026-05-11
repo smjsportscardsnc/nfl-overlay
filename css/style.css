@@ -45,7 +45,7 @@ body{
   left:90px !important;
   transform:none !important;
   width:900px !important;
-  height:430px !important;
+  height:382px !important;
   overflow:hidden;
   border-radius:30px;
   background:linear-gradient(135deg,rgba(6,14,32,.94),rgba(18,29,58,.86));
@@ -179,7 +179,7 @@ body{
 
 .teams-stage{
   position:relative;
-  padding:0 16px 2px;
+  padding:0 16px;
   z-index:4;
 }
 
@@ -187,6 +187,7 @@ body{
   display:grid;
   grid-template-columns:repeat(8,1fr);
   gap:7px;
+  margin-bottom:6px;
 }
 
 .team-box{
@@ -273,7 +274,7 @@ body{
   position:absolute;
   left:16px;
   right:16px;
-  bottom:6px;
+  top:326px;
   height:46px;
   display:flex;
   z-index:5;
