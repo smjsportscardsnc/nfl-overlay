@@ -852,3 +852,12 @@ window.SMJ_LEAGUES = {
     ]
   }
 };
+
+// Auto-sort all league teams alphabetically by TEAM NAME
+Object.keys(window.SMJ_LEAGUES).forEach(function(key){
+  if(window.SMJ_LEAGUES[key] && Array.isArray(window.SMJ_LEAGUES[key].teams)){
+    window.SMJ_LEAGUES[key].teams.sort(function(a,b){
+      return (a.name || "").localeCompare((b.name || ""));
+    });
+  }
+});
