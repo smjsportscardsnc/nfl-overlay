@@ -37,3 +37,11 @@ New look (scoreboard refresh):
 - Control panel: "Next buyer" box, active league highlighted, confirm before a
   league switch clears sold teams, confirm before un-selling a team.
 - Firebase data adds two fields: buyers {abbr: name} and lastSold.
+
+Animations:
+- Control panel > Animations plays a full-screen fly-in (about 4.5 s) over the overlay:
+  light streaks, the graphic slams in with a burst and sparks, holds, then flies out.
+- Graphics and colors are listed in js/moments.js. To add one, put a transparent PNG
+  in assets/graphics and add an entry there.
+- The swoosh sound plays on the way in and out. In OBS, tick "Control audio via OBS"
+  on the Browser Source so viewers hear it.

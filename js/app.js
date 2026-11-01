@@ -105,6 +105,49 @@ function nextCallout(){
   calloutTimer=setTimeout(nextCallout,CALLOUT_MS);
 }
 
+// ---------- full-screen moments ----------
+const MOMENT_MS=4600;
+const momentEl=document.getElementById("moment"),
+momentImg=document.getElementById("momentImg"),
+momentShine=document.getElementById("momentShine"),
+momentSparks=document.getElementById("momentSparks");
+let momentTimer=null,lastMomentAt=null;
+const swoosh=new Audio("assets/sounds/swoosh.wav");
+swoosh.preload="auto";
+
+function playSound(volume){
+  try{const a=swoosh.cloneNode();a.volume=volume;a.play().catch(()=>{})}catch(e){}
+}
+
+function playMoment(id){
+  const m=window.SMJ_MOMENTS&&window.SMJ_MOMENTS[id];
+  if(!m)return;
+  clearTimeout(momentTimer);
+  momentEl.classList.remove("play");
+  m.colors.forEach((c,i)=>momentEl.style.setProperty(`--c${i+1}`,c));
+  momentImg.src=m.image;
+  momentShine.style.setProperty("--img",`url("${m.image}")`);
+
+  // sparks that burst out when the graphic lands
+  momentSparks.innerHTML="";
+  for(let i=0;i<26;i++){
+    const a=Math.random()*Math.PI*2,r=320+Math.random()*380,s=el("div","m-spark");
+    s.style.setProperty("--x",`${Math.cos(a)*r}px`);
+    s.style.setProperty("--y",`${Math.sin(a)*r*.75}px`);
+    s.style.setProperty("--s",`${6+Math.random()*14}px`);
+    s.style.setProperty("--d",`${Math.random()*.12}s`);
+    s.style.setProperty("--sc",m.colors[i%m.colors.length]);
+    momentSparks.appendChild(s);
+  }
+
+  void momentEl.offsetWidth;
+  momentEl.classList.add("play");
+  playSound(1);
+  setTimeout(()=>playSound(.6),3650);
+  momentTimer=setTimeout(()=>momentEl.classList.remove("play"),MOMENT_MS);
+}
+window.playMoment=playMoment; // handy for testing from the browser console
+
 render();
 fitTicker();
 
@@ -120,6 +163,10 @@ if(window.SMJFIREBASE_READY&&window.smjDB){
     render();
     if(newlySold.length)queueCallouts(newlySold);
     previousSoldState={...state.sold};
+    // play a moment when the control panel sends a new one (never on first load)
+    const mAt=data.moment&&data.moment.at;
+    if(mAt&&mAt!==lastMomentAt&&!firstSnapshot)playMoment(data.moment.id);
+    lastMomentAt=mAt||lastMomentAt;
     firstSnapshot=false;
   },err=>console.error(err));
 }else{
