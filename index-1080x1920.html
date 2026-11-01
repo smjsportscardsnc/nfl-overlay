@@ -4,13 +4,16 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>SMJ VERTICAL 1080x1920</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Inter:wght@600;800&display=swap"/>
 <link rel="stylesheet" href="css/style.css"/>
 </head>
 <body>
 <main class="overlay-frame">
-  <section class="scoreboard-panel">
+  <section class="scoreboard-panel" id="scoreboardPanel">
     <div class="watermark"></div>
-    <div class="animated-bg"></div>
+    <div class="accent-bar"></div>
     <div class="light-sweep"></div>
 
     <section class="top-bar">
@@ -24,7 +27,10 @@
 
       <div class="right-badges">
         <div class="league-indicator" id="leagueIndicator">NFL</div>
-        <div class="sold-badge"><span>Sold</span><strong id="soldCount">0/32</strong></div>
+        <div class="remaining" id="remaining">
+          <span class="remaining-count" id="remainingCount">32</span><span class="remaining-label" id="remainingLabel">LEFT</span>
+          <div class="progress"><span class="progress-fill" id="progressFill"></span></div>
+        </div>
       </div>
     </section>
 
@@ -33,11 +39,19 @@
     </section>
 
     <footer class="ticker-wrap">
-      <div class="ticker-label">SMJ LIVE</div>
+      <div class="ticker-label"><span class="live-dot"></span>LIVE</div>
       <div class="ticker-window">
         <div id="tickerText" class="ticker-text">Welcome to SMJ Sports Cards & Collectibles!</div>
       </div>
     </footer>
+
+    <div class="sold-callout" id="soldCallout">
+      <div id="calloutLogo"></div>
+      <div class="callout-text">
+        <span class="callout-kicker">JUST SOLD</span>
+        <div class="callout-main" id="calloutMain"></div>
+      </div>
+    </div>
   </section>
 </main>
 
