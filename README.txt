@@ -25,3 +25,15 @@ Files:
 - Removed the large gap between the bottom team row and ticker by positioning ticker at top:326px and reducing panel height.
 
 - All teams for all leagues are now automatically sorted alphabetically by team name.
+
+New look (scoreboard refresh):
+- Oswald/Inter fonts (loaded from Google Fonts; falls back to Impact/Arial if offline).
+- Team tiles show the logo plus the team abbreviation; WNBA uses wider tiles.
+- Sold teams keep their logo and get a red SOLD ribbon plus the buyer's name.
+- "Just sold" pop-up with team logo and buyer name for about 4 seconds on each sale.
+- "LEFT" counter with a progress bar replaces the Sold x/y badge.
+- Watermark toned down; light sweep now only plays when a team sells.
+- Ticker scrolls at the same speed whatever the message length.
+- Control panel: "Next buyer" box, active league highlighted, confirm before a
+  league switch clears sold teams, confirm before un-selling a team.
+- Firebase data adds two fields: buyers {abbr: name} and lastSold.

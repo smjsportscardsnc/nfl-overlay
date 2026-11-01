@@ -1,11 +1,12 @@
 const PATH="smjOverlay/current";
-const DEFAULT={title:"SMJ NFL BREAK",ticker:"Welcome to SMJ Sports Cards & Collectibles!",sold:{},league:"nfl"};
+const DEFAULT={title:"SMJ NFL BREAK",ticker:"Welcome to SMJ Sports Cards & Collectibles!",sold:{},buyers:{},league:"nfl",lastSold:""};
 
 let state={...DEFAULT},ref=null;
 
 const teamControls=document.getElementById("teamControls"),
 titleInput=document.getElementById("titleInput"),
 tickerInput=document.getElementById("tickerInput"),
+buyerInput=document.getElementById("buyerInput"),
 connectionStatus=document.getElementById("connectionStatus"),
 commandStatus=document.getElementById("commandStatus");
 
@@ -26,35 +27,55 @@ function renderTeams(){
     const btn=document.createElement("button");
     btn.type="button";
     btn.className=`team-btn ${state.sold?.[team.abbr]?"sold":""}`;
-    btn.innerHTML=`<img src="${logo(team.abbr)}" alt="" /><span class="team-name"><strong>${team.name}</strong><span>${team.city}</span></span>`;
+    const buyer=state.buyers?.[team.abbr]||"";
+    btn.innerHTML=`<img src="${logo(team.abbr)}" alt="" /><span class="team-name"><strong>${team.name}</strong><span></span></span>`;
+    btn.querySelector(".team-name span").textContent=state.sold?.[team.abbr]?(buyer?`Sold to ${buyer}`:"Sold"):team.city;
     btn.addEventListener("click",()=>toggleSold(team.abbr));
     teamControls.appendChild(btn);
   });
 }
 
+function markActiveLeague(){
+  document.querySelectorAll("[data-league]").forEach(b=>b.classList.toggle("active",b.dataset.league===(state.league||"nfl")));
+}
+
 function switchLeague(league){
+  if(league===state.league)return;
+  const soldN=Object.values(state.sold||{}).filter(Boolean).length;
+  if(soldN&&!confirm(`Switching leagues clears the ${soldN} sold team${soldN===1?"":"s"}. Switch anyway?`))return;
   state.league=league;
+  state.buyers={};
   state.sold={};
   const name=window.SMJ_LEAGUES[league].name,title=`SMJ ${name} BREAK`;
   titleInput.value=title;
   renderTeams();
-  if(ref)ref.update({league,sold:{},title});
+  markActiveLeague();
+  if(ref)ref.update({league,sold:{},buyers:{},lastSold:"",title});
   setCmd(`League switched to ${name}`,"ok");
 }
 
 function toggleSold(abbr){
-  const sold={...(state.sold||{})};
-  sold[abbr]=!sold[abbr];
-  state.sold=sold;
+  const nowSold=!state.sold?.[abbr];
+  const team=teams().find(t=>t.abbr===abbr);
+  if(!nowSold&&!confirm(`Mark ${team?team.name:abbr.toUpperCase()} as available again?`))return;
+  const buyer=nowSold?buyerInput.value.trim():"";
+  state.sold={...(state.sold||{}),[abbr]:nowSold};
+  state.buyers={...(state.buyers||{}),[abbr]:buyer};
+  if(nowSold){state.lastSold=abbr;buyerInput.value=""}
+  else if(state.lastSold===abbr)state.lastSold="";
   renderTeams();
-  if(ref)ref.child("sold").set(sold);
+  // one write, so the overlay gets the team and buyer name together
+  if(ref)ref.update({[`sold/${abbr}`]:nowSold,[`buyers/${abbr}`]:buyer,lastSold:state.lastSold});
+  setCmd(nowSold?`${team?team.name:abbr} sold${buyer?` to ${buyer}`:""}.`:`${team?team.name:abbr} is available again.`,"ok");
 }
 
 function resetSold(){
   if(!confirm("Reset all teams to available?"))return;
   state.sold={};
+  state.buyers={};
+  state.lastSold="";
   renderTeams();
-  if(ref)ref.child("sold").set({});
+  if(ref)ref.update({sold:{},buyers:{},lastSold:""});
 }
 
 function saveText(){
@@ -69,6 +90,7 @@ document.getElementById("resetAllBtn").addEventListener("click",resetSold);
 
 hydrate();
 renderTeams();
+markActiveLeague();
 
 if(window.SMJFIREBASE_READY&&window.smjDB){
   ref=window.smjDB.ref(PATH);
@@ -80,9 +102,10 @@ if(window.SMJFIREBASE_READY&&window.smjDB){
   ref.on("value",snap=>{
     const data=snap.val();
     if(!data)return;
-    state={...DEFAULT,...data,sold:{...(data.sold||{})}};
+    state={...DEFAULT,...data,sold:{...(data.sold||{})},buyers:{...(data.buyers||{})}};
     hydrate();
     renderTeams();
+    markActiveLeague();
   },err=>{
     console.error(err);
     setConn("Firebase error","bad");
