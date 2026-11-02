@@ -84,9 +84,10 @@ function saveText(){
   if(ref)ref.update(payload).then(()=>setCmd("Overlay text updated.","ok"));
 }
 
-const ANIM_STYLES=[["pop","Pop"],["drop","Drop"],["flip","Flip"]];
-let animStyle="pop";
-try{animStyle=localStorage.getItem("smjAnimStyle")||"pop"}catch(e){}
+const ANIM_STYLES=[["flip","Flip"],["reveal","Reveal"],["slide","Slide"]];
+let animStyle="flip";
+try{animStyle=localStorage.getItem("smjAnimStyle")||"flip"}catch(e){}
+if(!ANIM_STYLES.some(([k])=>k===animStyle))animStyle="flip";
 let momentCooldown=false;
 
 function triggerMoment(id){

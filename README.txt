@@ -45,6 +45,6 @@ Animations (full screen):
     Then right-click it > Transform > Fit to screen, and keep it at the top of the source list.
     Tick "Control audio via OBS" so viewers hear the swoosh.
 - The page is transparent until you press a button in Control panel > Animations.
-- Styles: Pop, Drop, Flip (picked in the control panel, remembered per device).
+- Styles: Flip (default), Reveal, Slide (picked in the control panel, remembered per device).
 - Graphics and colors are listed in js/moments.js. To add one, put a transparent PNG
   in assets/graphics and add an entry there.
