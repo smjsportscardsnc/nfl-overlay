@@ -1,0 +1,41 @@
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:transparent}
+
+.stage{
+  position:fixed;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  pointer-events:none;
+  perspective:1600px;
+  /* the graphic's width: 88% of the screen, but never taller than ~60% of it */
+  --gw:min(88vw,90vh);
+}
+
+.graphic{
+  position:relative;
+  width:var(--gw);
+  opacity:0;
+  transform-style:preserve-3d;
+  will-change:transform,opacity;
+}
+
+.graphic img{
+  display:block;
+  width:100%;
+  filter:drop-shadow(0 2vmin 3vmin rgba(0,0,0,.55));
+}
+
+.shine{
+  position:absolute;
+  inset:0;
+  background:linear-gradient(110deg,transparent 40%,rgba(255,255,255,.55) 50%,transparent 60%) no-repeat;
+  background-size:300% 100%;
+  background-position:120% 0;
+  -webkit-mask:var(--img) center/100% 100% no-repeat;
+          mask:var(--img) center/100% 100% no-repeat;
+  mix-blend-mode:overlay;
+  opacity:0;
+}
+

@@ -38,10 +38,13 @@ New look (scoreboard refresh):
   league switch clears sold teams, confirm before un-selling a team.
 - Firebase data adds two fields: buyers {abbr: name} and lastSold.
 
-Animations:
-- Control panel > Animations plays a full-screen fly-in (about 4.5 s) over the overlay:
-  light streaks, the graphic slams in with a burst and sparks, holds, then flies out.
+Animations (full screen):
+- Add a SECOND Browser Source in OBS for animations.html:
+    URL: https://smjsportscardsnc.github.io/nfl-overlay/animations.html
+    Width/Height: your OBS canvas size (Settings > Video > Base Resolution)
+    Then right-click it > Transform > Fit to screen, and keep it at the top of the source list.
+    Tick "Control audio via OBS" so viewers hear the swoosh.
+- The page is transparent until you press a button in Control panel > Animations.
+- Styles: Flip (default), Reveal, Slide (picked in the control panel, remembered per device).
 - Graphics and colors are listed in js/moments.js. To add one, put a transparent PNG
   in assets/graphics and add an entry there.
-- The swoosh sound plays on the way in and out. In OBS, tick "Control audio via OBS"
-  on the Browser Source so viewers hear it.

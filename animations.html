@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>SMJ Animations (full screen)</title>
+<link rel="stylesheet" href="css/animations.css"/>
+</head>
+<body>
+<!--
+  Full-screen animation layer. Add this page in OBS as its own Browser Source,
+  sized to your whole canvas and placed above everything else.
+  It is transparent except while an animation is playing.
+-->
+<div class="stage" id="stage">
+  <div class="graphic" id="graphic">
+    <img id="graphicImg" alt=""/>
+    <div class="shine" id="shine"></div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="js/firebase.js"></script>
+<script src="js/moments.js"></script>
+<script src="js/animations.js"></script>
+</body>
+</html>
