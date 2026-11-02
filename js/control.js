@@ -36,33 +36,7 @@ function renderTeams(){
 }
 
 function markActiveLeague(){
-  let momentCooldown=false;
-function triggerMoment(id){
-  if(momentCooldown)return;
-  const m=window.SMJ_MOMENTS[id];
-  const at=(window.firebase&&firebase.database&&firebase.database.ServerValue)?firebase.database.ServerValue.TIMESTAMP:Date.now();
-  if(ref)ref.child("moment").set({id,at}).then(()=>setCmd(`Playing ${m.label}`,"ok"));
-  // stop double taps from queuing the same animation twice
-  momentCooldown=true;
-  document.querySelectorAll(".moment-btn").forEach(b=>b.disabled=true);
-  setTimeout(()=>{momentCooldown=false;document.querySelectorAll(".moment-btn").forEach(b=>b.disabled=false)},4600);
-}
-
-function renderMomentButtons(){
-  const wrap=document.getElementById("momentButtons");
-  Object.entries(window.SMJ_MOMENTS||{}).forEach(([id,m])=>{
-    const b=document.createElement("button");
-    b.type="button";
-    b.className="moment-btn";
-    b.innerHTML=`<img src="${m.image}" alt=""/><span></span>`;
-    b.querySelector("span").textContent=m.label;
-    b.addEventListener("click",()=>triggerMoment(id));
-    wrap.appendChild(b);
-  });
-}
-renderMomentButtons();
-
-document.querySelectorAll("[data-league]").forEach(b=>b.classList.toggle("active",b.dataset.league===(state.league||"nfl")));
+  document.querySelectorAll("[data-league]").forEach(b=>b.classList.toggle("active",b.dataset.league===(state.league||"nfl")));
 }
 
 function switchLeague(league){
@@ -110,20 +84,42 @@ function saveText(){
   if(ref)ref.update(payload).then(()=>setCmd("Overlay text updated.","ok"));
 }
 
+const ANIM_STYLES=[["pop","Pop"],["drop","Drop"],["flip","Flip"]];
+let animStyle="pop";
+try{animStyle=localStorage.getItem("smjAnimStyle")||"pop"}catch(e){}
 let momentCooldown=false;
+
 function triggerMoment(id){
   if(momentCooldown)return;
   const m=window.SMJ_MOMENTS[id];
   const at=(window.firebase&&firebase.database&&firebase.database.ServerValue)?firebase.database.ServerValue.TIMESTAMP:Date.now();
-  if(ref)ref.child("moment").set({id,at}).then(()=>setCmd(`Playing ${m.label}`,"ok"));
+  if(ref)ref.child("moment").set({id,at,style:animStyle}).then(()=>setCmd(`Playing ${m.label}`,"ok"));
   // stop double taps from queuing the same animation twice
   momentCooldown=true;
   document.querySelectorAll(".moment-btn").forEach(b=>b.disabled=true);
-  setTimeout(()=>{momentCooldown=false;document.querySelectorAll(".moment-btn").forEach(b=>b.disabled=false)},4600);
+  setTimeout(()=>{momentCooldown=false;document.querySelectorAll(".moment-btn").forEach(b=>b.disabled=false)},4000);
+}
+
+function renderStyleButtons(){
+  const wrap=document.getElementById("styleButtons");
+  wrap.innerHTML="";
+  ANIM_STYLES.forEach(([key,label])=>{
+    const b=document.createElement("button");
+    b.type="button";
+    b.textContent=label;
+    b.classList.toggle("active",key===animStyle);
+    b.addEventListener("click",()=>{
+      animStyle=key;
+      try{localStorage.setItem("smjAnimStyle",key)}catch(e){}
+      renderStyleButtons();
+    });
+    wrap.appendChild(b);
+  });
 }
 
 function renderMomentButtons(){
   const wrap=document.getElementById("momentButtons");
+  wrap.innerHTML="";
   Object.entries(window.SMJ_MOMENTS||{}).forEach(([id,m])=>{
     const b=document.createElement("button");
     b.type="button";
@@ -134,6 +130,7 @@ function renderMomentButtons(){
     wrap.appendChild(b);
   });
 }
+renderStyleButtons();
 renderMomentButtons();
 
 document.querySelectorAll("[data-league]").forEach(b=>b.addEventListener("click",()=>switchLeague(b.dataset.league)));
