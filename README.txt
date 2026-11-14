@@ -45,3 +45,19 @@ Animations:
   in assets/graphics and add an entry there.
 - The swoosh sound plays on the way in and out. In OBS, tick "Control audio via OBS"
   on the Browser Source so viewers hear it.
+
+Gameday look (trading-card board + team takeover):
+- Big Shoulders Display / Inter fonts (Google Fonts; falls back to Oswald/Impact).
+- Board sits at x=36 y=170, full width (1008px), so it clears Whatnot's top bar.
+- Each team is a trading-card tile: light card face, team-colour frame and
+  nameplate, slow foil shine. Light team colours get dark nameplate text.
+- Sold tiles go dark with a SOLD stamp and the buyer's name on a gold nameplate
+  (or the abbreviation in grey if no buyer was typed).
+- Every sale plays a team takeover over the board (~4.2s): team colour wash,
+  logo pattern, rays, logo slam, confetti, team name and @buyer. Sales queue.
+- Header: SMJ logo, break title, new "Break details" line, big spots-left
+  counter and a segmented progress bar (one segment per team).
+- Ticker is now a separate lower-third bar at y=1215, just above Whatnot chat.
+- Control panel: new "Break details" field. Fixed the Animations buttons being
+  added again every time Firebase updated.
+- Test from the browser console: testTakeover("buf","@cardking88").

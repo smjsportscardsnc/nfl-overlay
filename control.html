@@ -36,13 +36,14 @@
 <section class="panel">
   <h2>Overlay Text Controls</h2>
   <label>Break Title<input id="titleInput" type="text" value="SMJ NFL BREAK"/></label>
+  <label>Break Details (line under the title)<input id="subtitleInput" type="text" placeholder="2025 Prizm Football · Hobby · Box 2 of 3"/></label>
   <label>Ticker Text<input id="tickerInput" type="text" value="Welcome to SMJ Sports Cards & Collectibles!"/></label>
   <button id="saveTextBtn" type="button">Update Overlay Text</button>
 </section>
 
 <section class="panel">
   <h2>Assign Teams as Sold</h2>
-  <p class="hint">Type the buyer's name (optional), then tap their team. The overlay shows a SOLD ribbon, the buyer's name, and a "Just sold" pop-up. Tap a sold team to make it available again.</p>
+  <p class="hint">Type the buyer's name (optional), then tap their team. The overlay plays a full-board team takeover, then shows the team as SOLD with the buyer's name. Tap a sold team to make it available again.</p>
   <label>Next buyer<input id="buyerInput" type="text" placeholder="@whatnot_username" autocomplete="off"/></label>
   <div id="teamControls" class="team-controls"></div>
 </section>

@@ -39,438 +39,395 @@ body{
   transform-origin:top left !important;
 }
 
+/* ==========================================================
+   GAMEDAY LOOK
+   Stage 1080 x 1920. Board: x=36 y=170, 1008 wide.
+   Ticker: x=36 y=1215 (sits just above Whatnot's chat).
+   ========================================================== */
+:root{
+  --brand:#1f6bff;
+  --brand2:#ff2d55;
+  --gold:#ffcc4d;
+  --ink:#f4f7ff;
+  --mute:#9aa6c4;
+  --glass:rgba(10,14,28,.82);
+  --line:rgba(255,255,255,.12);
+  --head:'Big Shoulders Display',Oswald,Impact,'Arial Narrow',sans-serif;
+}
+
 .scoreboard-panel{
   position:absolute !important;
-  top:180px !important;
-  left:90px !important;
+  top:170px !important;
+  left:36px !important;
   transform:none !important;
-  width:900px !important;
-  height:382px !important;
+  width:1008px !important;
   overflow:hidden;
-  border-radius:26px;
-  background:linear-gradient(160deg,rgba(10,22,48,.96) 0%,rgba(11,18,38,.95) 55%,rgba(20,12,34,.95) 100%);
-  border:1.5px solid rgba(255,255,255,.14);
-  box-shadow:0 10px 40px rgba(0,0,0,.45),0 0 0 1px rgba(0,140,255,.15);
+  border-radius:28px;
+  padding:0 18px 18px;
+  background:var(--glass);
+  border:1.5px solid var(--line);
+  box-shadow:0 24px 60px rgba(0,0,0,.55);
   backdrop-filter:blur(12px);
+  color:var(--ink);
   z-index:2;
-}
-
-/* ---------- background layers ---------- */
-.watermark{
-  position:absolute;
-  inset:0;
-  background:url('../assets/background-logo.png') center 60%/460px no-repeat;
-  opacity:.13;
-  z-index:1;
-  pointer-events:none;
-}
-
-.accent-bar{
-  position:absolute;
-  left:0;right:0;top:0;
-  height:4px;
-  background:linear-gradient(90deg,#008cff,#00d4ff,#ff2d55);
-  z-index:3;
-}
-
-/* light sweep now runs once when a team sells, not nonstop */
-.light-sweep{
-  position:absolute;
-  top:-30%;
-  left:-20%;
-  width:40%;
-  height:180%;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,.14),transparent);
-  transform:translateX(-120%) rotate(20deg);
-  opacity:0;
-  z-index:6;
-  pointer-events:none;
-}
-.scoreboard-panel.sale-flash .light-sweep{
-  animation:sweep 1.1s ease-out 1;
 }
 
 /* ---------- header ---------- */
 .top-bar{
   position:relative;
-  z-index:4;
-  padding:14px 18px 10px;
+  height:120px;
+  margin:0 -18px 16px;
+  padding:0 26px 0 22px;
   display:flex;
   align-items:center;
-  justify-content:space-between;
+  gap:22px;
+  background:linear-gradient(100deg,rgba(9,13,28,.95),rgba(14,22,48,.85));
+  border-bottom:1.5px solid var(--line);
 }
-
-.brand-lockup{
-  display:flex;
-  gap:12px;
-  align-items:center;
-  min-width:0;
+.top-bar::before{
+  content:"";
+  position:absolute;
+  left:0;top:0;bottom:0;
+  width:8px;
+  background:linear-gradient(var(--brand),var(--brand2));
 }
 
 .smj-badge{
   flex:none;
-  width:60px;
-  height:60px;
+  width:92px;
+  height:92px;
   border-radius:50%;
-  background:#0d1b33;
+  background:#0c1220;
   overflow:hidden;
-  border:2px solid rgba(255,255,255,.25);
-  box-shadow:0 0 18px rgba(0,170,255,.5);
+  border:3px solid rgba(255,255,255,.18);
+  box-shadow:0 0 24px rgba(31,107,255,.55);
 }
+.smj-badge img{width:100%;height:100%;object-fit:cover;transform:scale(1.12)}
 
-.smj-badge img{
-  width:100%;
-  height:100%;
-  object-fit:contain;
-}
+.brand-text{min-width:0;flex:1}
 
 .break-title{
-  font-family:Oswald,Impact,Arial Narrow,sans-serif;
-  font-size:34px;
-  font-weight:700;
-  letter-spacing:.02em;
-  color:#fff;
-  line-height:1;
+  font-family:var(--head);
+  font-size:50px;
+  font-weight:900;
+  letter-spacing:.01em;
+  line-height:.95;
   text-transform:uppercase;
   white-space:nowrap;
-  transform-origin:left center;
 }
 
 .break-subtitle{
-  font-size:11px;
-  font-weight:600;
-  letter-spacing:.22em;
+  font-size:19px;
+  font-weight:700;
+  letter-spacing:.16em;
   text-transform:uppercase;
-  color:#7fcfff;
-  margin-top:5px;
-}
-
-.right-badges{
-  flex:none;
-  display:flex;
-  gap:12px;
-  align-items:center;
-}
-
-.league-indicator{
-  font-family:Oswald,Impact,sans-serif;
-  font-size:16px;
-  font-weight:700;
-  letter-spacing:.14em;
-  color:#0a1630;
-  background:#9cecff;
-  padding:6px 12px;
-  border-radius:8px;
-}
-
-.remaining{
-  text-align:right;
-  min-width:150px;
-}
-
-.remaining-count{
-  font-family:Oswald,Impact,sans-serif;
-  font-size:34px;
-  font-weight:700;
-  color:#fff;
-  line-height:1;
-}
-
-.remaining-label{
-  font-family:Oswald,Impact,sans-serif;
-  font-size:15px;
-  font-weight:700;
-  color:#ffd166;
-  letter-spacing:.12em;
-  margin-left:6px;
-}
-
-.progress{
-  width:150px;
-  height:6px;
-  margin:6px 0 0 auto;
-  border-radius:3px;
-  background:rgba(255,255,255,.12);
+  color:#8fb6ff;
+  margin-top:6px;
+  white-space:nowrap;
   overflow:hidden;
+  text-overflow:ellipsis;
 }
 
-.progress-fill{
-  display:block;
-  height:100%;
-  width:0;
-  background:linear-gradient(90deg,#00d4ff,#ff2d55);
-  transition:width .6s ease;
-}
+.remaining{flex:none;text-align:right}
+.remaining-count{font-family:var(--head);font-size:64px;font-weight:900;line-height:.9}
+.remaining-count em{font-style:normal;font-size:36px;color:var(--mute)}
+.remaining-label{font-size:16px;font-weight:800;letter-spacing:.24em;color:var(--gold)}
+.remaining.sold-out .remaining-count{font-size:52px;color:var(--gold)}
+.remaining.sold-out .remaining-count em{display:none}
 
-.remaining.sold-out .remaining-count{color:#ffd166}
-
-/* ---------- team grid ---------- */
-.teams-stage{
-  position:relative;
-  padding:0 18px;
-  z-index:4;
+.progress-segs{
+  position:absolute;
+  left:8px;right:0;bottom:0;
+  height:6px;
+  display:grid;
+  grid-template-columns:repeat(var(--n,32),1fr);
+  gap:2px;
 }
+.progress-segs i{background:rgba(255,255,255,.12);transition:background .4s}
+.progress-segs i.on{background:linear-gradient(90deg,var(--brand2),var(--gold))}
+
+/* ---------- team cards ---------- */
+.teams-stage{position:relative}
 
 .teams-grid{
   display:grid;
   grid-template-columns:repeat(var(--cols,8),1fr);
-  gap:6px;
+  gap:10px;
 }
 
 .team-box{
-  height:51px;
-  border-radius:10px;
-  display:flex;
-  align-items:center;
-  gap:7px;
-  padding:0 7px;
+  --teamColor:#333;
   position:relative;
+  aspect-ratio:1/1.08;
+  border-radius:14px;
   overflow:hidden;
-  background:linear-gradient(135deg,color-mix(in srgb,var(--teamColor) 55%,transparent),rgba(255,255,255,.04) 70%);
-  border:1px solid rgba(255,255,255,.13);
+  background:linear-gradient(160deg,#fff 0%,#dfe4ee 42%,#f5f7fb 58%,#c9d0de 100%);
+  box-shadow:inset 0 0 0 4px var(--teamColor),0 6px 14px rgba(0,0,0,.35);
 }
 
 .logo-plate{
+  position:absolute;
+  left:12%;right:12%;top:8%;bottom:31%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.logo-plate img{
+  max-width:100%;
+  max-height:100%;
+  object-fit:contain;
+  filter:drop-shadow(0 3px 4px rgba(0,0,0,.25));
+}
+.fallback-initials{
+  display:none;
+  font-family:var(--head);
+  font-size:40px;
+  font-weight:900;
+  color:var(--teamColor);
+}
+.logo-plate.logo-error img{display:none}
+.logo-plate.logo-error .fallback-initials{display:block}
+
+.nameplate{
+  position:absolute;
+  left:0;right:0;bottom:0;
+  height:25%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:var(--teamColor);
+  color:var(--plateText,#fff);
+  font-family:var(--head);
+  font-size:28px;
+  font-weight:900;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+}
+
+/* slow foil shine across open spots */
+.team-box::after{
+  content:"";
+  position:absolute;
+  inset:-40%;
+  background:linear-gradient(115deg,transparent 42%,rgba(255,255,255,.75) 50%,transparent 58%);
+  transform:translateX(-70%);
+  animation:sheen 7s infinite;
+  animation-delay:var(--d,0s);
+  pointer-events:none;
+}
+
+/* sold */
+.team-box.sold{
+  background:linear-gradient(160deg,#1b2030,#0e121c);
+  box-shadow:inset 0 0 0 3px rgba(255,255,255,.08),0 6px 14px rgba(0,0,0,.35);
+}
+.team-box.sold::after{display:none}
+.team-box.sold .logo-plate img{filter:grayscale(1) brightness(1.6);opacity:.22}
+.team-box.sold .nameplate{
+  display:block;
+  padding:0 6px;
+  background:linear-gradient(90deg,var(--gold),#ffe08a);
+  color:#1a1300;
+  font-family:Inter,Arial,sans-serif;
+  font-size:15px;
+  font-weight:800;
+  letter-spacing:0;
+  text-transform:none;
+  line-height:2.05;
+  text-align:center;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.team-box.sold.no-buyer .nameplate{
+  background:#2a3042;
+  color:var(--mute);
+  font-family:var(--head);
+  font-size:24px;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  line-height:1.3;
+}
+.sold-stamp{
+  position:absolute;
+  left:50%;top:37%;
+  transform:translate(-50%,-50%) rotate(-12deg);
+  font-family:var(--head);
+  font-size:30px;
+  font-weight:900;
+  letter-spacing:.08em;
+  color:var(--brand2);
+  border:3px solid var(--brand2);
+  border-radius:8px;
+  padding:2px 10px;
+  background:rgba(255,45,85,.08);
+}
+.team-box.just-sold .sold-stamp{animation:stampIn .45s cubic-bezier(.2,1.6,.4,1)}
+.team-box.latest{animation:latestGlow 1.6s ease-in-out 3}
+
+/* fewer teams (WNBA): same card size, centred */
+.teams-grid.roomy{justify-content:center;grid-template-columns:repeat(var(--cols),112px)}
+
+/* ---------- team takeover (plays on every sale) ---------- */
+.takeover{
+  --teamColor:#1f6bff;
+  position:absolute;
+  inset:0;
+  z-index:8;
+  display:flex;
+  align-items:center;
+  gap:40px;
+  padding:0 60px;
+  overflow:hidden;
+  border-radius:inherit;
+  background:radial-gradient(circle at 25% 50%,color-mix(in srgb,var(--teamColor) 80%,#fff),var(--teamColor) 45%,color-mix(in srgb,var(--teamColor) 55%,#000) 100%);
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+}
+.takeover.show{visibility:visible;animation:toInOut var(--toMs,4.2s) ease forwards}
+
+.to-rays{
+  position:absolute;
+  left:25%;top:50%;
+  width:1700px;height:1700px;
+  margin:-850px 0 0 -850px;
+  background:repeating-conic-gradient(rgba(255,255,255,.10) 0 6deg,transparent 6deg 18deg);
+  animation:spin 14s linear infinite;
+}
+.to-pattern{
+  position:absolute;
+  inset:-80px;
+  opacity:.10;
+  background-size:120px;
+  background-repeat:space;
+  transform:rotate(-12deg);
+  animation:drift 6s linear infinite;
+}
+.to-wipe{position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.55) 50%,transparent 70%);transform:translateX(-100%)}
+.takeover.show .to-wipe{animation:wipe 1s ease-out forwards}
+
+.to-logo{
   position:relative;
   flex:none;
-  width:38px;
-  height:38px;
+  width:300px;height:300px;
   border-radius:50%;
   background:#fff;
   display:flex;
   align-items:center;
   justify-content:center;
-  box-shadow:0 0 0 2px var(--teamColor),0 2px 6px rgba(0,0,0,.4);
+  box-shadow:0 0 0 10px rgba(255,255,255,.25),0 0 0 22px rgba(255,255,255,.1),0 30px 60px rgba(0,0,0,.45);
 }
+.to-logo .logo-plate{position:static;width:72%;height:72%}
+.to-logo .logo-plate img{width:100%;height:100%}
+.takeover.show .to-logo{animation:slam .55s cubic-bezier(.2,1.6,.4,1) both}
 
-.logo-plate img{
-  width:82%;
-  height:82%;
-  object-fit:contain;
-}
-
-.fallback-initials{
-  display:none;
-  font-family:Oswald,Impact,sans-serif;
-  font-size:13px;
-  font-weight:700;
+.to-text{position:relative;min-width:0}
+.takeover.show .to-text{animation:rise .5s .25s both}
+.to-kicker{
+  display:inline-block;
+  font-family:var(--head);
+  font-size:30px;
+  font-weight:900;
+  letter-spacing:.3em;
+  background:#fff;
   color:var(--teamColor);
+  padding:6px 18px;
+  border-radius:8px;
 }
-
-.logo-plate.logo-error img{display:none}
-.logo-plate.logo-error .fallback-initials{display:block}
-
-.team-text{min-width:0}
-
-.team-abbr{
-  font-family:Oswald,Impact,sans-serif;
-  font-size:18px;
-  font-weight:700;
+.to-team{
+  font-family:var(--head);
+  font-size:104px;
+  font-weight:900;
+  line-height:.88;
+  text-transform:uppercase;
   color:#fff;
-  letter-spacing:.03em;
-  line-height:1;
+  margin:14px 0 18px;
+  text-shadow:0 6px 20px rgba(0,0,0,.35);
+  white-space:nowrap;
 }
-
-.team-buyer{
-  display:none;
-  font-family:Oswald,Arial Narrow,sans-serif;
-  font-size:12px;
-  font-weight:500;
-  letter-spacing:.01em;
-  color:#ffd166;
-  margin-top:2px;
+.to-team small{display:block;font-size:46px;opacity:.85;letter-spacing:.04em}
+.to-buyer{
+  display:inline-block;
+  max-width:540px;
+  font-size:34px;
+  font-weight:800;
+  color:#fff;
+  background:rgba(0,0,0,.35);
+  border:2px solid rgba(255,255,255,.4);
+  padding:10px 22px;
+  border-radius:999px;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
 }
-
-.team-box.sold{
-  background:linear-gradient(135deg,rgba(255,45,85,.28),rgba(255,255,255,.03));
-  border-color:rgba(255,45,85,.7);
-}
-.team-box.sold .team-abbr{color:#ffb3c1;font-size:15px;padding-top:4px}
-.team-box.sold .team-buyer{display:block}
-
-.team-box.sold::after{
-  content:"SOLD";
-  position:absolute;
-  right:-21px;
-  top:4px;
-  transform:rotate(38deg);
-  background:#ff2d55;
-  color:#fff;
-  font-family:Oswald,Impact,sans-serif;
-  font-weight:700;
-  font-size:8px;
-  letter-spacing:.12em;
-  padding:0 18px;
-  box-shadow:0 1px 4px rgba(0,0,0,.4);
-}
-
-.team-box.just-sold{
-  animation:soldBoxPulse 1.2s ease-out;
-}
-.team-box.just-sold::after{
-  animation:ribbonIn .5s cubic-bezier(.18,.9,.12,1);
-}
-
-.team-box.latest{
-  box-shadow:0 0 0 2px #ffd166,0 0 18px rgba(255,209,102,.7);
-}
-
-/* wider tiles for smaller leagues (WNBA) */
-.teams-grid.roomy .team-box{height:51px;padding:0 12px;gap:12px}
-.teams-grid.roomy .team-abbr{font-size:22px}
-.teams-grid.roomy .team-buyer{font-size:15px}
+.to-buyer:empty{display:none}
+.to-confetti{position:absolute;inset:0;pointer-events:none}
+.to-confetti i{position:absolute;top:-30px;width:14px;height:22px;animation:fall var(--fd,2s) linear var(--dl,0s) forwards}
 
 /* ---------- ticker ---------- */
 .ticker-wrap{
   position:absolute;
-  left:18px;
-  right:18px;
-  top:326px;
-  height:42px;
+  left:36px;
+  right:36px;
+  top:1215px;
+  height:72px;
   display:flex;
-  z-index:5;
-  border-radius:10px;
+  z-index:3;
+  border-radius:18px;
   overflow:hidden;
-  border:1px solid rgba(255,255,255,.12);
-  background:rgba(0,0,0,.55);
+  border:1.5px solid var(--line);
+  background:var(--glass);
+  backdrop-filter:blur(10px);
 }
-
 .ticker-label{
   flex:none;
-  width:120px;
-  background:#ff2d55;
   display:flex;
   align-items:center;
-  justify-content:center;
-  gap:7px;
-  font-family:Oswald,Impact,sans-serif;
-  font-size:17px;
-  font-weight:700;
-  letter-spacing:.1em;
+  gap:10px;
+  padding:0 22px;
+  background:linear-gradient(90deg,var(--brand2),#ff6a3d);
+  font-family:var(--head);
+  font-size:30px;
+  font-weight:900;
+  letter-spacing:.12em;
   color:#fff;
 }
-
-.live-dot{
-  width:8px;
-  height:8px;
-  border-radius:50%;
-  background:#fff;
-  animation:livePulse 1.6s ease-in-out infinite;
-}
-
+.live-dot{width:12px;height:12px;border-radius:50%;background:#fff;animation:livePulse 1.2s ease-in-out infinite}
 .ticker-window{
   position:relative;
   flex:1;
   overflow:hidden;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent);
+          mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent);
 }
-
 .ticker-text{
   position:absolute;
   left:0;
   white-space:nowrap;
-  line-height:42px;
-  font-family:Oswald,Impact,sans-serif;
-  font-size:24px;
-  font-weight:500;
-  letter-spacing:.03em;
-  color:#eaf6ff;
+  line-height:72px;
+  font-family:var(--head);
+  font-size:32px;
+  font-weight:800;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  color:var(--ink);
   animation:tickerMove var(--tickerDuration,16s) linear infinite;
 }
 
-/* ---------- just sold callout ---------- */
-.sold-callout{
-  position:absolute;
-  left:150px;
-  right:150px;
-  top:150px;
-  height:84px;
-  border-radius:16px;
-  display:flex;
-  align-items:center;
-  gap:16px;
-  padding:0 22px;
-  background:linear-gradient(90deg,#c8102e,#ff2d55);
-  box-shadow:0 12px 40px rgba(0,0,0,.6),0 0 0 3px #ffd166;
-  z-index:9;
-  opacity:0;
-  transform:translateY(20px) scale(.9);
-  pointer-events:none;
-}
-
-.sold-callout.show{
-  animation:calloutInOut 4.2s cubic-bezier(.18,.9,.12,1) forwards;
-}
-
-.sold-callout .logo-plate{
-  width:60px;
-  height:60px;
-  box-shadow:0 0 0 3px #fff,0 4px 10px rgba(0,0,0,.4);
-}
-
-.callout-text{min-width:0}
-
-.callout-kicker{
-  display:block;
-  font-family:Oswald,Impact,sans-serif;
-  font-size:14px;
-  letter-spacing:.2em;
-  color:#ffe3a3;
-}
-
-.callout-main{
-  font-family:Oswald,Impact,sans-serif;
-  font-size:32px;
-  font-weight:700;
-  color:#fff;
-  line-height:1.05;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-
 /* ---------- animations ---------- */
-@keyframes soldBoxPulse{
-  0%{transform:scale(1)}
-  35%{transform:scale(1.1);box-shadow:0 0 0 2px #ffd166,0 0 30px #ff2d55}
-  100%{transform:scale(1)}
-}
-
-@keyframes ribbonIn{
-  0%{transform:translate(30px,-30px) rotate(38deg);opacity:0}
-  100%{transform:rotate(38deg);opacity:1}
-}
-
-@keyframes calloutInOut{
-  0%{opacity:0;transform:translateY(20px) scale(.9)}
-  10%{opacity:1;transform:translateY(0) scale(1.03)}
-  16%{transform:scale(1)}
-  85%{opacity:1;transform:scale(1)}
-  100%{opacity:0;transform:translateY(-10px) scale(.97)}
-}
-
-@keyframes sweep{
-  0%{transform:translateX(-120%) rotate(20deg);opacity:1}
-  100%{transform:translateX(600%) rotate(20deg);opacity:1}
-}
-
-@keyframes livePulse{
-  0%,100%{opacity:1}
-  50%{opacity:.3}
-}
-
-@keyframes tickerMove{
-  from{transform:translateX(var(--tickerStart,740px))}
-  to{transform:translateX(-100%)}
-}
-
-/* SMJ 9x16 V2 HARD-CODED DIMENSION LOCK
-   Stage: 1080 x 1920
-   Scoreboard: 900 x 382
-   Scoreboard position: x=90 y=180
-*/
+@keyframes sheen{0%,70%{transform:translateX(-70%)}85%,100%{transform:translateX(70%)}}
+@keyframes stampIn{from{transform:translate(-50%,-50%) rotate(-12deg) scale(2.4);opacity:0}}
+@keyframes latestGlow{50%{box-shadow:inset 0 0 0 3px var(--gold),0 0 30px 6px rgba(255,204,77,.7)}}
+@keyframes toInOut{0%{opacity:0}6%{opacity:1}90%{opacity:1}100%{opacity:0}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes drift{to{background-position:240px 120px}}
+@keyframes wipe{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+@keyframes slam{from{transform:scale(2.6) rotate(-14deg);opacity:0}to{transform:none;opacity:1}}
+@keyframes rise{from{transform:translateY(40px);opacity:0}}
+@keyframes fall{to{transform:translateY(760px) rotate(720deg)}}
+@keyframes livePulse{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes tickerMove{from{transform:translateX(var(--tickerStart,740px))}to{transform:translateX(-100%)}}
 
 /* ---------- full-screen moments (Stash or Pass, Spin 2 Choose 1) ---------- */
 .moment{
