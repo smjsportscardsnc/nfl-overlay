@@ -61,3 +61,9 @@ Gameday look (trading-card board + team takeover):
 - Control panel: new "Break details" field. Fixed the Animations buttons being
   added again every time Firebase updated.
 - Test from the browser console: testTakeover("buf","@cardking88").
+- New break animations, drawn in code in the Gameday style (no image files):
+  Free Respin, Double Respin, Stash or Pass, Spin 2 Choose 1, See 3 Take 2,
+  Last Spot. Colour bands slash in, a chrome-edged card flips in with a flash
+  and confetti, the words drop in, two foil shines, then it flips out (~4.6s).
+  Add or edit them in js/moments.js. Test: playMoment("free-respin").
+  (assets/graphics PNGs are no longer used.)

@@ -104,7 +104,9 @@ function renderMomentButtons(){
     const b=document.createElement("button");
     b.type="button";
     b.className="moment-btn";
-    b.innerHTML=`<img src="${m.image}" alt=""/><span></span>`;
+    b.innerHTML=`<i class="moment-badge"></i><span></span>`;
+    b.style.setProperty("--c1",m.colors[0]);b.style.setProperty("--c2",m.colors[1]);b.style.setProperty("--c3",m.colors[2]);
+    b.querySelector("i").textContent=m.badge||"";
     b.querySelector("span").textContent=m.label;
     b.addEventListener("click",()=>triggerMoment(id));
     wrap.appendChild(b);

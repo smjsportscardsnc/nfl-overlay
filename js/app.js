@@ -153,8 +153,10 @@ window.testTakeover=(abbr,buyer)=>{const t=teams().find(x=>x.abbr===abbr)||teams
 // ---------- full-screen moments ----------
 const MOMENT_MS=4600;
 const momentEl=document.getElementById("moment"),
-momentImg=document.getElementById("momentImg"),
-momentShine=document.getElementById("momentShine"),
+momentKicker=document.getElementById("momentKicker"),
+momentTitle=document.getElementById("momentTitle"),
+momentSub=document.getElementById("momentSub"),
+momentBadge=document.getElementById("momentBadge"),
 momentSparks=document.getElementById("momentSparks");
 let momentTimer=null,lastMomentAt=null;
 const swoosh=new Audio("assets/sounds/swoosh.wav");
@@ -170,13 +172,21 @@ function playMoment(id){
   clearTimeout(momentTimer);
   momentEl.classList.remove("play");
   m.colors.forEach((c,i)=>momentEl.style.setProperty(`--c${i+1}`,c));
-  momentImg.src=m.image;
-  momentShine.style.setProperty("--img",`url("${m.image}")`);
+  momentKicker.textContent=m.kicker||"";
+  momentKicker.hidden=!m.kicker;
+  momentTitle.replaceChildren(...(m.lines||[]).map(l=>{
+    const s=el("span",l.small?"small":"",l.t);
+    if(l.c)s.style.setProperty("--lc",l.c);
+    return s;
+  }));
+  momentTitle.classList.toggle("long",(m.lines||[]).some(l=>!l.small&&l.t.length>6));
+  momentSub.textContent=m.sub||"";
+  momentBadge.textContent=m.badge||"";
 
   // sparks that burst out when the graphic lands
   momentSparks.innerHTML="";
-  for(let i=0;i<26;i++){
-    const a=Math.random()*Math.PI*2,r=320+Math.random()*380,s=el("div","m-spark");
+  for(let i=0;i<44;i++){
+    const a=Math.random()*Math.PI*2,r=420+Math.random()*420,s=el("div","m-spark");
     s.style.setProperty("--x",`${Math.cos(a)*r}px`);
     s.style.setProperty("--y",`${Math.sin(a)*r*.75}px`);
     s.style.setProperty("--s",`${6+Math.random()*14}px`);
