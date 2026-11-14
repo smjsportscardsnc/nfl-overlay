@@ -6,64 +6,69 @@
 <title>SMJ VERTICAL 1080x1920</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Inter:wght@600;800&display=swap"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Inter:wght@600;700;800&display=swap"/>
 <link rel="stylesheet" href="css/style.css"/>
 </head>
 <body>
 <main class="overlay-frame">
   <section class="scoreboard-panel" id="scoreboardPanel">
-    <div class="watermark"></div>
-    <div class="accent-bar"></div>
-    <div class="light-sweep"></div>
-
-    <section class="top-bar">
-      <div class="brand-lockup">
-        <div class="smj-badge"><img src="assets/logo.png" alt="SMJ"/></div>
-        <div>
-          <div id="breakTitle" class="break-title">SMJ NFL BREAK</div>
-          <div class="break-subtitle">singles • rips • breaks</div>
-        </div>
+    <header class="top-bar">
+      <div class="smj-badge"><img src="assets/logo.png" alt="SMJ"/></div>
+      <div class="brand-text">
+        <div id="breakTitle" class="break-title">SMJ NFL BREAK</div>
+        <div id="breakSubtitle" class="break-subtitle">singles • rips • breaks</div>
       </div>
-
-      <div class="right-badges">
-        <div class="league-indicator" id="leagueIndicator">NFL</div>
-        <div class="remaining" id="remaining">
-          <span class="remaining-count" id="remainingCount">32</span><span class="remaining-label" id="remainingLabel">LEFT</span>
-          <div class="progress"><span class="progress-fill" id="progressFill"></span></div>
-        </div>
+      <div class="remaining" id="remaining">
+        <div class="remaining-count"><span id="remainingCount">32</span><em id="remainingTotal">/32</em></div>
+        <div class="remaining-label" id="remainingLabel">SPOTS LEFT</div>
       </div>
-    </section>
+      <div class="progress-segs" id="progressSegs"></div>
+      <div class="league-indicator" id="leagueIndicator" hidden>NFL</div>
+    </header>
 
     <section class="teams-stage">
       <div id="teamsGrid" class="teams-grid"></div>
     </section>
 
-    <footer class="ticker-wrap">
-      <div class="ticker-label"><span class="live-dot"></span>LIVE</div>
-      <div class="ticker-window">
-        <div id="tickerText" class="ticker-text">Welcome to SMJ Sports Cards & Collectibles!</div>
+    <div class="takeover" id="takeover">
+      <div class="to-rays"></div>
+      <div class="to-pattern" id="takeoverPattern"></div>
+      <div class="to-logo" id="takeoverLogo"></div>
+      <div class="to-text">
+        <span class="to-kicker">SOLD</span>
+        <div class="to-team"><small id="takeoverCity"></small><span id="takeoverName"></span></div>
+        <div class="to-buyer" id="takeoverBuyer"></div>
       </div>
-    </footer>
-
-    <div class="sold-callout" id="soldCallout">
-      <div id="calloutLogo"></div>
-      <div class="callout-text">
-        <span class="callout-kicker">JUST SOLD</span>
-        <div class="callout-main" id="calloutMain"></div>
-      </div>
+      <div class="to-wipe"></div>
+      <div class="to-confetti" id="takeoverConfetti"></div>
     </div>
   </section>
 
+  <footer class="ticker-wrap">
+    <div class="ticker-label"><span class="live-dot"></span>LIVE</div>
+    <div class="ticker-window">
+      <div id="tickerText" class="ticker-text">Welcome to SMJ Sports Cards & Collectibles!</div>
+    </div>
+  </footer>
+
   <div class="moment" id="moment">
-    <div class="m-dim"></div>
-    <div class="m-rays"></div>
-    <div class="m-streak s1"></div>
-    <div class="m-streak s2"></div>
-    <div class="m-streak s3"></div>
-    <div class="m-burst"></div>
+    <div class="gm-dim"></div>
+    <div class="gm-band b1"></div>
+    <div class="gm-band b2"></div>
+    <div class="gm-rays"></div>
+    <div class="gm-ring"></div>
+    <div class="gm-card">
+      <div class="gm-face">
+        <img class="gm-logo" src="assets/logo.png" alt=""/>
+        <div class="gm-kicker" id="momentKicker"></div>
+        <div class="gm-title" id="momentTitle"></div>
+        <div class="gm-sub" id="momentSub"></div>
+        <div class="gm-badge" id="momentBadge"></div>
+        <div class="gm-shine"></div>
+      </div>
+    </div>
     <div id="momentSparks"></div>
-    <div class="m-graphic"><img id="momentImg" alt=""/><div class="m-shine" id="momentShine"></div></div>
-    <div class="m-flash"></div>
+    <div class="gm-flash"></div>
   </div>
 </main>
 

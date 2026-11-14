@@ -1,11 +1,12 @@
 const PATH="smjOverlay/current";
-const DEFAULT={title:"SMJ NFL BREAK",ticker:"Welcome to SMJ Sports Cards & Collectibles!",sold:{},buyers:{},league:"nfl",lastSold:""};
+const DEFAULT={title:"SMJ NFL BREAK",subtitle:"singles • rips • breaks",ticker:"Welcome to SMJ Sports Cards & Collectibles!",sold:{},buyers:{},league:"nfl",lastSold:""};
 
 let state={...DEFAULT},ref=null;
 
 const teamControls=document.getElementById("teamControls"),
 titleInput=document.getElementById("titleInput"),
 tickerInput=document.getElementById("tickerInput"),
+subtitleInput=document.getElementById("subtitleInput"),
 buyerInput=document.getElementById("buyerInput"),
 connectionStatus=document.getElementById("connectionStatus"),
 commandStatus=document.getElementById("commandStatus");
@@ -19,6 +20,7 @@ function logo(abbr){const lg=currentLeague();return `https://a.espncdn.com/i/tea
 function hydrate(){
   titleInput.value=state.title||DEFAULT.title;
   tickerInput.value=state.ticker||DEFAULT.ticker;
+  subtitleInput.value=state.subtitle==null?DEFAULT.subtitle:state.subtitle;
 }
 
 function renderTeams(){
@@ -36,33 +38,7 @@ function renderTeams(){
 }
 
 function markActiveLeague(){
-  let momentCooldown=false;
-function triggerMoment(id){
-  if(momentCooldown)return;
-  const m=window.SMJ_MOMENTS[id];
-  const at=(window.firebase&&firebase.database&&firebase.database.ServerValue)?firebase.database.ServerValue.TIMESTAMP:Date.now();
-  if(ref)ref.child("moment").set({id,at}).then(()=>setCmd(`Playing ${m.label}`,"ok"));
-  // stop double taps from queuing the same animation twice
-  momentCooldown=true;
-  document.querySelectorAll(".moment-btn").forEach(b=>b.disabled=true);
-  setTimeout(()=>{momentCooldown=false;document.querySelectorAll(".moment-btn").forEach(b=>b.disabled=false)},4600);
-}
-
-function renderMomentButtons(){
-  const wrap=document.getElementById("momentButtons");
-  Object.entries(window.SMJ_MOMENTS||{}).forEach(([id,m])=>{
-    const b=document.createElement("button");
-    b.type="button";
-    b.className="moment-btn";
-    b.innerHTML=`<img src="${m.image}" alt=""/><span></span>`;
-    b.querySelector("span").textContent=m.label;
-    b.addEventListener("click",()=>triggerMoment(id));
-    wrap.appendChild(b);
-  });
-}
-renderMomentButtons();
-
-document.querySelectorAll("[data-league]").forEach(b=>b.classList.toggle("active",b.dataset.league===(state.league||"nfl")));
+  document.querySelectorAll("[data-league]").forEach(b=>b.classList.toggle("active",b.dataset.league===(state.league||"nfl")));
 }
 
 function switchLeague(league){
@@ -105,7 +81,7 @@ function resetSold(){
 }
 
 function saveText(){
-  const payload={title:titleInput.value.trim()||DEFAULT.title,ticker:tickerInput.value.trim()||DEFAULT.ticker};
+  const payload={title:titleInput.value.trim()||DEFAULT.title,subtitle:subtitleInput.value.trim(),ticker:tickerInput.value.trim()||DEFAULT.ticker};
   state={...state,...payload};
   if(ref)ref.update(payload).then(()=>setCmd("Overlay text updated.","ok"));
 }
@@ -128,7 +104,9 @@ function renderMomentButtons(){
     const b=document.createElement("button");
     b.type="button";
     b.className="moment-btn";
-    b.innerHTML=`<img src="${m.image}" alt=""/><span></span>`;
+    b.innerHTML=`<i class="moment-badge"></i><span></span>`;
+    b.style.setProperty("--c1",m.colors[0]);b.style.setProperty("--c2",m.colors[1]);b.style.setProperty("--c3",m.colors[2]);
+    b.querySelector("i").textContent=m.badge||"";
     b.querySelector("span").textContent=m.label;
     b.addEventListener("click",()=>triggerMoment(id));
     wrap.appendChild(b);

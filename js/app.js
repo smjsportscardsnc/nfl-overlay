@@ -1,23 +1,29 @@
 const PATH="smjOverlay/current";
-const DEFAULT={title:"SMJ NFL BREAK",ticker:"Welcome to SMJ Sports Cards & Collectibles!",sold:{},buyers:{},league:"nfl",lastSold:""};
-const CALLOUT_MS=4200;
+const DEFAULT={title:"SMJ NFL BREAK",subtitle:"singles • rips • breaks",ticker:"Welcome to SMJ Sports Cards & Collectibles!",sold:{},buyers:{},league:"nfl",lastSold:""};
+const TAKEOVER_MS=4200;
 const TICKER_SPEED=110; // pixels per second
 
 let state={...DEFAULT},previousSoldState={},firstSnapshot=true;
-let calloutQueue=[],calloutTimer=null;
+let takeoverQueue=[],takeoverTimer=null;
 
 const panel=document.getElementById("scoreboardPanel"),
 grid=document.getElementById("teamsGrid"),
 remaining=document.getElementById("remaining"),
 remainingCount=document.getElementById("remainingCount"),
+remainingTotal=document.getElementById("remainingTotal"),
 remainingLabel=document.getElementById("remainingLabel"),
-progressFill=document.getElementById("progressFill"),
+progressSegs=document.getElementById("progressSegs"),
 tickerText=document.getElementById("tickerText"),
 breakTitle=document.getElementById("breakTitle"),
+breakSubtitle=document.getElementById("breakSubtitle"),
 leagueIndicator=document.getElementById("leagueIndicator"),
-soldCallout=document.getElementById("soldCallout"),
-calloutLogo=document.getElementById("calloutLogo"),
-calloutMain=document.getElementById("calloutMain");
+takeover=document.getElementById("takeover"),
+takeoverLogo=document.getElementById("takeoverLogo"),
+takeoverPattern=document.getElementById("takeoverPattern"),
+takeoverCity=document.getElementById("takeoverCity"),
+takeoverName=document.getElementById("takeoverName"),
+takeoverBuyer=document.getElementById("takeoverBuyer"),
+takeoverConfetti=document.getElementById("takeoverConfetti");
 
 function currentLeague(){return window.SMJ_LEAGUES[state.league||"nfl"]||window.SMJ_LEAGUES.nfl}
 function teams(){return currentLeague().teams}
@@ -25,6 +31,12 @@ function logo(abbr){const lg=currentLeague();return `https://a.espncdn.com/i/tea
 function buyerFor(abbr){return (state.buyers&&state.buyers[abbr])||""}
 
 function el(tag,cls,text){const e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e}
+
+// light team colours (Steelers gold, Raiders silver, Saints gold) get dark nameplate text
+function isLight(hex){
+  const n=parseInt((hex||"#000").slice(1),16);
+  return (0.299*(n>>16)+0.587*(n>>8&255)+0.114*(n&255))/255>.6;
+}
 
 function logoPlate(team){
   const plate=el("div","logo-plate");
@@ -36,12 +48,12 @@ function logoPlate(team){
   return plate;
 }
 
-// Shrink the break title until it fits next to the badges
+// Shrink the break title until it fits next to the logo and counter
 function fitTitle(){
   breakTitle.style.fontSize="";
-  const max=900-36-72-document.querySelector(".right-badges").offsetWidth-24;
-  let size=34;
-  while(breakTitle.scrollWidth>max&&size>18){size-=1;breakTitle.style.fontSize=size+"px"}
+  const max=breakTitle.parentElement.clientWidth;
+  let size=50;
+  while(breakTitle.scrollWidth>max&&size>26){size-=1;breakTitle.style.fontSize=size+"px"}
 }
 
 // Same scroll speed no matter how long the message is
@@ -55,61 +67,96 @@ function fitTicker(){
 function render(){
   const lg=currentLeague(),list=teams();
   if(breakTitle.textContent!==(state.title||DEFAULT.title)){breakTitle.textContent=state.title||DEFAULT.title}
+  const sub=state.subtitle==null?DEFAULT.subtitle:state.subtitle;
+  breakSubtitle.textContent=sub;
+  breakSubtitle.hidden=!sub;
   if(tickerText.textContent!==(state.ticker||DEFAULT.ticker)){tickerText.textContent=state.ticker||DEFAULT.ticker;fitTicker()}
   leagueIndicator.textContent=lg.name;
 
   const soldN=list.filter(t=>!!state.sold?.[t.abbr]).length,left=list.length-soldN;
   remainingCount.textContent=left===0?"SOLD OUT":left;
-  remainingLabel.textContent=left===0?"":(left<=3?`OF ${list.length} · LAST ${left}`:"LEFT");
+  remainingTotal.textContent=`/${list.length}`;
+  remainingLabel.textContent=left===0?"THANK YOU!":(left<=3?`LAST ${left}!`:"SPOTS LEFT");
   remaining.classList.toggle("sold-out",left===0);
-  progressFill.style.width=`${list.length?soldN/list.length*100:0}%`;
 
-  const cols=list.length>16?8:Math.ceil(list.length/4);
+  progressSegs.style.setProperty("--n",list.length);
+  progressSegs.innerHTML="";
+  for(let i=0;i<list.length;i++)progressSegs.appendChild(el("i",i<soldN?"on":""));
+
+  const cols=list.length>16?8:Math.min(8,Math.ceil(list.length/2));
   grid.style.setProperty("--cols",cols);
   grid.classList.toggle("roomy",cols<8);
 
   grid.innerHTML="";
-  list.forEach(team=>{
+  list.forEach((team,i)=>{
     const isSold=!!state.sold?.[team.abbr],wasSold=!!previousSoldState?.[team.abbr];
+    const buyer=buyerFor(team.abbr);
     const box=el("div","team-box");
     if(isSold)box.classList.add("sold");
+    if(isSold&&!buyer)box.classList.add("no-buyer");
     if(isSold&&!wasSold&&!firstSnapshot)box.classList.add("just-sold");
     if(isSold&&state.lastSold===team.abbr)box.classList.add("latest");
     box.style.setProperty("--teamColor",team.color);
-    const text=el("div","team-text");
-    text.append(el("div","team-abbr",team.abbr.toUpperCase()),el("div","team-buyer",buyerFor(team.abbr)));
-    box.append(logoPlate(team),text);
+    box.style.setProperty("--plateText",isLight(team.color)?"#111":"#fff");
+    box.style.setProperty("--d",`${(i%8)*.15+Math.floor(i/8)*.08}s`);
+    box.append(logoPlate(team));
+    if(isSold)box.append(el("div","sold-stamp","SOLD"));
+    box.append(el("div","nameplate",isSold&&buyer?buyer:team.abbr.toUpperCase()));
     grid.appendChild(box);
   });
 
   fitTitle();
 }
 
-function queueCallouts(newlySold){
+// ---------- team takeover on each sale ----------
+function queueTakeovers(newlySold){
   newlySold.forEach(abbr=>{
     const team=teams().find(t=>t.abbr===abbr);
-    if(team)calloutQueue.push(team);
+    if(team)takeoverQueue.push(team);
   });
-  if(!calloutTimer)nextCallout();
+  if(!takeoverTimer)nextTakeover();
 }
 
-function nextCallout(){
-  const team=calloutQueue.shift();
-  if(!team){calloutTimer=null;return}
-  calloutLogo.replaceChildren(logoPlate(team));
-  soldCallout.style.setProperty("--teamColor",team.color);
-  const buyer=buyerFor(team.abbr);
-  calloutMain.textContent=`${team.city} ${team.name}`.toUpperCase()+(buyer?` → ${buyer}`:"");
-  soldCallout.classList.remove("show");void soldCallout.offsetWidth;soldCallout.classList.add("show");
-  panel.classList.remove("sale-flash");void panel.offsetWidth;panel.classList.add("sale-flash");
-  calloutTimer=setTimeout(nextCallout,CALLOUT_MS);
+function nextTakeover(){
+  const team=takeoverQueue.shift();
+  if(!team){takeoverTimer=null;return}
+  showTakeover(team,buyerFor(team.abbr));
+  takeoverTimer=setTimeout(nextTakeover,TAKEOVER_MS+200);
 }
+
+function showTakeover(team,buyer){
+  takeover.style.setProperty("--teamColor",team.color);
+  takeover.style.setProperty("--toMs",TAKEOVER_MS+"ms");
+  takeoverLogo.replaceChildren(logoPlate(team));
+  takeoverPattern.style.backgroundImage=`url("${logo(team.abbr)}")`;
+  takeoverCity.textContent=team.city;
+  takeoverName.textContent=team.name;
+  takeoverBuyer.textContent=buyer||"";
+  // shrink long team names to fit
+  const tn=takeoverName.parentElement;tn.style.fontSize="";
+  takeoverConfetti.innerHTML="";
+  const colours=["#fff",team.color,"#ffcc4d"];
+  for(let i=0;i<40;i++){
+    const c=el("i");
+    c.style.left=Math.random()*100+"%";
+    c.style.background=colours[i%3];
+    c.style.setProperty("--dl",(Math.random()*.8).toFixed(2)+"s");
+    c.style.setProperty("--fd",(1.6+Math.random()).toFixed(2)+"s");
+    takeoverConfetti.appendChild(c);
+  }
+  takeover.classList.remove("show");void takeover.offsetWidth;takeover.classList.add("show");
+  const max=panel.clientWidth-60-300-40-60;let size=104;
+  while(tn.scrollWidth>max&&size>56){size-=4;tn.style.fontSize=size+"px"}
+}
+window.testTakeover=(abbr,buyer)=>{const t=teams().find(x=>x.abbr===abbr)||teams()[0];showTakeover(t,buyer||"@cardking88")};
 
 // ---------- full-screen moments ----------
 const MOMENT_MS=4600;
 const momentEl=document.getElementById("moment"),
-momentImg=document.getElementById("momentImg"),
-momentShine=document.getElementById("momentShine"),
+momentKicker=document.getElementById("momentKicker"),
+momentTitle=document.getElementById("momentTitle"),
+momentSub=document.getElementById("momentSub"),
+momentBadge=document.getElementById("momentBadge"),
 momentSparks=document.getElementById("momentSparks");
 let momentTimer=null,lastMomentAt=null;
 const swoosh=new Audio("assets/sounds/swoosh.wav");
@@ -125,13 +172,21 @@ function playMoment(id){
   clearTimeout(momentTimer);
   momentEl.classList.remove("play");
   m.colors.forEach((c,i)=>momentEl.style.setProperty(`--c${i+1}`,c));
-  momentImg.src=m.image;
-  momentShine.style.setProperty("--img",`url("${m.image}")`);
+  momentKicker.textContent=m.kicker||"";
+  momentKicker.hidden=!m.kicker;
+  momentTitle.replaceChildren(...(m.lines||[]).map(l=>{
+    const s=el("span",l.small?"small":"",l.t);
+    if(l.c)s.style.setProperty("--lc",l.c);
+    return s;
+  }));
+  momentTitle.classList.toggle("long",(m.lines||[]).some(l=>!l.small&&l.t.length>6));
+  momentSub.textContent=m.sub||"";
+  momentBadge.textContent=m.badge||"";
 
   // sparks that burst out when the graphic lands
   momentSparks.innerHTML="";
-  for(let i=0;i<26;i++){
-    const a=Math.random()*Math.PI*2,r=320+Math.random()*380,s=el("div","m-spark");
+  for(let i=0;i<44;i++){
+    const a=Math.random()*Math.PI*2,r=420+Math.random()*420,s=el("div","m-spark");
     s.style.setProperty("--x",`${Math.cos(a)*r}px`);
     s.style.setProperty("--y",`${Math.sin(a)*r*.75}px`);
     s.style.setProperty("--s",`${6+Math.random()*14}px`);
@@ -161,7 +216,7 @@ if(window.SMJFIREBASE_READY&&window.smjDB){
     state={...DEFAULT,...data,sold:{...(data.sold||{})},buyers:{...(data.buyers||{})}};
     const newlySold=(firstSnapshot||leagueChanged)?[]:Object.keys(state.sold).filter(a=>state.sold[a]&&!previousSoldState[a]);
     render();
-    if(newlySold.length)queueCallouts(newlySold);
+    if(newlySold.length)queueTakeovers(newlySold);
     previousSoldState={...state.sold};
     // play a moment when the control panel sends a new one (never on first load)
     const mAt=data.moment&&data.moment.at;
