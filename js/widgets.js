@@ -124,10 +124,8 @@
         const key=sport+"|"+lgName;
         if(key===last)return;
         sd.dataset.sport=sport;
-        q(".sd-kicker").textContent=left?"NOW BREAKING":"LET'S RIP";
         q(".sd-big").textContent=left?lgName:art.word;
         q(".sd-art").innerHTML=piece.art;
-        q(".sd-tag").textContent=piece.tag;
         fitBig(sd);
         if(last){sd.classList.remove("swap");void sd.offsetWidth;sd.classList.add("swap")}
         last=key;
