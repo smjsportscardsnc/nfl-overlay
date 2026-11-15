@@ -97,3 +97,37 @@ test("health check reports keys and connections without leaking them", async () 
   const noKey = await (await worker.fetch(new Request("https://w.test/health"), { ...env, WHATNOT_TOKEN: "" }, { waitUntil() {} })).json();
   assert.equal(noKey.ready, false); assert.equal(noKey.whatnotTokenSet, false);
 });
+
+test("Stream Deck triggers: key check, animations with cooldown, auto-mark, undo", async () => {
+  const db = { smjOverlay: { current: { league: "nfl", sold: { dal: true }, buyers: { dal: "ryan" }, prices: { dal: 12 }, lastSold: "dal" }, whatnot: { settings: { enabled: false } } } };
+  fakeBackends(db, {});
+  const e = { ...env, TRIGGER_KEY: "k123" };
+  const go = async (path, key = "k123") => {
+    const res = await worker.fetch(new Request(`https://w.test/go/${path}?key=${key}`), e, { waitUntil() {} });
+    return { status: res.status, body: await res.json() };
+  };
+  assert.equal((await go("stash-or-pass", "nope")).status, 403);
+  assert.equal((await go("stash-or-pass", "")).status, 403);
+
+  assert.equal((await go("stash-or-pass")).body.ok, true);
+  assert.equal(db.smjOverlay.current.moment.id, "stash-or-pass");
+  const at = db.smjOverlay.current.moment.at;
+  assert.match((await go("spin-2-choose-1")).body.did, /ignored/); // double press within 4.6s
+  assert.equal(db.smjOverlay.current.moment.at, at);
+  db.smjOverlay.current.moment.at = Date.now() - 10000;
+  await go("spin-2-choose-1");
+  assert.equal(db.smjOverlay.current.moment.id, "spin-2-choose-1");
+
+  assert.equal((await go("automark-toggle")).body.did, "auto-mark on");
+  assert.equal(db.smjOverlay.whatnot.settings.enabled, true);
+  assert.equal((await go("automark-off")).body.did, "auto-mark off");
+  assert.equal(db.smjOverlay.whatnot.settings.enabled, false);
+
+  await go("undo-last");
+  assert.equal(db.smjOverlay.current.sold.dal, false);
+  assert.equal(db.smjOverlay.current.lastSold, "");
+  assert.equal((await go("undo-last")).body.did, "nothing to undo");
+
+  const bad = await go("explode");
+  assert.equal(bad.body.ok, false);
+});

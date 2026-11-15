@@ -96,6 +96,10 @@ body.src-anim .moment{--cy:960px}
 .socials.show{opacity:1}
 .socials.flip .so-ic,.socials.flip .so-text{animation:soFlip .6s cubic-bezier(.2,1.3,.4,1)}
 .so-ic{flex:none;width:56px;height:56px;border-radius:50%;display:grid;place-items:center;font-family:var(--head);font-size:24px;font-weight:900;color:#fff;border:2px solid rgba(255,255,255,.25)}
+.so-ic svg{width:30px;height:30px;fill:#fff;filter:drop-shadow(0 1px 2px rgba(0,0,0,.35))}
+.so-ic img{width:36px;height:36px;object-fit:contain}
+.so-ic.dark{color:#111}
+.so-ic.dark svg{fill:#111;filter:none}
 .so-text{min-width:0}
 .so-text small{display:block;font-size:11px;font-weight:800;letter-spacing:.2em;color:var(--mute)}
 .so-text b{display:block;font-family:var(--head);font-size:30px;font-weight:900;letter-spacing:.03em;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}

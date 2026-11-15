@@ -58,7 +58,6 @@
       youtube:{n:"YouTube",i:"YT",c:"#ff0033"},
       x:{n:"X",i:"X",c:"#111"},
       facebook:{n:"Facebook",i:"FB",c:"#1877f2"},
-      whatnot:{n:"Whatnot",i:"WN",c:"linear-gradient(135deg,#ffd400,#ffb000)"},
       discord:{n:"Discord",i:"DC",c:"#5865f2"},
       twitch:{n:"Twitch",i:"TW",c:"#9146ff"}
     };
@@ -68,8 +67,12 @@
       const [k,h]=items[idx%items.length],p=P[k];
       so.classList.add("show");
       so.classList.remove("flip");void so.offsetWidth;so.classList.add("flip");
-      $("soIcon").textContent=p.i;
-      $("soIcon").style.background=p.c;
+      const ic=$("soIcon"),logo=(window.SMJ_SOCIAL_ICONS||{})[k]||{};
+      ic.style.background=p.c;
+      ic.classList.toggle("dark",!!p.dark);
+      if(logo.path)ic.innerHTML=`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${logo.path}"/></svg>`;
+      else if(logo.img)ic.innerHTML=`<img src="${logo.img}" alt=""/>`;
+      else ic.textContent=p.i;
       $("soLabel").textContent=`FOLLOW ON ${p.n.toUpperCase()}`;
       $("soHandle").textContent=h;
       idx++;

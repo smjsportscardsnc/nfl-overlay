@@ -70,6 +70,31 @@ Open the control panel and press **Auto-mark is off** in the Whatnot Auto-Mark
 box so it turns green. Sales from then on mark themselves. Turn it off between
 shows or whenever you want to mark teams by hand.
 
+## Stream Deck buttons
+
+The helper has trigger links that do the same thing as the Live Show buttons,
+so a Stream Deck key can fire them:
+
+| Link | Does |
+|---|---|
+| `/go/spin-2-choose-1` | plays Spin 2 Choose 1 |
+| `/go/stash-or-pass` | plays Stash or Pass |
+| `/go/automark-toggle` (or `automark-on`, `automark-off`) | Whatnot Auto-mark |
+| `/go/undo-last` | makes the last sold team available again |
+
+Any other animation id in `js/moments.js` works too. Each link needs
+`?key=...`, a private key, so nobody else can trigger your overlay. A second
+press while an animation is still playing is ignored.
+
+Set it up once (makes the key, saves it on Cloudflare, writes your links to
+`stream-deck-links.txt` in this folder, which stays out of git):
+
+    npm run stream-deck
+
+Then in the Stream Deck app: drag **System → Website** onto a key, paste a
+link, and tick **GET request in background**. Run the command again to change
+the key (old links stop working).
+
 ## Day to day
 
 - Pick the right league in the control panel before the break. The helper only
@@ -87,6 +112,7 @@ shows or whenever you want to mark teams by hand.
 |---|---|
 | `WHATNOT_TOKEN` | Whatnot personal access token (read:orders, read:shows) |
 | `WHATNOT_WEBHOOK_SECRET` | Webhook signing secret from the Whatnot dashboard |
+| `TRIGGER_KEY` | Private key for the Stream Deck links (set by `npm run stream-deck`) |
 | `FIREBASE_AUTH` | Optional. Only needed if you lock down your Firebase rules later |
 
 Firebase data the helper uses, under `smjOverlay/whatnot`: `settings`

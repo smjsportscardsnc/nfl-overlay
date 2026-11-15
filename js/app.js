@@ -168,7 +168,9 @@ let momentTimer=null,lastMomentAt=null;
 const swoosh=momentEl?new Audio("assets/sounds/swoosh.wav"):null;
 if(swoosh)swoosh.preload="auto";
 
+// Sound is off unless "Animation sound" is set to Swoosh on the Setup page.
 function playSound(volume){
+  if(!swoosh||state.animSound!=="swoosh")return;
   try{const a=swoosh.cloneNode();a.volume=volume;a.play().catch(()=>{})}catch(e){}
 }
 

@@ -26,6 +26,7 @@ function logo(abbr){const lg=currentLeague();return `https://a.espncdn.com/i/tea
 
 function hydrate(){
   document.querySelectorAll("[data-rows]").forEach(b=>b.classList.toggle("active",+b.dataset.rows===(+state.boardRows||3)));
+  document.querySelectorAll("[data-sound]").forEach(b=>b.classList.toggle("active",b.dataset.sound===(state.animSound||"off")));
   setVal(titleInput,state.title||DEFAULT.title);
   setVal(tickerInput,state.ticker||DEFAULT.ticker);
   setVal(brandInput,state.brand||DEFAULT.brand);
@@ -156,6 +157,11 @@ document.querySelectorAll("[data-rows]").forEach(b=>b.addEventListener("click",(
   if(ref)ref.update({boardRows:state.boardRows}).then(()=>setCmd(`Board layout: ${b.textContent}`,"ok"));
 }));
 
+document.querySelectorAll("[data-sound]").forEach(b=>b.addEventListener("click",()=>{
+  state.animSound=b.dataset.sound;hydrate();
+  if(ref)ref.update({animSound:state.animSound}).then(()=>setCmd(`Animation sound: ${b.textContent}`,"ok"));
+}));
+
 // ---------- OBS sources ----------
 const SOURCES=[
   ["Spot board","board.html",1080,700,"Your team board. Uses about 690px of height at 4 rows, 390px at 3 rows, 250px at 2 rows (top of the source); crop the rest in OBS if you like"],
@@ -188,7 +194,7 @@ const SOURCES=[
 if(currencySelect)currencySelect.addEventListener("change",()=>{state.currency=currencySelect.value;if(ref)ref.update({currency:state.currency})});
 
 // ---------- socials ----------
-const SOCIALS=[["instagram","Instagram"],["tiktok","TikTok"],["youtube","YouTube"],["x","X / Twitter"],["facebook","Facebook"],["whatnot","Whatnot"],["discord","Discord"],["twitch","Twitch"]];
+const SOCIALS=[["instagram","Instagram"],["tiktok","TikTok"],["youtube","YouTube"],["x","X / Twitter"],["facebook","Facebook"],["discord","Discord"],["twitch","Twitch"]];
 SOCIALS.forEach(([k,n])=>{
   const l=document.createElement("label");l.textContent=n;
   const i=document.createElement("input");i.type="text";i.id=`social_${k}`;i.placeholder="@handle";i.autocomplete="off";

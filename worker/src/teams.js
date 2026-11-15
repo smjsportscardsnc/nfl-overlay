@@ -132,3 +132,4 @@ export const LEAGUES = {"nfl":[{"abbr":"sf","city":"San Francisco","name":"49ers
   {"abbr":"con","city":"Connecticut","name":"Sun"},
   {"abbr":"gs","city":"Golden State","name":"Valkyries"},
   {"abbr":"dal","city":"Dallas","name":"Wings"}]};
+export const MOMENTS = ["free-respin","double-respin","stash-or-pass","spin-2-choose-1","see-3-take-2","last-spot"];
