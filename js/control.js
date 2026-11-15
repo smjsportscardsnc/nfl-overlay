@@ -170,13 +170,16 @@ document.querySelectorAll("[data-facecam]").forEach(b=>b.addEventListener("click
 
 // ---------- OBS sources ----------
 const SOURCES=[
-  ["Spot board","board.html",1080,700,"Your team board. Uses about 690px of height at 4 rows, 390px at 3 rows, 250px at 2 rows (top of the source); crop the rest in OBS if you like"],
-  ["Spot strip (2 rows)","strip.html",1080,260,"Always the compact 2-row board, sized exactly"],
+  ["Spot board · 4 rows","board-4-rows.html",1080,680,"The full-size team board, always 4 rows"],
+  ["Spot board · 3 rows","board-3-rows.html",1080,402,"Always 3 rows. Leaves room for the facecam row above or below it"],
+  ["Spot board · 2 rows","board-2-rows.html",1080,252,"The compact board, always 2 rows"],
   ["Animations","animations.html",1080,1920,"The SOLD team takeover on every sale, plus Spin 2 Choose 1 and Stash or Pass, all in the middle of the screen. Put it on top of your other sources"],
   ["Ticker","ticker.html",1080,72,"Scrolling LIVE ticker"],
-  ["Break stats","stats.html",520,120,"Average spot, total and spots sold"],
+  ["Break stats","stats.html",220,360,"Spots sold, average spot and total. Same height as the facecam, so it sits on either side of it"],
   ["Socials","socials.html",420,80,"Rotates through your handles"],
   ["Facecam frame","facecam.html",640,360,"Animated border. With a camera: LIVE tag and your name over your webcam. Without: a rotating logo reel (switch below)"],
+  ["Side art · left","side-left.html",220,360,"Goes left of the facecam. Football, basketball, baseball or hockey art that follows the league you pick on the Live Show panel"],
+  ["Side art · right","side-right.html",220,360,"Goes right of the facecam. Matches the left panel with a second piece of league art"],
   ["All-in-one (phone)","index-1080x1920.html",1080,1920,"Board, ticker, takeover and animations together"]
 ];
 (function renderSources(){

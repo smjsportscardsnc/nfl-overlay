@@ -20,6 +20,9 @@
   const socialList=s=>Object.keys(P).map(k=>[k,String((s.socials||{})[k]||"").trim()]).filter(x=>x[1]);
   const socialIcon=k=>{const l=(window.SMJ_SOCIAL_ICONS||{})[k]||{};return l.path?`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${l.path}"/></svg>`:l.img?`<img src="${l.img}" alt=""/>`:esc(P[k].i)};
 
+  // shrink a one-line text until it fits its box
+  const fitText=(el,max,min)=>{let size=max;el.style.fontSize=size+"px";while(el.scrollWidth>el.clientWidth+1&&size>min){size-=2;el.style.fontSize=size+"px"}};
+
   // ---------- price tag ----------
   const pt=$("priceTag");
   if(pt){
@@ -56,6 +59,7 @@
       $("stSold").textContent=sold.length;
       $("stOf").textContent="/"+list.length;
       $("stRing").style.setProperty("--p",list.length?sold.length/list.length*100:0);
+      st.querySelectorAll(".st-v").forEach(v=>fitText(v,48,24));
       const key=[sold.length,total].join("|");
       if(last&&key!==last)pop(st);
       last=key;
@@ -87,6 +91,30 @@
       items=next;idx=0;clearInterval(timer);show();
       if(items.length>1)timer=setInterval(show,6000);
     });
+  }
+
+  // ---------- side art beside the facecam (follows the league) ----------
+  const sd=$("side");
+  if(sd){
+    let last="";
+    const paint=s=>{
+      const lg=s.league||"nfl",sport=(window.SMJ_LEAGUE_SPORT||{})[lg]||"football";
+      const art=(window.SMJ_SPORT_ART||{})[sport];if(!art)return;
+      const left=sd.dataset.side!=="right",piece=left?art.left:art.right;
+      const lgName=((window.SMJ_LEAGUES||{})[lg]||{}).name||"NFL";
+      const key=sport+"|"+lgName;
+      if(key===last)return;
+      sd.dataset.sport=sport;
+      $("sdKicker").textContent=left?"NOW BREAKING":"LET'S RIP";
+      $("sdBig").textContent=left?lgName:art.word;
+      $("sdArt").innerHTML=piece.art;
+      $("sdTag").textContent=piece.tag;
+      fitText($("sdBig"),left?78:56,28);
+      if(last){sd.classList.remove("swap");void sd.offsetWidth;sd.classList.add("swap")}
+      last=key;
+    };
+    hooks.push(paint);
+    if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{if($("sdBig").textContent)fitText($("sdBig"),sd.dataset.side!=="right"?78:56,28)});
   }
 
   // ---------- facecam frame ----------

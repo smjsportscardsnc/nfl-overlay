@@ -71,14 +71,20 @@ Gameday look (trading-card board + team takeover):
 
 Separate OBS sources (like Breakers Overlays):
 Add only the ones you want as Browser Sources. All update live from control.html.
-- board.html          1080 x 700   spot board + team takeover on each sale
-- strip.html          1080 x 260   two-row landscape board + takeover
+- board-4-rows.html   1080 x 680   spot board, always 4 rows
+- board-3-rows.html   1080 x 402   spot board, always 3 rows
+- board-2-rows.html   1080 x 252   spot board, always 2 rows
+  (board.html and strip.html still work for old OBS scenes but aren't listed any more)
 - animations.html     1080 x 1920  full-screen break animations
 - ticker.html         1080 x 72    scrolling LIVE ticker
 - price-tag.html       520 x 180   break type + price (show/hide from panel)
-- stats.html           520 x 120   average spot, total, spots sold
+- stats.html           220 x 360   spots sold, average spot, total (sits beside the facecam)
 - socials.html         420 x 80    rotates through your handles
 - facecam.html         640 x 360   animated border, LIVE tag, brand chip
+- side-left.html       220 x 360   league art for the left of the facecam
+- side-right.html      220 x 360   league art for the right of the facecam
+  Football for NFL, basketball for NBA/WNBA, baseball for MLB, hockey for NHL.
+  Artwork is in js/sport-art.js.
 - index-1080x1920.html 1080 x 1920 all-in-one (board, ticker, takeover, animations)
 The control panel lists every link with its size and a Copy button.
 New Firebase fields: brand, prices {abbr: number}, currency, priceTag {label, amount, show}, socials {platform: handle}.
@@ -89,6 +95,9 @@ New Firebase fields: brand, prices {abbr: number}, currency, priceTag {label, am
   2 rows, from the control panel (Firebase field boardRows). 3 and 2 rows use a
   compact header; on the all-in-one page they sit just above the ticker so the
   facecam fits above. Heights: 4 rows 670px, 3 rows 373px, 2 rows 232px.
+- The fixed board sources (board-2/3/4-rows.html) ignore boardRows and always lay
+  out a 32-team grid, so every league fits the same source size. boardRows now
+  only affects the all-in-one page (Setup > All-in-one Rows).
 
 Whatnot auto-mark:
 - New "Whatnot Auto-Mark" box in the control panel. When it's on, every auction

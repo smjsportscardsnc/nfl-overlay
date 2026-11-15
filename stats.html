@@ -2,22 +2,24 @@
 <html class="src">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=520"/>
-<title>Break stats · SMJ overlay (520x120)</title>
+<meta name="viewport" content="width=220"/>
+<title>Break stats · SMJ overlay (220x360)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Inter:wght@600;700;800&display=swap"/>
 <link rel="stylesheet" href="css/style.css"/>
 <link rel="stylesheet" href="css/sources.css"/>
 </head>
-<body class="src src-stats" style="--w:520px;--h:120px">
-<!-- OBS Browser Source: 520 x 120 -->
+<body class="src src-stats" style="--w:220px;--h:360px">
+<!-- OBS Browser Source: 220 x 360 (fits beside the 640 x 360 facecam) -->
 <main class="src-frame">
   <div class="stats" id="stats">
+    <div class="st-ring" id="stRing"><b id="stSold">0</b><small id="stOf">/32</small></div>
+    <div class="st-k st-ring-k">SPOTS SOLD</div>
+    <div class="st-div"></div>
     <div class="st-cell"><div class="st-k">AVG SPOT</div><div class="st-v" id="stAvg">—</div></div>
     <div class="st-div"></div>
     <div class="st-cell"><div class="st-k">TOTAL</div><div class="st-v" id="stTotal">—</div></div>
-    <div class="st-ring" id="stRing"><b id="stSold">0</b><small id="stOf">/32</small></div>
   </div>
 </main>
 
