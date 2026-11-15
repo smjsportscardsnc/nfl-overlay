@@ -1,5 +1,5 @@
 const PATH="smjOverlay/current";
-const DEFAULT={brand:"SMJ Sports Cards",title:"SMJ NFL BREAK",subtitle:"singles • rips • breaks",ticker:"Welcome to SMJ Sports Cards & Collectibles!",sold:{},buyers:{},prices:{},league:"nfl",lastSold:"",currency:"$",priceTag:{label:"Free Respin",amount:"",show:false},socials:{}};
+const DEFAULT={brand:"SMJ Sports Cards",title:"SMJ NFL BREAK",subtitle:"singles • rips • breaks",ticker:"Welcome to SMJ Sports Cards & Collectibles!",sold:{},buyers:{},prices:{},league:"nfl",lastSold:"",boardSize:"m",currency:"$",priceTag:{label:"Free Respin",amount:"",show:false},socials:{}};
 
 let state={...DEFAULT},ref=null;
 
@@ -21,6 +21,7 @@ function teams(){return currentLeague().teams}
 function logo(abbr){const lg=currentLeague();return `https://a.espncdn.com/i/teamlogos/${lg.cdn}/500/${abbr}.png`}
 
 function hydrate(){
+  document.querySelectorAll("[data-size]").forEach(b=>b.classList.toggle("active",b.dataset.size===(state.boardSize||"m")));
   titleInput.value=state.title||DEFAULT.title;
   tickerInput.value=state.ticker||DEFAULT.ticker;
   brandInput.value=state.brand||DEFAULT.brand;
@@ -128,6 +129,10 @@ renderMomentButtons();
 
 document.querySelectorAll("[data-league]").forEach(b=>b.addEventListener("click",()=>switchLeague(b.dataset.league)));
 document.getElementById("saveTextBtn").addEventListener("click",saveText);
+document.querySelectorAll("[data-size]").forEach(b=>b.addEventListener("click",()=>{
+  state.boardSize=b.dataset.size;hydrate();
+  if(ref)ref.update({boardSize:state.boardSize}).then(()=>setCmd(`Board size: ${b.textContent}`,"ok"));
+}));
 
 // ---------- OBS sources ----------
 const SOURCES=[
