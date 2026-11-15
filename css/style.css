@@ -644,3 +644,8 @@ body{
 @keyframes gmShine{0%,30%{transform:translateX(-120%)}44%{transform:translateX(120%)}44.1%,58%{transform:translateX(-120%)}72%,100%{transform:translateX(120%)}}
 @keyframes gmFlash{0%{opacity:.45}100%{opacity:0}}
 @keyframes mSpark{0%{opacity:1;transform:translate(0,0) rotate(0) scale(1)}100%{opacity:0;transform:translate(var(--x),var(--y)) rotate(540deg) scale(.4)}}
+
+/* ---------- board size (control panel: Large / Medium / Small) ---------- */
+.scoreboard-panel[data-size="m"]{transform:scale(.78) !important;transform-origin:50% 0 !important}
+.scoreboard-panel[data-size="s"]{transform:scale(.6) !important;transform-origin:50% 0 !important}
+body.src-strip .scoreboard-panel[data-size]{transform:none !important}

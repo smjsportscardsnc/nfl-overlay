@@ -81,3 +81,6 @@ Add only the ones you want as Browser Sources. All update live from control.html
 - index-1080x1920.html 1080 x 1920 all-in-one (board, ticker, takeover, animations)
 The control panel lists every link with its size and a Copy button.
 New Firebase fields: brand, prices {abbr: number}, currency, priceTag {label, amount, show}, socials {platform: handle}.
+- Board size: Large / Medium / Small buttons in the control panel (Firebase field
+  boardSize: "l" | "m" | "s", default "m"). Scales the board from its top centre on
+  the all-in-one page and board.html; the strip keeps its own size.

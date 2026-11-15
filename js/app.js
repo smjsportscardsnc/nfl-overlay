@@ -1,5 +1,5 @@
 const PATH="smjOverlay/current";
-const DEFAULT={brand:"SMJ Sports Cards",title:"SMJ NFL BREAK",subtitle:"singles • rips • breaks",ticker:"Welcome to SMJ Sports Cards & Collectibles!",sold:{},buyers:{},prices:{},league:"nfl",lastSold:"",currency:"$",priceTag:{label:"Free Respin",amount:"",show:false},socials:{}};
+const DEFAULT={brand:"SMJ Sports Cards",title:"SMJ NFL BREAK",subtitle:"singles • rips • breaks",ticker:"Welcome to SMJ Sports Cards & Collectibles!",sold:{},buyers:{},prices:{},league:"nfl",lastSold:"",boardSize:"m",currency:"$",priceTag:{label:"Free Respin",amount:"",show:false},socials:{}};
 const TAKEOVER_MS=4200;
 const TICKER_SPEED=110; // pixels per second
 
@@ -71,6 +71,7 @@ function render(){
   if(tickerText&&tickerText.textContent!==(state.ticker||DEFAULT.ticker)){tickerText.textContent=state.ticker||DEFAULT.ticker;fitTicker()}
   (window.SMJ_HOOKS||[]).forEach(fn=>{try{fn(state)}catch(e){console.error(e)}});
   if(!grid)return;
+  panel.dataset.size=["l","m","s"].includes(state.boardSize)?state.boardSize:"m";
   if(breakTitle.textContent!==(state.title||DEFAULT.title)){breakTitle.textContent=state.title||DEFAULT.title}
   const sub=state.subtitle==null?DEFAULT.subtitle:state.subtitle;
   if(breakSubtitle){breakSubtitle.textContent=sub;breakSubtitle.hidden=!sub}
