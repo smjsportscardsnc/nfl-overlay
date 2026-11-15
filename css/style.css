@@ -151,7 +151,8 @@ body{
 
 .teams-grid{
   display:grid;
-  grid-template-columns:repeat(var(--cols,8),1fr);
+  grid-template-columns:repeat(var(--cols,8),minmax(0,112px));
+  justify-content:center;
   gap:10px;
 }
 
@@ -266,7 +267,7 @@ body{
 .team-box.latest{animation:latestGlow 1.6s ease-in-out 3}
 
 /* fewer teams (WNBA): same card size, centred */
-.teams-grid.roomy{justify-content:center;grid-template-columns:repeat(var(--cols),112px)}
+
 
 /* ---------- team takeover (plays on every sale) ---------- */
 .takeover{
@@ -645,7 +646,45 @@ body{
 @keyframes gmFlash{0%{opacity:.45}100%{opacity:0}}
 @keyframes mSpark{0%{opacity:1;transform:translate(0,0) rotate(0) scale(1)}100%{opacity:0;transform:translate(var(--x),var(--y)) rotate(540deg) scale(.4)}}
 
-/* ---------- board size (control panel: Large / Medium / Small) ---------- */
-.scoreboard-panel[data-size="m"]{transform:scale(.78) !important;transform-origin:50% 0 !important}
-.scoreboard-panel[data-size="s"]{transform:scale(.6) !important;transform-origin:50% 0 !important}
-body.src-strip .scoreboard-panel[data-size]{transform:none !important}
+
+/* ---------- board layouts: 4 rows (original), 3 rows, 2 rows ----------
+   3 and 2 rows use a compact header and, on the all-in-one page, sit with
+   their bottom just above the ticker so the facecam fits above them. */
+.overlay-frame .scoreboard-panel:is([data-rows="3"],[data-rows="2"]){top:auto !important;bottom:732px !important}
+.scoreboard-panel:is([data-rows="3"],[data-rows="2"]){padding:0 12px 12px}
+.scoreboard-panel:is([data-rows="3"],[data-rows="2"]) .top-bar{height:66px;margin:0 -12px 10px;padding:0 20px 0 16px;gap:12px}
+.scoreboard-panel:is([data-rows="3"],[data-rows="2"]) .top-bar::before{width:6px}
+.scoreboard-panel:is([data-rows="3"],[data-rows="2"]) .smj-badge{width:50px;height:50px;border-width:2px}
+.scoreboard-panel:is([data-rows="3"],[data-rows="2"]) .brand-text{display:flex;align-items:baseline;gap:16px}
+.scoreboard-panel:is([data-rows="3"],[data-rows="2"]) .break-title{font-size:34px}
+.scoreboard-panel:is([data-rows="3"],[data-rows="2"]) .break-subtitle{font-size:13px;margin:0}
+.scoreboard-panel:is([data-rows="3"],[data-rows="2"]) .remaining{display:flex;align-items:baseline;gap:10px}
+.scoreboard-panel:is([data-rows="3"],[data-rows="2"]) .remaining-count{font-size:42px}
+.scoreboard-panel:is([data-rows="3"],[data-rows="2"]) .remaining-count em{font-size:22px}
+.scoreboard-panel:is([data-rows="3"],[data-rows="2"]) .remaining-label{font-size:12px}
+.scoreboard-panel:is([data-rows="3"],[data-rows="2"]) .progress-segs{height:4px}
+
+.scoreboard-panel[data-rows="3"] .teams-grid{gap:7px}
+.scoreboard-panel[data-rows="3"] .team-box{border-radius:11px;box-shadow:inset 0 0 0 3px var(--teamColor),0 4px 10px rgba(0,0,0,.35)}
+.scoreboard-panel[data-rows="3"] .nameplate{font-size:22px}
+.scoreboard-panel[data-rows="3"] .team-box.sold .nameplate{font-size:11.5px;line-height:2.15;padding:0 4px}
+.scoreboard-panel[data-rows="3"] .team-box.sold.no-buyer .nameplate{font-size:19px;line-height:1.2}
+.scoreboard-panel[data-rows="3"] .sold-stamp{font-size:20px;border-width:2px;padding:1px 6px;border-radius:6px}
+.scoreboard-panel[data-rows="3"] .to-logo{width:210px;height:210px}
+.scoreboard-panel[data-rows="3"] .to-team{font-size:82px;margin:8px 0 12px}
+.scoreboard-panel[data-rows="3"] .to-team small{font-size:34px}
+.scoreboard-panel[data-rows="3"] .to-kicker{font-size:24px;padding:4px 14px}
+.scoreboard-panel[data-rows="3"] .to-buyer{font-size:26px;padding:6px 18px}
+
+.scoreboard-panel[data-rows="2"] .teams-grid{gap:6px}
+.scoreboard-panel[data-rows="2"] .team-box{aspect-ratio:1/1.22;border-radius:9px;box-shadow:inset 0 0 0 3px var(--teamColor),0 3px 8px rgba(0,0,0,.35)}
+.scoreboard-panel[data-rows="2"] .nameplate{font-size:17px;height:26%}
+.scoreboard-panel[data-rows="2"] .team-box.sold .nameplate{font-size:9.5px;line-height:2.4;padding:0 3px}
+.scoreboard-panel[data-rows="2"] .team-box.sold.no-buyer .nameplate{font-size:15px;line-height:1.5}
+.scoreboard-panel[data-rows="2"] .sold-stamp{font-size:15px;border-width:2px;padding:0 4px;border-radius:5px}
+.scoreboard-panel[data-rows="2"] .takeover{gap:24px;padding:0 40px}
+.scoreboard-panel[data-rows="2"] .to-logo{width:170px;height:170px;box-shadow:0 0 0 6px rgba(255,255,255,.25),0 0 0 14px rgba(255,255,255,.1),0 16px 30px rgba(0,0,0,.45)}
+.scoreboard-panel[data-rows="2"] .to-kicker{font-size:20px;padding:3px 12px}
+.scoreboard-panel[data-rows="2"] .to-team{font-size:70px;margin:6px 0 10px}
+.scoreboard-panel[data-rows="2"] .to-team small{font-size:28px}
+.scoreboard-panel[data-rows="2"] .to-buyer{font-size:22px;padding:5px 16px}

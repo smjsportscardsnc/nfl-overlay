@@ -84,3 +84,7 @@ New Firebase fields: brand, prices {abbr: number}, currency, priceTag {label, am
 - Board size: Large / Medium / Small buttons in the control panel (Firebase field
   boardSize: "l" | "m" | "s", default "m"). Scales the board from its top centre on
   the all-in-one page and board.html; the strip keeps its own size.
+- Board layout (replaces board size): 4 rows (original), 3 rows (default) or
+  2 rows, from the control panel (Firebase field boardRows). 3 and 2 rows use a
+  compact header; on the all-in-one page they sit just above the ticker so the
+  facecam fits above. Heights: 4 rows 670px, 3 rows 373px, 2 rows 232px.

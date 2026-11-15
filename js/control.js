@@ -1,5 +1,5 @@
 const PATH="smjOverlay/current";
-const DEFAULT={brand:"SMJ Sports Cards",title:"SMJ NFL BREAK",subtitle:"singles • rips • breaks",ticker:"Welcome to SMJ Sports Cards & Collectibles!",sold:{},buyers:{},prices:{},league:"nfl",lastSold:"",boardSize:"m",currency:"$",priceTag:{label:"Free Respin",amount:"",show:false},socials:{}};
+const DEFAULT={brand:"SMJ Sports Cards",title:"SMJ NFL BREAK",subtitle:"singles • rips • breaks",ticker:"Welcome to SMJ Sports Cards & Collectibles!",sold:{},buyers:{},prices:{},league:"nfl",lastSold:"",boardRows:3,currency:"$",priceTag:{label:"Free Respin",amount:"",show:false},socials:{}};
 
 let state={...DEFAULT},ref=null;
 
@@ -21,7 +21,7 @@ function teams(){return currentLeague().teams}
 function logo(abbr){const lg=currentLeague();return `https://a.espncdn.com/i/teamlogos/${lg.cdn}/500/${abbr}.png`}
 
 function hydrate(){
-  document.querySelectorAll("[data-size]").forEach(b=>b.classList.toggle("active",b.dataset.size===(state.boardSize||"m")));
+  document.querySelectorAll("[data-rows]").forEach(b=>b.classList.toggle("active",+b.dataset.rows===(+state.boardRows||3)));
   titleInput.value=state.title||DEFAULT.title;
   tickerInput.value=state.ticker||DEFAULT.ticker;
   brandInput.value=state.brand||DEFAULT.brand;
@@ -129,15 +129,15 @@ renderMomentButtons();
 
 document.querySelectorAll("[data-league]").forEach(b=>b.addEventListener("click",()=>switchLeague(b.dataset.league)));
 document.getElementById("saveTextBtn").addEventListener("click",saveText);
-document.querySelectorAll("[data-size]").forEach(b=>b.addEventListener("click",()=>{
-  state.boardSize=b.dataset.size;hydrate();
-  if(ref)ref.update({boardSize:state.boardSize}).then(()=>setCmd(`Board size: ${b.textContent}`,"ok"));
+document.querySelectorAll("[data-rows]").forEach(b=>b.addEventListener("click",()=>{
+  state.boardRows=+b.dataset.rows;hydrate();
+  if(ref)ref.update({boardRows:state.boardRows}).then(()=>setCmd(`Board layout: ${b.textContent}`,"ok"));
 }));
 
 // ---------- OBS sources ----------
 const SOURCES=[
-  ["Spot board","board.html",1080,700,"Your team board, with the team takeover on every sale"],
-  ["Spot strip (landscape)","strip.html",1080,260,"Two-row board for horizontal layouts"],
+  ["Spot board","board.html",1080,700,"Your team board, with the team takeover on every sale. Uses about 690px of height at 4 rows, 390px at 3 rows, 250px at 2 rows (top of the source); crop the rest in OBS if you like"],
+  ["Spot strip (2 rows)","strip.html",1080,260,"Always the compact 2-row board, sized exactly"],
   ["Animations","animations.html",1080,1920,"Full-screen break animations (Free Respin, etc.)"],
   ["Ticker","ticker.html",1080,72,"Scrolling LIVE ticker"],
   ["Price tag","price-tag.html",520,180,"Break type and price for your facecam corner"],
