@@ -9,10 +9,11 @@
 // Secrets (set with `npx wrangler secret put NAME`):
 //   WHATNOT_TOKEN           Whatnot personal access token (read:orders)
 //   WHATNOT_WEBHOOK_SECRET  signing secret from the Whatnot developer dashboard (wn_wh_...)
+//   TRIGGER_KEY             private key for the Stream Deck trigger links (/go/...)
 //   FIREBASE_AUTH           optional: Firebase database secret, if your rules need one
 // Vars (wrangler.toml): FIREBASE_URL, OVERLAY_PATH, WHATNOT_PATH
 
-import { LEAGUES } from "./teams.js";
+import { LEAGUES, MOMENTS } from "./teams.js";
 import { matchTeam, isSkippable, buyerName, pricePaid } from "./match.js";
 import { verifyWebhook } from "./verify.js";
 
@@ -31,6 +32,19 @@ export default {
     // Answers yes/no only, never the keys or any order data.
     if (request.method === "GET" && url.pathname === "/health") {
       return Response.json(await health(env), { headers: { "cache-control": "no-store" } });
+    }
+
+    // Stream Deck buttons: /go/<action>?key=<TRIGGER_KEY>
+    if ((request.method === "GET" || request.method === "POST") && url.pathname.startsWith("/go/")) {
+      if (!env.TRIGGER_KEY || !safeEqual(url.searchParams.get("key") || "", env.TRIGGER_KEY)) {
+        return Response.json({ ok: false, error: "wrong or missing key" }, { status: 403 });
+      }
+      const action = decodeURIComponent(url.pathname.slice(4)).replace(/\/+$/, "");
+      try {
+        return Response.json(await trigger(env, action), { headers: { "cache-control": "no-store" } });
+      } catch (e) {
+        return Response.json({ ok: false, error: String(e.message || e) }, { status: 500 });
+      }
     }
 
     if (request.method === "POST" && url.pathname === "/whatnot/webhook") {
@@ -60,10 +74,53 @@ export default {
   },
 };
 
+// ---------- Stream Deck triggers ----------
+const MOMENT_COOLDOWN_MS = 4600; // same as the Live Show buttons: a double press doesn't queue it twice
+
+export async function trigger(env, action) {
+  if (MOMENTS.includes(action)) {
+    const last = await fb(env, "GET", env.OVERLAY_PATH + "/moment");
+    if (last?.at && Date.now() - last.at < MOMENT_COOLDOWN_MS) {
+      return { ok: true, did: "ignored, an animation is still playing" };
+    }
+    // a new timestamp is what tells the overlays to play it
+    await fb(env, "PUT", env.OVERLAY_PATH + "/moment", { id: action, at: Date.now() });
+    return { ok: true, did: `playing ${action}` };
+  }
+
+  if (action === "automark-on" || action === "automark-off" || action === "automark-toggle") {
+    const now = !!(await fb(env, "GET", env.WHATNOT_PATH + "/settings/enabled"));
+    const next = action === "automark-toggle" ? !now : action === "automark-on";
+    if (next !== now) {
+      await fb(env, "PATCH", env.WHATNOT_PATH + "/settings", { enabled: next, enabledAt: next ? Date.now() : null });
+    }
+    return { ok: true, did: `auto-mark ${next ? "on" : "off"}` };
+  }
+
+  if (action === "undo-last") {
+    const overlay = (await fb(env, "GET", env.OVERLAY_PATH)) || {};
+    const abbr = overlay.lastSold;
+    if (!abbr || !overlay.sold?.[abbr]) return { ok: true, did: "nothing to undo" };
+    await fb(env, "PATCH", env.OVERLAY_PATH, {
+      [`sold/${abbr}`]: false, [`buyers/${abbr}`]: "", [`prices/${abbr}`]: 0, lastSold: "",
+    });
+    return { ok: true, did: `${abbr.toUpperCase()} is available again` };
+  }
+
+  return { ok: false, error: `unknown action "${action}"`, actions: [...MOMENTS, "automark-on", "automark-off", "automark-toggle", "undo-last"] };
+}
+
+function safeEqual(a, b) {
+  let diff = a.length ^ b.length;
+  for (let i = 0; i < Math.max(a.length, b.length); i++) diff |= (a.charCodeAt(i) || 0) ^ (b.charCodeAt(i) || 0);
+  return diff === 0;
+}
+
 async function health(env) {
   const out = {
     whatnotTokenSet: !!env.WHATNOT_TOKEN,
     webhookSecretSet: !!env.WHATNOT_WEBHOOK_SECRET,
+    streamDeckKeySet: !!env.TRIGGER_KEY,
     whatnotApi: "not checked",
     firebaseRead: "not checked",
     firebaseWrite: "not checked",

@@ -6,7 +6,8 @@
     "deploy": "wrangler deploy",
     "logs": "wrangler tail",
     "sync-teams": "node scripts/sync-teams.mjs",
-    "test": "node --test test/*.test.mjs"
+    "test": "node --test test/*.test.mjs",
+    "stream-deck": "node scripts/stream-deck-setup.mjs"
   },
   "devDependencies": {
     "wrangler": "^4.0.0"
