@@ -3,103 +3,69 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>SMJ Overlay Control</title>
+<title>SMJ Live Show</title>
 <link rel="stylesheet" href="css/control.css"/>
 </head>
-<body>
-<header>
-  <div>
-    <h1>SMJ Overlay Control</h1>
-    <p id="connectionStatus" class="connection warning">Loading Firebase…</p>
-    <p id="commandStatus" class="command-status">Ready.</p>
+<body class="page-live">
+<header class="topbar">
+  <div class="topbar-title">
+    <h1>Live Show</h1>
+    <div class="status-row">
+      <span id="connectionStatus" class="connection warning">Loading Firebase…</span>
+      <span id="commandStatus" class="command-status">Ready.</span>
+    </div>
   </div>
-  <button class="danger" id="resetAllBtn" type="button">Reset Sold Teams</button>
+  <nav class="topbar-actions">
+    <a class="nav-link" href="setup.html">Setup &amp; OBS links</a>
+    <button class="danger" id="resetAllBtn" type="button">Reset Sold Teams</button>
+  </nav>
 </header>
 
-<section class="panel">
-  <h2>League Selection</h2>
-  <div class="buttons">
-    <button type="button" data-league="nfl">NFL</button>
-    <button type="button" data-league="nba">NBA</button>
-    <button type="button" data-league="mlb">MLB</button>
-    <button type="button" data-league="nhl">NHL</button>
-    <button type="button" data-league="wnba">WNBA</button>
+<main class="live-grid">
+  <section class="panel teams-panel">
+    <div class="panel-head">
+      <h2>Teams</h2>
+      <span id="spotsLeft" class="pill"></span>
+    </div>
+    <div class="buttons chips league-chips">
+      <button type="button" data-league="nfl">NFL</button>
+      <button type="button" data-league="nba">NBA</button>
+      <button type="button" data-league="mlb">MLB</button>
+      <button type="button" data-league="nhl">NHL</button>
+      <button type="button" data-league="wnba">WNBA</button>
+    </div>
+    <div class="row buyer-row">
+      <label>Next buyer<input id="buyerInput" type="text" placeholder="@whatnot_username" autocomplete="off"/></label>
+      <label class="narrow">Price paid<input id="priceInput" type="text" inputmode="decimal" placeholder="optional" autocomplete="off"/></label>
+    </div>
+    <p class="hint small">Type the buyer (optional), then tap their team. Tap a sold team to make it available again.</p>
+    <div id="teamControls" class="team-controls"></div>
+  </section>
+
+  <div class="side-col">
+    <section class="panel" id="whatnotPanel">
+      <div class="panel-head">
+        <h2>Whatnot Auto-Mark</h2>
+        <button id="wnToggle" type="button" class="ghost small-btn">Auto-mark is off</button>
+      </div>
+      <p class="hint small"><span id="wnStatus">Waiting for Firebase…</span> Auction sales mark their team from the end of the listing title ("… - Dallas Cowboys"). Giveaways are ignored.</p>
+      <div id="wnLog" class="wn-log"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Animations</h2>
+      <div id="momentButtons" class="moment-buttons"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Break Info</h2>
+      <label>Break title<input id="titleInput" type="text" value="SMJ NFL BREAK"/></label>
+      <label>Break details<input id="subtitleInput" type="text" placeholder="2025 Prizm Football · Hobby · Box 2 of 3"/></label>
+      <label>Ticker<input id="tickerInput" type="text" value="Welcome to SMJ Sports Cards &amp; Collectibles!"/></label>
+      <button id="saveTextBtn" type="button">Update Overlay Text</button>
+    </section>
   </div>
-</section>
-
-<section class="panel">
-  <h2>Board Layout</h2>
-  <p class="hint">How many rows of teams the spot board uses. 3 and 2 rows are short enough to leave room for your facecam above the board; on the all-in-one overlay they sit just above the ticker.</p>
-  <div class="buttons">
-    <button type="button" data-rows="4">4 rows (original)</button>
-    <button type="button" data-rows="3">3 rows</button>
-    <button type="button" data-rows="2">2 rows (compact)</button>
-  </div>
-</section>
-
-<section class="panel">
-  <h2>Animations</h2>
-  <p class="hint">Plays a full-screen animation across the overlay (about 4.5 seconds).</p>
-  <div id="momentButtons" class="moment-buttons"></div>
-</section>
-
-<section class="panel">
-  <h2>OBS Browser Sources</h2>
-  <p class="hint">Add each one you want in OBS: Sources → + → Browser Source, paste the link and set the width and height shown. Everything updates live from this panel, no refresh needed.</p>
-  <div id="sourceList" class="source-list"></div>
-</section>
-
-<section class="panel">
-  <h2>Price Tag</h2>
-  <p class="hint">A small box for your facecam corner (Price tag source). Pick a break type or type your own, add a price, then Show.</p>
-  <div class="buttons chips" id="ptPresets"></div>
-  <div class="row">
-    <label>Label<input id="ptLabelInput" type="text" placeholder="Free Respin"/></label>
-    <label class="narrow">Price<input id="ptAmountInput" type="text" inputmode="decimal" placeholder="9"/></label>
-  </div>
-  <div class="buttons">
-    <button id="ptShowBtn" type="button">Show / Update</button>
-    <button id="ptHideBtn" type="button" class="ghost">Hide</button>
-  </div>
-</section>
-
-<section class="panel">
-  <h2>Overlay Text Controls</h2>
-  <label>Brand Name (facecam frame)<input id="brandInput" type="text" placeholder="SMJ Sports Cards"/></label>
-  <label>Break Title<input id="titleInput" type="text" value="SMJ NFL BREAK"/></label>
-  <label>Break Details (line under the title)<input id="subtitleInput" type="text" placeholder="2025 Prizm Football · Hobby · Box 2 of 3"/></label>
-  <label>Ticker Text<input id="tickerInput" type="text" value="Welcome to SMJ Sports Cards & Collectibles!"/></label>
-  <button id="saveTextBtn" type="button">Update Overlay Text</button>
-</section>
-
-<section class="panel" id="whatnotPanel">
-  <h2>Whatnot Auto-Mark</h2>
-  <p class="hint">When this is on, every auction that sells on Whatnot marks its team sold on the board, with the buyer's username and price, and plays the takeover. The team comes from the end of the listing title, for example "… - Dallas Cowboys". Giveaways and $0 orders are ignored. You can still tap teams below to fix anything.</p>
-  <div class="wn-bar">
-    <button id="wnToggle" type="button" class="ghost">Auto-mark is off</button>
-    <span id="wnStatus" class="wn-status">Waiting for Firebase…</span>
-  </div>
-  <div id="wnLog" class="wn-log"></div>
-</section>
-
-<section class="panel">
-  <h2>Assign Teams as Sold</h2>
-  <p class="hint">Type the buyer's name (optional), then tap their team. The overlay plays a full-board team takeover, then shows the team as SOLD with the buyer's name. Tap a sold team to make it available again.</p>
-  <div class="row">
-    <label>Next buyer<input id="buyerInput" type="text" placeholder="@whatnot_username" autocomplete="off"/></label>
-    <label class="narrow">Price paid<input id="priceInput" type="text" inputmode="decimal" placeholder="optional" autocomplete="off"/></label>
-    <label class="narrow">Currency<select id="currencySelect"><option>$</option><option>£</option><option>€</option></select></label>
-  </div>
-  <p class="hint">Prices feed the Break stats source (average spot and total).</p>
-  <div id="teamControls" class="team-controls"></div>
-</section>
-
-<section class="panel">
-  <h2>Socials</h2>
-  <p class="hint">Fill in the handles you want on stream. The Socials source rotates through them every few seconds. Leave a box empty to skip it.</p>
-  <div id="socialInputs" class="social-grid"></div>
-  <button id="saveSocialsBtn" type="button">Save Socials</button>
-</section>
+</main>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>

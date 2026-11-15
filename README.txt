@@ -95,3 +95,10 @@ Whatnot auto-mark:
 - The team comes from the end of the listing title ("... - Dallas Cowboys").
 - Runs as a small free Cloudflare helper in the worker/ folder. Setup steps are
   in worker/README.md.
+
+Control panel split into two pages:
+- control.html = Live Show: teams, Whatnot auto-mark, animations (Spin 2 Choose 1,
+  Stash or Pass; the list is SMJ_MOMENT_BUTTONS in js/moments.js) and
+  break title/details/ticker. Everything you touch during a break.
+- setup.html = Setup: OBS browser source links, board layout, brand name,
+  currency and socials. Set once. Each page links to the other in the top bar.

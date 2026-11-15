@@ -1,3 +1,5 @@
+// Shared by control.html (Live Show) and setup.html (Setup).
+// Every section is optional: code only runs for the parts on the current page.
 const PATH="smjOverlay/current";
 const DEFAULT={brand:"SMJ Sports Cards",title:"SMJ NFL BREAK",subtitle:"singles • rips • breaks",ticker:"Welcome to SMJ Sports Cards & Collectibles!",sold:{},buyers:{},prices:{},league:"nfl",lastSold:"",boardRows:3,currency:"$",priceTag:{label:"Free Respin",amount:"",show:false},socials:{}};
 
@@ -14,25 +16,35 @@ brandInput=document.getElementById("brandInput"),
 connectionStatus=document.getElementById("connectionStatus"),
 commandStatus=document.getElementById("commandStatus");
 
-function setConn(t,c){connectionStatus.textContent=t;connectionStatus.className=`connection ${c}`}
-function setCmd(t,c="ok"){commandStatus.textContent=t;commandStatus.className=`command-status ${c}`}
+function setConn(t,c){if(connectionStatus){connectionStatus.textContent=t;connectionStatus.className=`connection ${c}`}}
+function setCmd(t,c="ok"){if(commandStatus){commandStatus.textContent=t;commandStatus.className=`command-status ${c}`}}
+function setVal(el,v){if(el&&document.activeElement!==el)el.value=v}
+function on(id,ev,fn){const el=document.getElementById(id);if(el)el.addEventListener(ev,fn)}
 function currentLeague(){return window.SMJ_LEAGUES[state.league||"nfl"]||window.SMJ_LEAGUES.nfl}
 function teams(){return currentLeague().teams}
 function logo(abbr){const lg=currentLeague();return `https://a.espncdn.com/i/teamlogos/${lg.cdn}/500/${abbr}.png`}
 
 function hydrate(){
   document.querySelectorAll("[data-rows]").forEach(b=>b.classList.toggle("active",+b.dataset.rows===(+state.boardRows||3)));
-  titleInput.value=state.title||DEFAULT.title;
-  tickerInput.value=state.ticker||DEFAULT.ticker;
-  brandInput.value=state.brand||DEFAULT.brand;
-  currencySelect.value=state.currency||"$";
-  if(document.activeElement!==ptLabelInput)ptLabelInput.value=(state.priceTag||{}).label||"";
-  if(document.activeElement!==ptAmountInput)ptAmountInput.value=(state.priceTag||{}).amount||"";
+  setVal(titleInput,state.title||DEFAULT.title);
+  setVal(tickerInput,state.ticker||DEFAULT.ticker);
+  setVal(brandInput,state.brand||DEFAULT.brand);
+  setVal(currencySelect,state.currency||"$");
   hydrateSocials();
-  subtitleInput.value=state.subtitle==null?DEFAULT.subtitle:state.subtitle;
+  setVal(subtitleInput,state.subtitle==null?DEFAULT.subtitle:state.subtitle);
+  renderProgress();
+}
+
+function renderProgress(){
+  const el=document.getElementById("spotsLeft");
+  if(!el)return;
+  const total=teams().length,sold=teams().filter(t=>state.sold?.[t.abbr]).length;
+  el.textContent=`${total-sold} of ${total} spots left`;
 }
 
 function renderTeams(){
+  renderProgress();
+  if(!teamControls)return;
   teamControls.innerHTML="";
   teams().forEach(team=>{
     const btn=document.createElement("button");
@@ -58,7 +70,8 @@ function switchLeague(league){
   state.buyers={};
   state.sold={};
   const name=window.SMJ_LEAGUES[league].name,title=`SMJ ${name} BREAK`;
-  titleInput.value=title;
+  if(titleInput)titleInput.value=title;
+  state.title=title;
   renderTeams();
   markActiveLeague();
   state.prices={};
@@ -70,12 +83,12 @@ function toggleSold(abbr){
   const nowSold=!state.sold?.[abbr];
   const team=teams().find(t=>t.abbr===abbr);
   if(!nowSold&&!confirm(`Mark ${team?team.name:abbr.toUpperCase()} as available again?`))return;
-  const buyer=nowSold?buyerInput.value.trim():"";
-  const price=nowSold?(parseFloat(priceInput.value.replace(/[^\d.]/g,""))||0):0;
+  const buyer=nowSold&&buyerInput?buyerInput.value.trim():"";
+  const price=nowSold&&priceInput?(parseFloat(priceInput.value.replace(/[^\d.]/g,""))||0):0;
   state.prices={...(state.prices||{}),[abbr]:price};
   state.sold={...(state.sold||{}),[abbr]:nowSold};
   state.buyers={...(state.buyers||{}),[abbr]:buyer};
-  if(nowSold){state.lastSold=abbr;buyerInput.value="";priceInput.value=""}
+  if(nowSold){state.lastSold=abbr;if(buyerInput)buyerInput.value="";if(priceInput)priceInput.value=""}
   else if(state.lastSold===abbr)state.lastSold="";
   renderTeams();
   // one write, so the overlay gets the team and buyer name together
@@ -94,7 +107,12 @@ function resetSold(){
 }
 
 function saveText(){
-  const payload={brand:brandInput.value.trim()||DEFAULT.brand,title:titleInput.value.trim()||DEFAULT.title,subtitle:subtitleInput.value.trim(),ticker:tickerInput.value.trim()||DEFAULT.ticker};
+  // only the boxes on this page
+  const payload={};
+  if(brandInput)payload.brand=brandInput.value.trim()||DEFAULT.brand;
+  if(titleInput)payload.title=titleInput.value.trim()||DEFAULT.title;
+  if(subtitleInput)payload.subtitle=subtitleInput.value.trim();
+  if(tickerInput)payload.ticker=tickerInput.value.trim()||DEFAULT.ticker;
   state={...state,...payload};
   if(ref)ref.update(payload).then(()=>setCmd("Overlay text updated.","ok"));
 }
@@ -113,7 +131,10 @@ function triggerMoment(id){
 
 function renderMomentButtons(){
   const wrap=document.getElementById("momentButtons");
-  Object.entries(window.SMJ_MOMENTS||{}).forEach(([id,m])=>{
+  if(!wrap)return;
+  // Only the animations listed in SMJ_MOMENT_BUTTONS (js/moments.js) get a button.
+  const all=window.SMJ_MOMENTS||{},ids=window.SMJ_MOMENT_BUTTONS||Object.keys(all);
+  ids.filter(id=>all[id]).map(id=>[id,all[id]]).forEach(([id,m])=>{
     const b=document.createElement("button");
     b.type="button";
     b.className="moment-btn";
@@ -128,7 +149,8 @@ function renderMomentButtons(){
 renderMomentButtons();
 
 document.querySelectorAll("[data-league]").forEach(b=>b.addEventListener("click",()=>switchLeague(b.dataset.league)));
-document.getElementById("saveTextBtn").addEventListener("click",saveText);
+on("saveTextBtn","click",saveText);
+on("saveBrandBtn","click",saveText);
 document.querySelectorAll("[data-rows]").forEach(b=>b.addEventListener("click",()=>{
   state.boardRows=+b.dataset.rows;hydrate();
   if(ref)ref.update({boardRows:state.boardRows}).then(()=>setCmd(`Board layout: ${b.textContent}`,"ok"));
@@ -136,11 +158,10 @@ document.querySelectorAll("[data-rows]").forEach(b=>b.addEventListener("click",(
 
 // ---------- OBS sources ----------
 const SOURCES=[
-  ["Spot board","board.html",1080,700,"Your team board, with the team takeover on every sale. Uses about 690px of height at 4 rows, 390px at 3 rows, 250px at 2 rows (top of the source); crop the rest in OBS if you like"],
+  ["Spot board","board.html",1080,700,"Your team board. Uses about 690px of height at 4 rows, 390px at 3 rows, 250px at 2 rows (top of the source); crop the rest in OBS if you like"],
   ["Spot strip (2 rows)","strip.html",1080,260,"Always the compact 2-row board, sized exactly"],
-  ["Animations","animations.html",1080,1920,"Full-screen break animations (Free Respin, etc.)"],
+  ["Animations","animations.html",1080,1920,"The SOLD team takeover on every sale, plus Spin 2 Choose 1 and Stash or Pass, all in the middle of the screen. Put it on top of your other sources"],
   ["Ticker","ticker.html",1080,72,"Scrolling LIVE ticker"],
-  ["Price tag","price-tag.html",520,180,"Break type and price for your facecam corner"],
   ["Break stats","stats.html",520,120,"Average spot, total and spots sold"],
   ["Socials","socials.html",420,80,"Rotates through your handles"],
   ["Facecam frame","facecam.html",640,360,"Animated border with LIVE tag and your name"],
@@ -149,6 +170,7 @@ const SOURCES=[
 (function renderSources(){
   const base=location.href.replace(/[^/]*([?#].*)?$/,"");
   const wrap=document.getElementById("sourceList");
+  if(!wrap)return;
   SOURCES.forEach(([name,file,w,h,desc])=>{
     const url=base+file,row=document.createElement("div");
     row.className="source-row";
@@ -163,36 +185,22 @@ const SOURCES=[
   });
 })();
 
-// ---------- price tag ----------
-const ptLabelInput=document.getElementById("ptLabelInput"),ptAmountInput=document.getElementById("ptAmountInput");
-["Free Respin","Double Respin","Stash or Pass","Spin 2 Choose 1","See 3 Take 2","Spot Price"].forEach(l=>{
-  const b=document.createElement("button");b.type="button";b.className="ghost";b.textContent=l;
-  b.addEventListener("click",()=>{ptLabelInput.value=l});
-  document.getElementById("ptPresets").appendChild(b);
-});
-function savePriceTag(show){
-  const priceTag={label:ptLabelInput.value.trim()||"Free Respin",amount:ptAmountInput.value.trim(),show};
-  state.priceTag=priceTag;
-  if(ref)ref.update({priceTag}).then(()=>setCmd(show?`Price tag showing: ${priceTag.label}`:"Price tag hidden.","ok"));
-}
-document.getElementById("ptShowBtn").addEventListener("click",()=>savePriceTag(true));
-document.getElementById("ptHideBtn").addEventListener("click",()=>savePriceTag(false));
-currencySelect.addEventListener("change",()=>{state.currency=currencySelect.value;if(ref)ref.update({currency:state.currency})});
+if(currencySelect)currencySelect.addEventListener("change",()=>{state.currency=currencySelect.value;if(ref)ref.update({currency:state.currency})});
 
 // ---------- socials ----------
 const SOCIALS=[["instagram","Instagram"],["tiktok","TikTok"],["youtube","YouTube"],["x","X / Twitter"],["facebook","Facebook"],["whatnot","Whatnot"],["discord","Discord"],["twitch","Twitch"]];
 SOCIALS.forEach(([k,n])=>{
   const l=document.createElement("label");l.textContent=n;
   const i=document.createElement("input");i.type="text";i.id=`social_${k}`;i.placeholder="@handle";i.autocomplete="off";
-  l.appendChild(i);document.getElementById("socialInputs").appendChild(l);
+  const box=document.getElementById("socialInputs");if(box){l.appendChild(i);box.appendChild(l)}
 });
 function hydrateSocials(){SOCIALS.forEach(([k])=>{const i=document.getElementById(`social_${k}`);if(i&&document.activeElement!==i)i.value=(state.socials||{})[k]||""})}
-document.getElementById("saveSocialsBtn").addEventListener("click",()=>{
+on("saveSocialsBtn","click",()=>{
   const socials={};SOCIALS.forEach(([k])=>{socials[k]=document.getElementById(`social_${k}`).value.trim()});
   state.socials=socials;
   if(ref)ref.update({socials}).then(()=>setCmd("Socials saved.","ok"));
 });
-document.getElementById("resetAllBtn").addEventListener("click",resetSold);
+on("resetAllBtn","click",resetSold);
 
 hydrate();
 renderTeams();
@@ -203,7 +211,11 @@ if(window.SMJFIREBASE_READY&&window.smjDB){
   setConn("Firebase connected","ok");
   setCmd("Ready.","ok");
 
-  ref.once("value").then(s=>{if(!s.exists())return ref.set(DEFAULT)});
+  ref.once("value").then(s=>{
+    if(!s.exists())return ref.set(DEFAULT);
+    // the price tag controls were removed, so don't leave an old one showing
+    if(s.val().priceTag&&s.val().priceTag.show)ref.child("priceTag/show").set(false);
+  });
 
   ref.on("value",snap=>{
     const data=snap.val();

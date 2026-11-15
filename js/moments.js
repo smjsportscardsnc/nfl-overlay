@@ -2,6 +2,10 @@
 // Each one is drawn in code (no image files), in the Gameday style.
 // To add one, copy an entry: lines are the big title words (c = colour,
 // small = a small connector word like "or"), badge is the stamp in the corner.
+// Animations that get a button on the Live Show panel, in this order.
+// Add an id from the list below to bring one back.
+window.SMJ_MOMENT_BUTTONS = ["spin-2-choose-1", "stash-or-pass"];
+
 window.SMJ_MOMENTS = {
   "free-respin": {
     label: "Free Respin",

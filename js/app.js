@@ -150,7 +150,7 @@ function showTakeover(team,buyer){
     takeoverConfetti.appendChild(c);
   }
   takeover.classList.remove("show");void takeover.offsetWidth;takeover.classList.add("show");
-  const max=panel.clientWidth-60-300-40-60;let size=104;
+  const max=takeover.classList.contains("center")?takeover.clientWidth-100:panel.clientWidth-60-300-40-60;let size=104;
   while(tn.scrollWidth>max&&size>56){size-=4;tn.style.fontSize=size+"px"}
 }
 window.SMJ_state=()=>state;

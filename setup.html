@@ -1,0 +1,64 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>SMJ Overlay Setup</title>
+<link rel="stylesheet" href="css/control.css"/>
+</head>
+<body class="page-setup">
+<header class="topbar">
+  <div class="topbar-title">
+    <h1>Setup</h1>
+    <div class="status-row">
+      <span id="connectionStatus" class="connection warning">Loading Firebase…</span>
+      <span id="commandStatus" class="command-status">Ready.</span>
+    </div>
+  </div>
+  <nav class="topbar-actions">
+    <a class="nav-link primary" href="control.html">Back to Live Show</a>
+  </nav>
+</header>
+
+<main class="setup-grid">
+  <section class="panel span-2">
+    <h2>OBS Browser Sources</h2>
+    <p class="hint">Add each one you want in OBS: Sources → + → Browser Source, paste the link and set the width and height shown. Everything updates live from the Live Show panel, no refresh needed.</p>
+    <div id="sourceList" class="source-list"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Board Layout</h2>
+    <p class="hint">How many rows of teams the spot board uses. 3 and 2 rows leave room for your facecam above the board.</p>
+    <div class="buttons">
+      <button type="button" data-rows="4">4 rows</button>
+      <button type="button" data-rows="3">3 rows</button>
+      <button type="button" data-rows="2">2 rows (compact)</button>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Branding</h2>
+    <div class="row">
+      <label>Brand name (facecam frame)<input id="brandInput" type="text" placeholder="SMJ Sports Cards"/></label>
+      <label class="narrow">Currency<select id="currencySelect"><option>$</option><option>£</option><option>€</option></select></label>
+    </div>
+    <button id="saveBrandBtn" type="button">Save Brand Name</button>
+  </section>
+
+  <section class="panel span-2">
+    <h2>Socials</h2>
+    <p class="hint">The Socials source rotates through these every few seconds. Leave a box empty to skip it.</p>
+    <div id="socialInputs" class="social-grid"></div>
+    <button id="saveSocialsBtn" type="button">Save Socials</button>
+  </section>
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="js/firebase.js"></script>
+<script src="js/leagues.js"></script>
+<script src="js/moments.js"></script>
+<script src="js/control.js"></script>
+</body>
+</html>

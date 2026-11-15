@@ -366,6 +366,31 @@ body{
 .to-confetti{position:absolute;inset:0;pointer-events:none}
 .to-confetti i{position:absolute;top:-30px;width:14px;height:22px;animation:fall var(--fd,2s) linear var(--dl,0s) forwards}
 
+/* centred takeover card (animations source + all-in-one): full screen middle */
+.takeover.center{
+  --cy:960px;
+  inset:auto;
+  left:calc(50% - 470px);
+  top:calc(var(--cy) - 420px);
+  width:940px;height:840px;
+  z-index:40;
+  flex-direction:column;
+  justify-content:center;
+  gap:26px;
+  padding:40px 50px;
+  text-align:center;
+  border-radius:48px;
+  background:radial-gradient(circle at 50% 32%,color-mix(in srgb,var(--teamColor) 80%,#fff),var(--teamColor) 45%,color-mix(in srgb,var(--teamColor) 55%,#000) 100%);
+  box-shadow:0 0 0 6px rgba(255,255,255,.18),0 40px 120px rgba(0,0,0,.6);
+}
+.takeover.center.show{animation:toInOut var(--toMs,4.2s) ease forwards,toPop .6s cubic-bezier(.2,1.5,.4,1) both}
+.takeover.center .to-rays{left:50%;top:32%}
+.takeover.center .to-logo{width:320px;height:320px}
+.takeover.center .to-team{margin:16px 0 20px;font-size:110px}
+.takeover.center .to-team small{font-size:48px}
+.takeover.center .to-buyer{max-width:820px;font-size:40px}
+@keyframes toPop{from{transform:scale(.6)}}
+
 /* ---------- ticker ---------- */
 .ticker-wrap{
   position:absolute;
