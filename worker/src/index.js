@@ -27,6 +27,12 @@ export default {
       return text("SMJ Whatnot helper is running.");
     }
 
+    // Setup check: are the keys in, and can we reach Whatnot and Firebase?
+    // Answers yes/no only, never the keys or any order data.
+    if (request.method === "GET" && url.pathname === "/health") {
+      return Response.json(await health(env), { headers: { "cache-control": "no-store" } });
+    }
+
     if (request.method === "POST" && url.pathname === "/whatnot/webhook") {
       const body = await request.text();
       const ok = await verifyWebhook(env.WHATNOT_WEBHOOK_SECRET, request.headers, body);
@@ -53,6 +59,31 @@ export default {
     ctx.waitUntil(catchUp(env).catch((e) => console.error(e)));
   },
 };
+
+async function health(env) {
+  const out = {
+    whatnotTokenSet: !!env.WHATNOT_TOKEN,
+    webhookSecretSet: !!env.WHATNOT_WEBHOOK_SECRET,
+    whatnotApi: "not checked",
+    firebaseRead: "not checked",
+    firebaseWrite: "not checked",
+    autoMarkOn: null,
+  };
+  if (env.WHATNOT_TOKEN) {
+    try { await wn(env, "/shows?limit=1"); out.whatnotApi = "ok"; }
+    catch (e) { out.whatnotApi = String(e.message || e).replace(/^Whatnot \S+: /, "error "); }
+  }
+  try {
+    const overlay = await fb(env, "GET", env.OVERLAY_PATH + "/league");
+    out.firebaseRead = "ok";
+    out.league = overlay || null;
+    out.autoMarkOn = !!(await fb(env, "GET", env.WHATNOT_PATH + "/settings/enabled"));
+  } catch (e) { out.firebaseRead = String(e.message || e); }
+  try { await fb(env, "PUT", env.WHATNOT_PATH + "/lastHealthCheck", Date.now()); out.firebaseWrite = "ok"; }
+  catch (e) { out.firebaseWrite = String(e.message || e); }
+  out.ready = out.whatnotTokenSet && out.whatnotApi === "ok" && out.firebaseRead === "ok" && out.firebaseWrite === "ok";
+  return out;
+}
 
 async function catchUp(env) {
   const settings = (await fb(env, "GET", env.WHATNOT_PATH + "/settings")) || {};

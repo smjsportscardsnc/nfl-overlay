@@ -85,3 +85,15 @@ test("does nothing while auto-mark is off; catch-up handles missed orders", asyn
   jobs.length = 0; await worker.scheduled({}, env, { waitUntil: (p) => jobs.push(p) }); await Promise.all(jobs);
   assert.equal(db.smjOverlay.current.sold.hou, true);
 });
+
+test("health check reports keys and connections without leaking them", async () => {
+  const db = { smjOverlay: { current: { league: "nfl" }, whatnot: { settings: { enabled: true } } } };
+  fakeBackends(db, {});
+  const res = await worker.fetch(new Request("https://w.test/health"), { ...env, WHATNOT_WEBHOOK_SECRET: "wn_wh_x" }, { waitUntil() {} });
+  const h = await res.json();
+  assert.equal(h.ready, true);
+  assert.equal(h.whatnotApi, "ok"); assert.equal(h.firebaseWrite, "ok"); assert.equal(h.league, "nfl"); assert.equal(h.autoMarkOn, true);
+  assert.ok(!JSON.stringify(h).includes("wn_wh_x"));
+  const noKey = await (await worker.fetch(new Request("https://w.test/health"), { ...env, WHATNOT_TOKEN: "" }, { waitUntil() {} })).json();
+  assert.equal(noKey.ready, false); assert.equal(noKey.whatnotTokenSet, false);
+});

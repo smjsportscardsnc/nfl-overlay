@@ -42,6 +42,10 @@ The last line prints your helper's address, something like
 `https://smj-whatnot.YOURNAME.workers.dev`. Open it in a browser: it should say
 "SMJ Whatnot helper is running."
 
+To check the keys are in and it can reach Whatnot and Firebase, open
+`https://smj-whatnot.YOURNAME.workers.dev/health`. Every line should say
+`ok`/`true`, and `ready` should be `true`.
+
 Then store the Whatnot key (paste it when asked):
 
     npx wrangler secret put WHATNOT_TOKEN
