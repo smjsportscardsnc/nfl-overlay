@@ -88,3 +88,10 @@ New Firebase fields: brand, prices {abbr: number}, currency, priceTag {label, am
   2 rows, from the control panel (Firebase field boardRows). 3 and 2 rows use a
   compact header; on the all-in-one page they sit just above the ticker so the
   facecam fits above. Heights: 4 rows 670px, 3 rows 373px, 2 rows 232px.
+
+Whatnot auto-mark:
+- New "Whatnot Auto-Mark" box in the control panel. When it's on, every auction
+  sale marks its team sold with the buyer's username and price, and plays the takeover.
+- The team comes from the end of the listing title ("... - Dallas Cowboys").
+- Runs as a small free Cloudflare helper in the worker/ folder. Setup steps are
+  in worker/README.md.
