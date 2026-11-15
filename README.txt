@@ -43,7 +43,8 @@ Animations:
   light streaks, the graphic slams in with a burst and sparks, holds, then flies out.
 - Graphics and colors are listed in js/moments.js. To add one, put a transparent PNG
   in assets/graphics and add an entry there.
-- The swoosh sound plays on the way in and out. In OBS, tick "Control audio via OBS"
+- Animation sound is off by default (Setup > Animation Sound turns the swoosh back on).
+  If you turn it on, in OBS tick "Control audio via OBS"
   on the Browser Source so viewers hear it.
 
 Gameday look (trading-card board + team takeover):

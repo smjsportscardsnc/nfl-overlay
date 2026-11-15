@@ -26,6 +26,7 @@ function logo(abbr){const lg=currentLeague();return `https://a.espncdn.com/i/tea
 
 function hydrate(){
   document.querySelectorAll("[data-rows]").forEach(b=>b.classList.toggle("active",+b.dataset.rows===(+state.boardRows||3)));
+  document.querySelectorAll("[data-sound]").forEach(b=>b.classList.toggle("active",b.dataset.sound===(state.animSound||"off")));
   setVal(titleInput,state.title||DEFAULT.title);
   setVal(tickerInput,state.ticker||DEFAULT.ticker);
   setVal(brandInput,state.brand||DEFAULT.brand);
@@ -154,6 +155,11 @@ on("saveBrandBtn","click",saveText);
 document.querySelectorAll("[data-rows]").forEach(b=>b.addEventListener("click",()=>{
   state.boardRows=+b.dataset.rows;hydrate();
   if(ref)ref.update({boardRows:state.boardRows}).then(()=>setCmd(`Board layout: ${b.textContent}`,"ok"));
+}));
+
+document.querySelectorAll("[data-sound]").forEach(b=>b.addEventListener("click",()=>{
+  state.animSound=b.dataset.sound;hydrate();
+  if(ref)ref.update({animSound:state.animSound}).then(()=>setCmd(`Animation sound: ${b.textContent}`,"ok"));
 }));
 
 // ---------- OBS sources ----------
