@@ -158,9 +158,9 @@ document.querySelectorAll("[data-rows]").forEach(b=>b.addEventListener("click",(
 
 // ---------- OBS sources ----------
 const SOURCES=[
-  ["Spot board","board.html",1080,700,"Your team board, with the team takeover on every sale. Uses about 690px of height at 4 rows, 390px at 3 rows, 250px at 2 rows (top of the source); crop the rest in OBS if you like"],
+  ["Spot board","board.html",1080,700,"Your team board. Uses about 690px of height at 4 rows, 390px at 3 rows, 250px at 2 rows (top of the source); crop the rest in OBS if you like"],
   ["Spot strip (2 rows)","strip.html",1080,260,"Always the compact 2-row board, sized exactly"],
-  ["Animations","animations.html",1080,1920,"Full-screen break animations (Free Respin, etc.)"],
+  ["Animations","animations.html",1080,1920,"The SOLD team takeover on every sale, plus Spin 2 Choose 1 and Stash or Pass, all in the middle of the screen. Put it on top of your other sources"],
   ["Ticker","ticker.html",1080,72,"Scrolling LIVE ticker"],
   ["Break stats","stats.html",520,120,"Average spot, total and spots sold"],
   ["Socials","socials.html",420,80,"Rotates through your handles"],
