@@ -1,0 +1,88 @@
+// Small overlay widgets: price tag, break stats, socials, facecam frame.
+// Each one only runs on a page that has its element, and is fed the shared
+// overlay state by app.js (window.SMJ_HOOKS).
+(function(){
+  const $=id=>document.getElementById(id);
+  const hooks=window.SMJ_HOOKS=window.SMJ_HOOKS||[];
+  const money=(cur,n)=>{const v=Math.round(n*100)/100;return cur+(Number.isInteger(v)?v:v.toFixed(2))};
+  const pop=el=>{el.classList.remove("pop");void el.offsetWidth;el.classList.add("pop")};
+
+  // ---------- price tag ----------
+  const pt=$("priceTag");
+  if(pt){
+    let last="";
+    hooks.push(s=>{
+      const t=s.priceTag||{},amt=String(t.amount||"").trim();
+      $("ptLabel").textContent=t.label||"";
+      $("ptKicker").textContent=t.kicker||"NOW RUNNING";
+      $("ptAmount").textContent=amt?(/^[\d.]+$/.test(amt)?(s.currency||"$")+amt:amt):"";
+      pt.classList.toggle("no-amount",!amt);
+      const lb=$("ptLabel");lb.style.fontSize="";
+      lb.style.width="max-content";
+      const avail=lb.parentElement.getBoundingClientRect().width-2;
+      let size=54;while(lb.getBoundingClientRect().width>avail&&size>28){size-=2;lb.style.fontSize=size+"px"}
+      lb.style.width="";
+      pt.classList.toggle("show",!!t.show);
+      const key=[t.label,amt,t.show].join("|");
+      if(last&&key!==last&&t.show)pop(pt);
+      last=key;
+    });
+  }
+
+  // ---------- break stats ----------
+  const st=$("stats");
+  if(st){
+    let last="";
+    hooks.push(s=>{
+      const list=teams(),cur=s.currency||"$";
+      const sold=list.filter(t=>s.sold&&s.sold[t.abbr]);
+      const priced=sold.map(t=>parseFloat((s.prices||{})[t.abbr])).filter(n=>n>0);
+      const total=priced.reduce((a,b)=>a+b,0);
+      $("stAvg").textContent=priced.length?money(cur,total/priced.length):"—";
+      $("stTotal").textContent=priced.length?money(cur,total):"—";
+      $("stSold").textContent=sold.length;
+      $("stOf").textContent="/"+list.length;
+      $("stRing").style.setProperty("--p",list.length?sold.length/list.length*100:0);
+      const key=[sold.length,total].join("|");
+      if(last&&key!==last)pop(st);
+      last=key;
+    });
+  }
+
+  // ---------- socials (rotates through every handle you fill in) ----------
+  const so=$("socials");
+  if(so){
+    const P={
+      instagram:{n:"Instagram",i:"IG",c:"linear-gradient(135deg,#f58529,#dd2a7b,#8134af)"},
+      tiktok:{n:"TikTok",i:"TT",c:"linear-gradient(135deg,#25f4ee,#000 50%,#fe2c55)"},
+      youtube:{n:"YouTube",i:"YT",c:"#ff0033"},
+      x:{n:"X",i:"X",c:"#111"},
+      facebook:{n:"Facebook",i:"FB",c:"#1877f2"},
+      whatnot:{n:"Whatnot",i:"WN",c:"linear-gradient(135deg,#ffd400,#ffb000)"},
+      discord:{n:"Discord",i:"DC",c:"#5865f2"},
+      twitch:{n:"Twitch",i:"TW",c:"#9146ff"}
+    };
+    let items=[],idx=0,timer=null;
+    function show(){
+      if(!items.length){so.classList.remove("show");return}
+      const [k,h]=items[idx%items.length],p=P[k];
+      so.classList.add("show");
+      so.classList.remove("flip");void so.offsetWidth;so.classList.add("flip");
+      $("soIcon").textContent=p.i;
+      $("soIcon").style.background=p.c;
+      $("soLabel").textContent=`FOLLOW ON ${p.n.toUpperCase()}`;
+      $("soHandle").textContent=h;
+      idx++;
+    }
+    hooks.push(s=>{
+      const next=Object.keys(P).map(k=>[k,String((s.socials||{})[k]||"").trim()]).filter(x=>x[1]);
+      if(JSON.stringify(next)===JSON.stringify(items))return;
+      items=next;idx=0;clearInterval(timer);show();
+      if(items.length>1)timer=setInterval(show,6000);
+    });
+  }
+
+  // ---------- facecam frame ----------
+  const fc=$("facecam");
+  if(fc)hooks.push(s=>{$("fcBrand").textContent=(s.brand||"SMJ Sports Cards").toUpperCase()});
+})();
