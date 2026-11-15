@@ -1,92 +1,149 @@
-// Artwork for the side panels next to the facecam (side-left.html / side-right.html).
-// The panels pick a sport from the league chosen on the Live Show panel.
+// Animated motion graphics for the side panels (top.html and side-left/right.html).
+// Each piece is inline SVG that animates itself with SMIL, so it runs as soon as it is
+// on screen. Ids are unique per piece so two panels can share one page.
 (function(){
-  // points along a quadratic curve, with short ticks across it (baseball stitches)
-  function stitches(x0,y0,cx,cy,x1,y1,n){
-    let d="";
-    for(let i=1;i<n;i++){
-      const t=i/n,u=1-t;
-      const x=u*u*x0+2*u*t*cx+t*t*x1,y=u*u*y0+2*u*t*cy+t*t*y1;
-      const dx=2*u*(cx-x0)+2*t*(x1-cx),dy=2*u*(cy-y0)+2*t*(y1-cy),l=Math.hypot(dx,dy)||1;
-      const nx=-dy/l*7,ny=dx/l*7,ax=dx/l*3,ay=dy/l*3;
-      d+=`M${(x-nx-ax).toFixed(1)} ${(y-ny-ay).toFixed(1)}L${(x+ax).toFixed(1)} ${(y+ay).toFixed(1)}M${(x+nx-ax).toFixed(1)} ${(y+ny-ay).toFixed(1)}L${(x+ax).toFixed(1)} ${(y+ay).toFixed(1)}`;
-    }
-    return d;
-  }
   const svg=(body,defs="")=>`<svg viewBox="0 0 200 200" aria-hidden="true"><defs>${defs}</defs>${body}</svg>`;
+  const glow=(id,sd=3)=>`<filter id="${id}" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="${sd}" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>`;
+  const grad=(id,c1,c2,c3)=>`<radialGradient id="${id}" cx="36%" cy="30%" r="78%"><stop offset="0" stop-color="${c1}"/><stop offset=".6" stop-color="${c2}"/><stop offset="1" stop-color="${c3}"/></radialGradient>`;
+  const lin=(id,c1,c2)=>`<linearGradient id="${id}" x1="0" x2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient>`;
+  // short sparks flashing outward from (cx,cy), once per cycle
+  const sparks=(cx,cy,n,r1,r2,color,begin,dur)=>{
+    let s="";
+    for(let i=0;i<n;i++){
+      const a=i/n*Math.PI*2+(i%2?0.18:0),c=Math.cos(a),d=Math.sin(a);
+      s+=`<line x1="${(cx+c*r1).toFixed(1)}" y1="${(cy+d*r1).toFixed(1)}" x2="${(cx+c*r2).toFixed(1)}" y2="${(cy+d*r2).toFixed(1)}" stroke="${color}" stroke-width="3" stroke-linecap="round" opacity="0"><animate attributeName="opacity" values="0;1;0" keyTimes="0;.2;1" dur="${dur}" begin="${begin}" repeatCount="indefinite"/></line>`;
+    }
+    return s;
+  };
+  // ice spray thrown back from the puck
+  const spray=[[60,128,14,110,0],[56,137,12,132,.25],[64,122,18,104,.45],[52,132,10,126,.15]].map(([x,y,tx,ty,b])=>
+    `<circle cx="${x}" cy="${y}" r="2.4"><animate attributeName="cx" values="${x};${tx}" dur=".7s" begin="${b}s" repeatCount="indefinite"/><animate attributeName="cy" values="${y};${ty}" dur=".7s" begin="${b}s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;0" dur=".7s" begin="${b}s" repeatCount="indefinite"/></circle>`).join("");
+  const football=(id)=>`<g transform="rotate(-32)"><ellipse rx="34" ry="19" fill="url(#${id})" stroke="#2e1406" stroke-width="2"/><path d="M-22 0H22M-16-5V5M-8-7V7M0-7V7M8-7V7M16-5V5" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/></g>`;
 
-  const football=svg(`
-    <g transform="rotate(-32 100 100)">
-      <ellipse cx="100" cy="100" rx="90" ry="54" fill="url(#fb)" stroke="#2e1406" stroke-width="4"/>
-      <path d="M34 66Q27 100 34 134M166 66Q173 100 166 134" stroke="#fff" stroke-width="7" fill="none" stroke-linecap="round"/>
-      <path d="M68 80H132" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
-      <path d="M76 71V89M88 71V89M100 71V89M112 71V89M124 71V89" stroke="#fff" stroke-width="4.5" stroke-linecap="round"/>
-      <ellipse cx="78" cy="78" rx="34" ry="12" fill="#fff" opacity=".12"/>
-    </g>`,
-    `<radialGradient id="fb" cx="40%" cy="35%" r="75%"><stop offset="0" stop-color="#b8642f"/><stop offset=".6" stop-color="#7a3712"/><stop offset="1" stop-color="#4a1f08"/></radialGradient>`);
+  // FOOTBALL, left: a spiral arcs across with a glowing trail
+  const fbL=svg(`
+    <path id="fbPathL" d="M14 160Q92-4 186 52" fill="none"/>
+    <path d="M14 160Q92-4 186 52" fill="none" stroke="#ffd54a" stroke-opacity=".75" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 14"><animate attributeName="stroke-dashoffset" from="0" to="-68" dur=".9s" repeatCount="indefinite"/></path>
+    <circle cx="14" cy="160" r="4" fill="#fff"><animate attributeName="r" values="3;12;3" dur="2.2s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;0;1" dur="2.2s" repeatCount="indefinite"/></circle>
+    <g filter="url(#glFbL)"><g>
+      <animateMotion dur="2.2s" repeatCount="indefinite" rotate="auto"><mpath href="#fbPathL"/></animateMotion>
+      ${football("gFbL")}
+    </g></g>`, glow("glFbL")+grad("gFbL","#d9864a","#8a3f15","#3a1807"));
 
-  const goalpost=svg(`
-    <ellipse cx="100" cy="188" rx="46" ry="7" fill="#000" opacity=".35"/>
-    <rect x="95" y="112" width="10" height="76" rx="3" fill="url(#gp)"/>
-    <rect x="34" y="104" width="132" height="10" rx="4" fill="url(#gp)"/>
-    <rect x="34" y="14" width="10" height="98" rx="4" fill="url(#gp)"/>
-    <rect x="156" y="14" width="10" height="98" rx="4" fill="url(#gp)"/>
-    <path d="M38 14V6M160 14V6" stroke="#e0222f" stroke-width="6" stroke-linecap="round"/>
-    <g class="kick"><g transform="rotate(-20 100 56)">
-      <ellipse cx="100" cy="56" rx="22" ry="13" fill="#7a3712" stroke="#2e1406" stroke-width="2.5"/>
-      <path d="M88 52H112M94 48V56M100 48V56M106 48V56" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
-    </g></g>`,
-    `<linearGradient id="gp" x1="0" x2="1"><stop offset="0" stop-color="#ffd54a"/><stop offset=".5" stop-color="#fff2a8"/><stop offset="1" stop-color="#e6b300"/></linearGradient>`);
-
-  const basketball=svg(`
-    <circle cx="100" cy="100" r="86" fill="url(#bb)" stroke="#2a1404" stroke-width="4"/>
-    <path d="M100 14V186M14 100H186M44 36Q84 100 44 164M156 36Q116 100 156 164" stroke="#2a1404" stroke-width="5" fill="none"/>
-    <ellipse cx="72" cy="62" rx="30" ry="18" fill="#fff" opacity=".14" transform="rotate(-30 72 62)"/>`,
-    `<radialGradient id="bb" cx="38%" cy="32%" r="78%"><stop offset="0" stop-color="#ffa04a"/><stop offset=".65" stop-color="#e2650f"/><stop offset="1" stop-color="#9c3f05"/></radialGradient>`);
-
-  const hoop=svg(`
-    <rect x="36" y="12" width="128" height="86" rx="8" fill="rgba(255,255,255,.92)" stroke="#e0222f" stroke-width="4"/>
-    <rect x="76" y="50" width="48" height="36" fill="none" stroke="#e0222f" stroke-width="4"/>
-    <rect x="94" y="98" width="12" height="10" fill="#555"/>
-    <g class="swish">
-      <path d="M68 112L80 172M84 114L90 172M100 114V172M116 114L110 172M132 112L120 172M72 130Q100 140 128 130M76 150Q100 158 124 150M80 170H120" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+  // FOOTBALL, right: a kick through the uprights, the posts flash on the score
+  const fbR=svg(`
+    <g filter="url(#glFbR)" fill="none" stroke="#ffd54a" stroke-linecap="round" stroke-width="7">
+      <g><animate attributeName="opacity" values=".55;1;.55" dur="2.8s" repeatCount="indefinite"/>
+        <path d="M40 18V70H160V18"/><path d="M100 70V180"/>
+      </g>
     </g>
-    <ellipse cx="100" cy="112" rx="34" ry="7" fill="none" stroke="#ff5a1f" stroke-width="6"/>`);
+    <ellipse cx="100" cy="182" rx="36" ry="5" fill="#000" opacity=".45"/>
+    <g filter="url(#glFbR)"><g>
+      <animate attributeName="opacity" values="1;1;0;0" keyTimes="0;.58;.62;1" dur="2.8s" repeatCount="indefinite"/>
+      <g><animateMotion path="M22 178Q100-62 178 178" dur="2.8s" keyPoints="0;1;1" keyTimes="0;.6;1" calcMode="linear" repeatCount="indefinite"/>
+        ${football("gFbR")}
+      </g>
+    </g></g>
+    ${sparks(100,50,16,20,46,"#ffd54a","1.7s","2.8s")}`, glow("glFbR",2)+grad("gFbR","#d9864a","#8a3f15","#3a1807"));
 
-  const baseball=svg(`
-    <circle cx="100" cy="100" r="86" fill="url(#bs)" stroke="#b9b9b9" stroke-width="3"/>
-    <path d="M44 30Q90 100 44 170M156 30Q110 100 156 170" stroke="#d01f2f" stroke-width="3" fill="none"/>
-    <path d="${stitches(44,30,90,100,44,170,13)}${stitches(156,30,110,100,156,170,13)}" stroke="#d01f2f" stroke-width="2.6" fill="none" stroke-linecap="round"/>`,
-    `<radialGradient id="bs" cx="38%" cy="32%" r="80%"><stop offset="0" stop-color="#fff"/><stop offset=".7" stop-color="#ececec"/><stop offset="1" stop-color="#c4c4c4"/></radialGradient>`);
+  // BASKETBALL, left: a dribble, with a shockwave on each bounce
+  const bbL=svg(`
+    <ellipse cx="100" cy="166" rx="46" ry="7" fill="#000" opacity=".5"><animate attributeName="rx" values="46;24;46" keyTimes="0;.5;1" dur="1.2s" repeatCount="indefinite"/></ellipse>
+    <circle cx="100" cy="166" r="8" fill="none" stroke="#ffb074" stroke-width="3"><animate attributeName="r" values="8;62" dur="1.2s" repeatCount="indefinite"/><animate attributeName="opacity" values=".9;0" dur="1.2s" repeatCount="indefinite"/></circle>
+    <g filter="url(#glBbL)"><g>
+      <animateTransform attributeName="transform" type="translate" values="0 0;0 -74;0 0" keyTimes="0;.5;1" calcMode="spline" keySplines=".33 0 .67 1;.33 0 .67 1" dur="1.2s" repeatCount="indefinite"/>
+      <g>
+        <animateTransform attributeName="transform" type="rotate" values="0 100 132;200 100 132" dur="1.2s" repeatCount="indefinite"/>
+        <circle cx="100" cy="132" r="34" fill="url(#gBbL)" stroke="#2a1404" stroke-width="2.5"/>
+        <path d="M100 98V166M66 132H134M72 106Q100 132 72 158M128 106Q100 132 128 158" fill="none" stroke="#2a1404" stroke-width="3"/>
+      </g>
+    </g></g>`, glow("glBbL")+grad("gBbL","#ffa04a","#e2650f","#9c3f05"));
 
-  const bat=`<path d="M95 14C90 14 87 20 87 30L93 150L93 170L107 170L107 150L113 30C113 20 110 14 105 14Z" fill="url(#bw)" stroke="#6b4419" stroke-width="2"/><ellipse cx="100" cy="174" rx="11" ry="5" fill="#8a5a26"/><path d="M93 136H107M93 142H107M93 148H107" stroke="#222" stroke-width="3"/>`;
-  const bats=svg(`
-    <g transform="rotate(-32 100 100)">${bat}</g>
-    <g transform="rotate(32 100 100)">${bat}</g>
-    <g class="kick"><circle cx="100" cy="46" r="20" fill="#fff" stroke="#bbb" stroke-width="1.5"/><path d="M88 32Q98 46 88 60M112 32Q102 46 112 60" stroke="#d01f2f" stroke-width="2" fill="none"/></g>`,
-    `<linearGradient id="bw" x1="0" x2="1"><stop offset="0" stop-color="#c58a45"/><stop offset=".45" stop-color="#f0c88c"/><stop offset="1" stop-color="#a86e30"/></linearGradient>`);
+  // BASKETBALL, right: the ball drops through the net, the net snaps back
+  const bbR=svg(`
+    <ellipse cx="100" cy="112" rx="36" ry="7" fill="none" stroke="#ff7a2a" stroke-width="5" filter="url(#glBbR)"><animate attributeName="opacity" values=".45;1;.45" dur="1.6s" repeatCount="indefinite"/></ellipse>
+    <rect x="34" y="14" width="132" height="84" rx="8" fill="rgba(255,255,255,.93)" stroke="#ff7a2a" stroke-width="4"/>
+    <rect x="76" y="48" width="48" height="34" fill="none" stroke="#ff7a2a" stroke-width="4"/>
+    <g filter="url(#glBbR)"><g>
+      <animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;.06;.4;.5;1" dur="2.4s" repeatCount="indefinite"/>
+      <g>
+        <animateMotion path="M0 0V126" dur="2.4s" keyPoints="0;1;1" keyTimes="0;.45;1" calcMode="linear" repeatCount="indefinite"/>
+        <circle cx="100" cy="22" r="15" fill="url(#gBbR)" stroke="#2a1404" stroke-width="2"/>
+        <path d="M100 9V35M86 22H114" fill="none" stroke="#2a1404" stroke-width="2.2"/>
+      </g>
+    </g></g>
+    <g transform="translate(100 112)"><g>
+      <animateTransform attributeName="transform" type="scale" values="1 1;1 1.14;1 1;1 1" keyTimes="0;.35;.6;1" dur="2.4s" repeatCount="indefinite"/>
+      <path d="M-30 0L-18 58M-14 2L-8 58M0 2V58M14 2L8 58M30 0L18 58M-27 20Q0 30 27 20M-23 40Q0 50 23 40M-18 58H18" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-opacity=".9"/>
+    </g></g>
+    ${sparks(100,112,10,38,52,"#ffb074","0.9s","2.4s")}`, glow("glBbR",2)+grad("gBbR","#ffa04a","#e2650f","#9c3f05"));
 
-  const puck=svg(`
-    <ellipse cx="100" cy="128" rx="78" ry="26" fill="#000" opacity=".25"/>
-    <path d="M24 92V116A76 25 0 0 0 176 116V92Z" fill="#0d0e11"/>
-    <path d="M24 100H176" stroke="#2c2f36" stroke-width="2"/>
-    <path d="M24 108H176" stroke="#2c2f36" stroke-width="2"/>
-    <ellipse cx="100" cy="92" rx="76" ry="25" fill="url(#pk)" stroke="#3a3e47" stroke-width="2"/>
-    <ellipse cx="100" cy="92" rx="48" ry="14" fill="none" stroke="#5b616d" stroke-width="2"/>`,
-    `<radialGradient id="pk" cx="40%" cy="30%" r="80%"><stop offset="0" stop-color="#4a4f59"/><stop offset="1" stop-color="#16181c"/></radialGradient>`);
+  // BASEBALL, left: a pitch crosses the plate and the strike zone lights up
+  const bsL=svg(`
+    <rect x="70" y="66" width="60" height="74" rx="4" fill="rgba(255,205,80,.06)" stroke="#ffd54a" stroke-width="2.5" stroke-dasharray="6 5"><animate attributeName="stroke-opacity" values=".35;1;.35" keyTimes="0;.6;1" dur="1.8s" repeatCount="indefinite"/></rect>
+    <path d="M22 34Q96 26 102 104" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="3" stroke-linecap="round" stroke-dasharray="4 12"><animate attributeName="stroke-dashoffset" from="0" to="-64" dur=".7s" repeatCount="indefinite"/></path>
+    <g filter="url(#glBsL)"><g>
+      <animate attributeName="opacity" values="1;1;0;0" keyTimes="0;.6;.66;1" dur="1.8s" repeatCount="indefinite"/>
+      <g>
+        <animateMotion path="M22 34Q96 26 102 104" dur="1.8s" keyPoints="0;1;1" keyTimes="0;.6;1" calcMode="linear" repeatCount="indefinite"/>
+        <circle r="13" fill="url(#gBsL)" stroke="#b9b9b9" stroke-width="1.5"/>
+        <path d="M-7-10Q-2 0-7 10M7-10Q2 0 7 10" fill="none" stroke="#d01f2f" stroke-width="2"/>
+      </g>
+    </g></g>`, glow("glBsL",2)+grad("gBsL","#ffffff","#ececec","#bdbdbd"));
 
-  const stick=`<path d="M58 14L118 156Q122 166 134 166L176 166Q184 166 184 158Q184 152 176 152L136 150" stroke="url(#st)" stroke-width="11" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M146 152L176 159" stroke="#111" stroke-width="11" stroke-linecap="round"/>`;
-  const sticks=svg(`
-    <g>${stick}</g>
-    <g transform="translate(200 0) scale(-1 1)">${stick}</g>
-    <g class="kick"><ellipse cx="100" cy="178" rx="20" ry="7" fill="#111"/><path d="M80 174V178A20 7 0 0 0 120 178V174" fill="#000"/><ellipse cx="100" cy="174" rx="20" ry="7" fill="#2b2e35"/></g>`,
-    `<linearGradient id="st" x1="0" x2="1"><stop offset="0" stop-color="#e8c38c"/><stop offset="1" stop-color="#b88446"/></linearGradient>`);
+  // BASEBALL, right: a swing, a flash at contact, the ball leaves the bat
+  const bsR=svg(`
+    <path d="M-3 108A84 84 0 0 1 143 192" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="4" stroke-linecap="round" stroke-dasharray="5 9"><animate attributeName="stroke-dashoffset" from="0" to="-56" dur="0.9s" repeatCount="indefinite"/></path>
+    <g filter="url(#glBsR)"><g transform="translate(70 150)"><g>
+      <animateTransform attributeName="transform" type="rotate" values="-150;-30;40;40" keyTimes="0;.5;.8;1" calcMode="spline" keySplines=".5 0 1 1;0 0 .5 1;0 0 1 1" dur="1.8s" repeatCount="indefinite"/>
+      <path d="M0-4L20-6Q70-12 84-4Q92 0 84 4Q70 12 20 6L0 4Z" fill="url(#gBsR)" stroke="#6b4419" stroke-width="1.5"/>
+    </g></g></g>
+    <g transform="translate(146 106)"><g>
+      <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;.49;.5;.8;1" dur="1.8s" repeatCount="indefinite"/>
+      <g><animateMotion path="M0 0L70-62" dur="1.8s" keyPoints="0;0;1" keyTimes="0;.5;1" calcMode="linear" repeatCount="indefinite"/>
+        <circle r="12" fill="url(#gBsB)" stroke="#b9b9b9" stroke-width="1.2"/>
+        <path d="M-6-9Q-1 0-6 9M6-9Q1 0 6 9" fill="none" stroke="#d01f2f" stroke-width="1.8"/>
+      </g>
+    </g></g>
+    ${sparks(146,106,12,8,34,"#fff1b8","0.9s","1.8s")}`, glow("glBsR",2)+lin("gBsR","#c58a45","#f5d59a")+grad("gBsB","#ffffff","#ececec","#bdbdbd"));
+
+  // HOCKEY, left: the puck slides across the ice and throws spray
+  const hkL=svg(`
+    <path d="M8 146H192" stroke="#8fb3c9" stroke-width="2" stroke-opacity=".5"/>
+    <path d="M8 158H192" stroke="#8fb3c9" stroke-width="1" stroke-opacity=".35"/>
+    <g filter="url(#glHkL)"><g>
+      <animateTransform attributeName="transform" type="translate" values="-70 0;70 0;70 0" keyTimes="0;.7;1" calcMode="spline" keySplines=".2 0 .4 1;0 0 1 1" dur="2s" repeatCount="indefinite"/>
+      <g>
+        <ellipse cx="100" cy="130" rx="46" ry="13" fill="#050608"/>
+        <ellipse cx="100" cy="124" rx="46" ry="13" fill="url(#gHkL)" stroke="#3a3e47" stroke-width="2"/>
+        <ellipse cx="100" cy="124" rx="28" ry="7" fill="none" stroke="#5b616d" stroke-width="2"/>
+        <path d="M70 118Q96 110 124 120" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="2.5" stroke-linecap="round"/>
+      </g>
+      <g fill="#e6f7ff">${spray}</g>
+    </g></g>`, glow("glHkL",2)+grad("gHkL","#4a4f59","#23262c","#0b0c0f"));
+
+  // HOCKEY, right: a slap shot from the wind-up, the puck flies off the blade
+  const hkR=svg(`
+    <g filter="url(#glHkR)">
+      <g transform="translate(60 40)"><g>
+        <animateTransform attributeName="transform" type="rotate" values="40;0;-30;-30" keyTimes="0;.5;.7;1" calcMode="spline" keySplines=".4 0 1 1;0 0 .6 1;0 0 1 1" dur="2s" repeatCount="indefinite"/>
+        <path d="M0 0Q30 40 60 92" fill="none" stroke="url(#gStk)" stroke-width="11" stroke-linecap="round"/>
+        <path d="M60 92H98" fill="none" stroke="#111" stroke-width="11" stroke-linecap="round"/>
+      </g></g>
+      <g transform="translate(120 132)"><g>
+        <animate attributeName="opacity" values="1;1;0;0" keyTimes="0;.8;.9;1" dur="2s" repeatCount="indefinite"/>
+        <g><animateMotion path="M0 0L70-18" dur="2s" keyPoints="0;0;1" keyTimes="0;.5;.85" calcMode="linear" repeatCount="indefinite"/>
+          <ellipse rx="14" ry="6" fill="#0b0c0f" stroke="#444" stroke-width="1.2"/>
+        </g>
+      </g></g>
+    </g>
+    ${sparks(120,132,12,8,30,"#9be7ff","1s","2s")}`, glow("glHkR",2)+lin("gStk","#e8c38c","#b88446"));
 
   window.SMJ_SPORT_ART={
-    football:{word:"FOOTBALL",left:{art:football,tag:"GAME DAY"},right:{art:goalpost,tag:"TOUCHDOWN"}},
-    basketball:{word:"BASKETBALL",left:{art:basketball,tag:"TIP-OFF"},right:{art:hoop,tag:"NOTHING BUT NET"}},
-    baseball:{word:"BASEBALL",left:{art:baseball,tag:"FIRST PITCH"},right:{art:bats,tag:"PLAY BALL"}},
-    hockey:{word:"HOCKEY",left:{art:puck,tag:"PUCK DROP"},right:{art:sticks,tag:"GAME ON"}}
+    football:{word:"FOOTBALL",left:{art:fbL,tag:"GAME DAY"},right:{art:fbR,tag:"TOUCHDOWN"}},
+    basketball:{word:"BASKETBALL",left:{art:bbL,tag:"TIP-OFF"},right:{art:bbR,tag:"NOTHING BUT NET"}},
+    baseball:{word:"BASEBALL",left:{art:bsL,tag:"FIRST PITCH"},right:{art:bsR,tag:"PLAY BALL"}},
+    hockey:{word:"HOCKEY",left:{art:hkL,tag:"PUCK DROP"},right:{art:hkR,tag:"GAME ON"}}
   };
   window.SMJ_LEAGUE_SPORT={nfl:"football",nba:"basketball",wnba:"basketball",mlb:"baseball",nhl:"hockey"};
 })();
