@@ -71,7 +71,9 @@ function render(){
   if(tickerText&&tickerText.textContent!==(state.ticker||DEFAULT.ticker)){tickerText.textContent=state.ticker||DEFAULT.ticker;fitTicker()}
   (window.SMJ_HOOKS||[]).forEach(fn=>{try{fn(state)}catch(e){console.error(e)}});
   if(!grid)return;
-  const rows=document.body.classList.contains("src-strip")?2:([2,3,4].includes(+state.boardRows)?+state.boardRows:3);
+  // board-2/3/4-rows.html fix their row count; the strip is always 2; otherwise Setup decides
+  const fixedRows=+document.body.dataset.rows||(document.body.classList.contains("src-strip")?2:0);
+  const rows=fixedRows||([2,3,4].includes(+state.boardRows)?+state.boardRows:3);
   panel.dataset.rows=rows;
   if(breakTitle.textContent!==(state.title||DEFAULT.title)){breakTitle.textContent=state.title||DEFAULT.title}
   const sub=state.subtitle==null?DEFAULT.subtitle:state.subtitle;
@@ -88,7 +90,8 @@ function render(){
   progressSegs.innerHTML="";
   for(let i=0;i<list.length;i++)progressSegs.appendChild(el("i",i<soldN?"on":""));
 
-  const cols=Math.ceil(list.length/rows);
+  // fixed-size sources keep a 32-team grid so every league fits the same height
+  const cols=fixedRows?Math.max(Math.ceil(list.length/rows),Math.ceil(32/rows)):Math.ceil(list.length/rows);
   grid.style.setProperty("--cols",cols);
 
   grid.innerHTML="";

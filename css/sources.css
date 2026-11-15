@@ -18,6 +18,9 @@ body.src-board .scoreboard-panel{top:14px !important;left:36px !important}
 body.src-strip .scoreboard-panel{top:4px !important;left:4px !important;width:1072px !important;padding:0 10px 10px;border-radius:20px}
 body.src-strip .top-bar{margin:0 -10px 8px}
 
+/* ---------- fixed-row boards: board-2-rows / board-3-rows / board-4-rows.html, sized exactly ---------- */
+body.src-fit .scoreboard-panel{top:4px !important;left:4px !important;width:1072px !important;border-radius:20px}
+
 /* ---------- ticker 1080x72 ---------- */
 body.src-ticker .ticker-wrap{top:0;left:0;right:0}
 
@@ -56,29 +59,32 @@ body.src-anim .moment{--cy:960px}
 .pt-amount{flex:none;font-family:var(--head);font-size:68px;font-weight:900;color:var(--gold)}
 .price-tag.pop{animation:widgetPop .5s cubic-bezier(.2,1.6,.4,1)}
 
-/* ---------- break stats 520x120 ---------- */
+/* ---------- break stats 220x360 (sits beside the 640x360 facecam) ---------- */
 .stats{
-  position:absolute;left:10px;top:10px;
-  width:500px;height:100px;
-  border-radius:24px;
-  display:flex;align-items:center;gap:18px;
-  padding:0 16px 0 24px;
+  position:absolute;left:6px;top:6px;
+  width:208px;height:348px;
+  border-radius:30px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+  padding:16px 14px;
   background:var(--glass);
-  color:#fff;
+  color:#fff;text-align:center;
   box-shadow:0 12px 26px rgba(0,0,0,.4);
 }
-.st-k{font-size:14px;font-weight:800;letter-spacing:.2em;color:var(--mute)}
-.st-v{font-family:var(--head);font-size:50px;font-weight:900;line-height:1}
-.st-div{width:2px;height:56px;background:var(--line)}
+.stats::before{padding:6px}
+.st-cell{width:100%}
+.st-k{font-size:13px;font-weight:800;letter-spacing:.2em;color:var(--mute)}
+.st-v{font-family:var(--head);font-size:48px;font-weight:900;line-height:1;white-space:nowrap}
+.st-div{width:70%;height:2px;flex:none;background:var(--line)}
 .st-ring{
-  margin-left:auto;flex:none;
-  width:80px;height:80px;border-radius:50%;
-  display:flex;align-items:baseline;justify-content:center;padding-top:22px;
-  background:radial-gradient(circle,#0b0f1c 58%,transparent 59%),conic-gradient(var(--gold) calc(var(--p,0)*1%),rgba(255,255,255,.1) 0);
+  flex:none;
+  width:104px;height:104px;border-radius:50%;
+  display:flex;align-items:baseline;justify-content:center;padding-top:30px;
+  background:radial-gradient(circle,#0b0f1c 60%,transparent 61%),conic-gradient(var(--gold) calc(var(--p,0)*1%),rgba(255,255,255,.1) 0);
   font-family:var(--head);
 }
-.st-ring b{font-size:30px;font-weight:900}
-.st-ring small{font-size:15px;color:var(--mute);font-weight:800}
+.st-ring b{font-size:38px;font-weight:900}
+.st-ring small{font-size:17px;color:var(--mute);font-weight:800}
+.st-ring-k{margin-top:-4px}
 .stats.pop{animation:widgetPop .5s cubic-bezier(.2,1.6,.4,1)}
 
 /* ---------- socials 420x80 ---------- */
@@ -198,3 +204,64 @@ body.src-anim .moment{--cy:960px}
 .s-social.active .soc-text>*{animation:slideL .6s cubic-bezier(.2,1.2,.4,1) both}
 .s-social.active .soc-text b{animation-delay:.15s}
 @keyframes socSpin{from{transform:scale(.2) rotate(-200deg);opacity:0}}
+
+/* ---------- side art 220x360 (left / right of the facecam, themed by league) ---------- */
+.side{position:absolute;inset:6px;border-radius:30px;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:22px 14px 20px;text-align:center;box-shadow:0 12px 26px rgba(0,0,0,.4)}
+.side::before{content:"";position:absolute;inset:0;padding:6px;border-radius:inherit;z-index:3;
+  background:conic-gradient(from var(--ba,0deg),var(--brand),var(--brand2),var(--gold),var(--brand));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;
+  animation:borderSpin 4s linear infinite;pointer-events:none}
+.side[data-side="right"]::before{animation-direction:reverse}
+.sd-surface{position:absolute;inset:6px;border-radius:24px;overflow:hidden;z-index:0}
+.sd-surface::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(5,9,22,.72) 0%,rgba(5,9,22,.05) 34%,rgba(5,9,22,.05) 70%,rgba(5,9,22,.7) 100%)}
+.sd-mark{position:absolute;inset:0}
+.sd-sweep{position:absolute;top:-20%;bottom:-20%;width:60px;left:-90px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.22),transparent);transform:skewX(-18deg);animation:sdSweep 6s ease-in-out infinite;z-index:1}
+.side[data-side="right"] .sd-sweep{animation-delay:3s}
+@keyframes sdSweep{0%,60%{left:-90px}100%{left:260px}}
+.sd-top,.sd-art,.sd-tag{position:relative;z-index:2}
+.sd-top{width:100%;display:flex;flex-direction:column;align-items:center}
+.sd-top small{font-size:12px;font-weight:900;letter-spacing:.22em;color:var(--gold);text-shadow:0 2px 6px rgba(0,0,0,.6)}
+.sd-top b{display:block;width:100%;margin-top:2px;font-family:var(--head);font-size:78px;font-weight:900;line-height:.9;white-space:nowrap;overflow:hidden;text-shadow:0 4px 0 rgba(0,0,0,.35),0 0 18px rgba(0,0,0,.5)}
+.sd-art{width:160px;height:160px;filter:drop-shadow(0 10px 14px rgba(0,0,0,.5))}
+.sd-art svg{width:100%;height:100%;overflow:visible}
+.sd-tag{max-width:100%;font-family:var(--head);font-size:21px;font-weight:900;letter-spacing:.08em;white-space:nowrap;background:rgba(10,14,28,.86);border:1.5px solid rgba(255,255,255,.28);padding:5px 14px;border-radius:999px;box-shadow:0 6px 14px rgba(0,0,0,.4)}
+.side.swap .sd-top,.side.swap .sd-art,.side.swap .sd-tag{animation:sdIn .7s cubic-bezier(.2,1.4,.4,1) both}
+.side.swap .sd-art{animation-delay:.1s}.side.swap .sd-tag{animation-delay:.2s}
+@keyframes sdIn{from{transform:scale(.4) translateY(20px);opacity:0}}
+
+/* the main art moves a little: balls spin, the puck slides, the kicked ball flies */
+.side[data-side="left"] .sd-art svg{animation:sdFloat 3.2s ease-in-out infinite}
+.side[data-side="left"][data-sport="basketball"] .sd-art svg,.side[data-side="left"][data-sport="baseball"] .sd-art svg{animation:sdSpin 9s linear infinite}
+.side[data-side="left"][data-sport="hockey"] .sd-art svg{animation:sdSlide 2.6s ease-in-out infinite}
+.side[data-side="right"] .sd-art svg{animation:sdFloat 4s ease-in-out infinite}
+.side .kick{animation:sdKick 2.8s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+.side .swish{animation:sdSwish 2.8s ease-in-out infinite;transform-origin:100px 112px}
+@keyframes sdFloat{50%{transform:translateY(-8px) rotate(3deg)}}
+@keyframes sdSpin{to{transform:rotate(360deg)}}
+@keyframes sdSlide{0%,100%{transform:translateX(-10px) rotate(-4deg)}50%{transform:translateX(10px) rotate(4deg)}}
+@keyframes sdKick{0%{transform:translateY(16px) scale(.85);opacity:0}25%{opacity:1}60%{transform:translateY(-6px) scale(1);opacity:1}85%,100%{transform:translateY(-22px) scale(.7);opacity:0}}
+@keyframes sdSwish{0%,40%,100%{transform:scaleY(1)}55%{transform:scaleY(1.12) skewX(4deg)}70%{transform:scaleY(.94)}}
+
+/* surfaces */
+.side[data-sport="football"] .sd-surface{background:
+  repeating-linear-gradient(0deg,transparent 0 46px,rgba(255,255,255,.7) 46px 49px),
+  repeating-linear-gradient(0deg,#2f8a36 0 49px,#287a2f 49px 98px)}
+.side[data-sport="football"] .sd-mark{background:
+  repeating-linear-gradient(0deg,rgba(255,255,255,.55) 0 2px,transparent 2px 9.8px) 28px 0/12px 100% no-repeat,
+  repeating-linear-gradient(0deg,rgba(255,255,255,.55) 0 2px,transparent 2px 9.8px) calc(100% - 28px) 0/12px 100% no-repeat}
+.side[data-sport="basketball"] .sd-surface{background:
+  repeating-linear-gradient(90deg,rgba(0,0,0,.14) 0 2px,transparent 2px 28px),
+  repeating-linear-gradient(0deg,rgba(255,255,255,.05) 0 1px,transparent 1px 7px),
+  linear-gradient(90deg,#d6975a,#c58546 25%,#dba163 50%,#c98b4d 75%,#d39456)}
+.side[data-sport="basketball"] .sd-mark{left:50%;top:56%;width:300px;height:300px;margin-left:-150px;border-radius:50%;border:4px solid rgba(255,255,255,.75);box-shadow:0 0 0 70px rgba(29,79,216,.35)}
+.side[data-sport="baseball"] .sd-surface{background:
+  radial-gradient(ellipse 160% 60% at 50% 118%,#b5713d 0 46%,#c98552 46% 48%,transparent 48.5%),
+  repeating-linear-gradient(45deg,#2f8a36 0 26px,#3a9a41 26px 52px)}
+.side[data-sport="baseball"] .sd-mark{background:linear-gradient(60deg,transparent 0 calc(50% - 2px),rgba(255,255,255,.8) calc(50% - 2px) calc(50% + 2px),transparent calc(50% + 2px))}
+.side[data-sport="hockey"] .sd-surface{background:
+  linear-gradient(0deg,transparent calc(50% - 4px),#d01f2f calc(50% - 4px) calc(50% + 4px),transparent calc(50% + 4px)),
+  linear-gradient(0deg,transparent 20%,#1d4fd8 20% 23%,transparent 23% 77%,#1d4fd8 77% 80%,transparent 80%),
+  repeating-linear-gradient(115deg,rgba(255,255,255,.35) 0 1px,transparent 1px 13px),
+  linear-gradient(180deg,#f2f8fc,#cfe2ee)}
+.side[data-sport="hockey"] .sd-mark{left:50%;top:50%;width:150px;height:150px;margin:-75px 0 0 -75px;border-radius:50%;border:4px solid rgba(208,31,47,.8)}
+.side[data-sport="hockey"] .sd-mark::after{content:"";position:absolute;left:50%;top:50%;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;background:#d01f2f}
