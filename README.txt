@@ -103,3 +103,9 @@ Control panel split into two pages:
   break title/details/ticker. Everything you touch during a break.
 - setup.html = Setup: OBS browser source links, board layout, brand name,
   currency and socials. Set once. Each page links to the other in the top bar.
+
+Facecam frame:
+- Setup > Facecam Frame: "Using a camera" keeps the see-through frame with the
+  LIVE tag and your name. "Logo graphics" (default) drops the LIVE tag and fills
+  the frame with a logo reel that rotates every 7 seconds: logo, wordmark,
+  "Now breaking" with your break title/details, and a Follow message.

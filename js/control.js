@@ -27,6 +27,7 @@ function logo(abbr){const lg=currentLeague();return `https://a.espncdn.com/i/tea
 function hydrate(){
   document.querySelectorAll("[data-rows]").forEach(b=>b.classList.toggle("active",+b.dataset.rows===(+state.boardRows||3)));
   document.querySelectorAll("[data-sound]").forEach(b=>b.classList.toggle("active",b.dataset.sound===(state.animSound||"off")));
+  document.querySelectorAll("[data-facecam]").forEach(b=>b.classList.toggle("active",b.dataset.facecam===(state.facecam==="camera"?"camera":"logo")));
   setVal(titleInput,state.title||DEFAULT.title);
   setVal(tickerInput,state.ticker||DEFAULT.ticker);
   setVal(brandInput,state.brand||DEFAULT.brand);
@@ -162,6 +163,11 @@ document.querySelectorAll("[data-sound]").forEach(b=>b.addEventListener("click",
   if(ref)ref.update({animSound:state.animSound}).then(()=>setCmd(`Animation sound: ${b.textContent}`,"ok"));
 }));
 
+document.querySelectorAll("[data-facecam]").forEach(b=>b.addEventListener("click",()=>{
+  state.facecam=b.dataset.facecam;hydrate();
+  if(ref)ref.update({facecam:state.facecam}).then(()=>setCmd(`Facecam frame: ${b.textContent}`,"ok"));
+}));
+
 // ---------- OBS sources ----------
 const SOURCES=[
   ["Spot board","board.html",1080,700,"Your team board. Uses about 690px of height at 4 rows, 390px at 3 rows, 250px at 2 rows (top of the source); crop the rest in OBS if you like"],
@@ -170,7 +176,7 @@ const SOURCES=[
   ["Ticker","ticker.html",1080,72,"Scrolling LIVE ticker"],
   ["Break stats","stats.html",520,120,"Average spot, total and spots sold"],
   ["Socials","socials.html",420,80,"Rotates through your handles"],
-  ["Facecam frame","facecam.html",640,360,"Animated border with LIVE tag and your name"],
+  ["Facecam frame","facecam.html",640,360,"Animated border. With a camera: LIVE tag and your name over your webcam. Without: a rotating logo reel (switch below)"],
   ["All-in-one (phone)","index-1080x1920.html",1080,1920,"Board, ticker, takeover and animations together"]
 ];
 (function renderSources(){

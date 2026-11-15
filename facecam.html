@@ -13,9 +13,47 @@
 <body class="src src-facecam" style="--w:640px;--h:360px">
 <!-- OBS Browser Source: 640 x 360 -->
 <main class="src-frame">
-  <div class="facecam" id="facecam">
+  <div class="facecam" id="facecam" data-mode="logo">
     <div class="fc-live">LIVE</div>
     <div class="fc-chip"><img src="assets/logo.png" alt=""/><b id="fcBrand">SMJ SPORTS CARDS</b></div>
+
+    <!-- Logo reel: shown instead of the camera when Setup > Facecam is set to "Logo graphics" -->
+    <div class="fc-reel" id="fcReel">
+      <div class="reel-bg"><i class="reel-stripes"></i><i class="reel-glow"></i></div>
+
+      <div class="scene s-hero">
+        <div class="hero-logo"><img src="assets/logo-720.png" alt="SMJ Sports Cards &amp; Collectibles"/><i class="shine"></i></div>
+      </div>
+
+      <div class="scene s-word">
+        <img class="word-logo" src="assets/logo-720.png" alt=""/>
+        <div class="word-text">
+          <b>SMJ</b>
+          <strong>SPORTS CARDS</strong>
+          <small>&amp; COLLECTIBLES</small>
+        </div>
+      </div>
+
+      <div class="scene s-now">
+        <div class="now-card"><div class="now-flip"><div class="now-front"><img src="assets/logo-720.png" alt=""/></div><div class="now-back">SMJ</div></div></div>
+        <div class="now-text">
+          <small>NOW BREAKING</small>
+          <b id="fcNowTitle">SMJ NFL BREAK</b>
+          <span id="fcNowSub">singles • rips • breaks</span>
+        </div>
+      </div>
+
+      <div class="scene s-cta">
+        <div class="cta-text">
+          <small>TAP</small>
+          <b>FOLLOW</b>
+          <span>Never miss a break</span>
+        </div>
+        <img class="cta-logo" src="assets/logo-720.png" alt=""/>
+      </div>
+
+      <div class="reel-dots" id="fcDots"></div>
+    </div>
   </div>
 </main>
 
@@ -24,6 +62,7 @@
 <script src="js/firebase.js"></script>
 <script src="js/leagues.js"></script>
 <script src="js/moments.js"></script>
+<script src="js/social-icons.js"></script>
 <script src="js/widgets.js"></script>
 <script src="js/app.js"></script>
 </body>

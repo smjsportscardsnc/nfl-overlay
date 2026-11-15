@@ -6,6 +6,19 @@
   const hooks=window.SMJ_HOOKS=window.SMJ_HOOKS||[];
   const money=(cur,n)=>{const v=Math.round(n*100)/100;return cur+(Number.isInteger(v)?v:v.toFixed(2))};
   const pop=el=>{el.classList.remove("pop");void el.offsetWidth;el.classList.add("pop")};
+  const esc=t=>String(t).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  // social networks: name, fallback letters, brand colour (logos are in js/social-icons.js)
+  const P={
+    instagram:{n:"Instagram",i:"IG",c:"linear-gradient(135deg,#f58529,#dd2a7b,#8134af)"},
+    tiktok:{n:"TikTok",i:"TT",c:"linear-gradient(135deg,#25f4ee,#000 50%,#fe2c55)"},
+    youtube:{n:"YouTube",i:"YT",c:"#ff0033"},
+    x:{n:"X",i:"X",c:"#111"},
+    facebook:{n:"Facebook",i:"FB",c:"#1877f2"},
+    discord:{n:"Discord",i:"DC",c:"#5865f2"},
+    twitch:{n:"Twitch",i:"TW",c:"#9146ff"}
+  };
+  const socialList=s=>Object.keys(P).map(k=>[k,String((s.socials||{})[k]||"").trim()]).filter(x=>x[1]);
+  const socialIcon=k=>{const l=(window.SMJ_SOCIAL_ICONS||{})[k]||{};return l.path?`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${l.path}"/></svg>`:l.img?`<img src="${l.img}" alt=""/>`:esc(P[k].i)};
 
   // ---------- price tag ----------
   const pt=$("priceTag");
@@ -52,15 +65,6 @@
   // ---------- socials (rotates through every handle you fill in) ----------
   const so=$("socials");
   if(so){
-    const P={
-      instagram:{n:"Instagram",i:"IG",c:"linear-gradient(135deg,#f58529,#dd2a7b,#8134af)"},
-      tiktok:{n:"TikTok",i:"TT",c:"linear-gradient(135deg,#25f4ee,#000 50%,#fe2c55)"},
-      youtube:{n:"YouTube",i:"YT",c:"#ff0033"},
-      x:{n:"X",i:"X",c:"#111"},
-      facebook:{n:"Facebook",i:"FB",c:"#1877f2"},
-      discord:{n:"Discord",i:"DC",c:"#5865f2"},
-      twitch:{n:"Twitch",i:"TW",c:"#9146ff"}
-    };
     let items=[],idx=0,timer=null;
     function show(){
       if(!items.length){so.classList.remove("show");return}
@@ -78,7 +82,7 @@
       idx++;
     }
     hooks.push(s=>{
-      const next=Object.keys(P).map(k=>[k,String((s.socials||{})[k]||"").trim()]).filter(x=>x[1]);
+      const next=socialList(s);
       if(JSON.stringify(next)===JSON.stringify(items))return;
       items=next;idx=0;clearInterval(timer);show();
       if(items.length>1)timer=setInterval(show,6000);
@@ -86,6 +90,57 @@
   }
 
   // ---------- facecam frame ----------
+  // Setup > Facecam: "camera" = transparent frame with LIVE tag for your webcam,
+  // "logo" (default) = no LIVE tag, the frame fills with a rotating logo reel.
   const fc=$("facecam");
-  if(fc)hooks.push(s=>{$("fcBrand").textContent=(s.brand||"SMJ Sports Cards").toUpperCase()});
+  if(fc){
+    const reel=$("fcReel"),dots=$("fcDots"),REEL_MS=7000;
+    let scenes=[...fc.querySelectorAll(".scene")],sceneIdx=-1,reelTimer=null,socialKey="";
+    function renderDots(){if(dots)dots.innerHTML=scenes.map(()=>"<i></i>").join("")}
+    renderDots();
+    // one extra scene per social handle filled in on Setup, after the logo scenes
+    function setSocialScenes(list){
+      const key=JSON.stringify(list);
+      if(key===socialKey)return;
+      socialKey=key;
+      reel.querySelectorAll(".s-social").forEach(n=>n.remove());
+      list.forEach(([k,h])=>{
+        const sc=document.createElement("div");
+        sc.className="scene s-social";
+        sc.innerHTML=`<div class="soc-ic" style="background:${P[k].c}">${socialIcon(k)}</div><div class="soc-text"><small>FOLLOW US ON ${esc(P[k].n.toUpperCase())}</small><b>${esc(h)}</b></div>`;
+        reel.insertBefore(sc,dots);
+      });
+      fitHandles();
+      scenes=[...fc.querySelectorAll(".scene")];
+      if(sceneIdx>=scenes.length)sceneIdx=-1;
+      renderDots();
+    }
+    // shrink long handles so the whole name fits next to the logo
+    function fitHandles(){
+      reel.querySelectorAll(".s-social .soc-text b").forEach(b=>{
+        let size=64;b.style.fontSize=size+"px";
+        while(b.scrollWidth>b.clientWidth+1&&size>30){size-=2;b.style.fontSize=size+"px"}
+      });
+    }
+    if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fitHandles);
+    function nextScene(){
+      sceneIdx=(sceneIdx+1)%scenes.length;
+      scenes.forEach((sc,i)=>sc.classList.toggle("active",i===sceneIdx));
+      if(dots)[...dots.children].forEach((d,i)=>d.classList.toggle("on",i===sceneIdx));
+    }
+    function setMode(mode){
+      if(fc.dataset.mode===mode&&(mode!=="logo"||reelTimer))return;
+      fc.dataset.mode=mode;
+      clearInterval(reelTimer);reelTimer=null;
+      if(mode==="logo"&&scenes.length){sceneIdx=-1;nextScene();reelTimer=setInterval(nextScene,REEL_MS)}
+    }
+    setMode("logo");
+    hooks.push(s=>{
+      $("fcBrand").textContent=(s.brand||"SMJ Sports Cards").toUpperCase();
+      if($("fcNowTitle"))$("fcNowTitle").textContent=s.title||"SMJ BREAK";
+      if($("fcNowSub")){const sub=s.subtitle==null?"singles • rips • breaks":s.subtitle;$("fcNowSub").textContent=sub;$("fcNowSub").hidden=!sub}
+      setSocialScenes(socialList(s));
+      setMode(s.facecam==="camera"?"camera":"logo");
+    });
+  }
 })();
