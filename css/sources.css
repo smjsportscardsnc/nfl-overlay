@@ -14,32 +14,9 @@ html.src{--w:auto;--h:auto}
 /* ---------- spot board 1080x700 ---------- */
 body.src-board .scoreboard-panel{top:14px !important;left:36px !important}
 
-/* ---------- landscape strip 1080x260 ---------- */
+/* ---------- landscape strip 1080x260 (always the 2-row layout) ---------- */
 body.src-strip .scoreboard-panel{top:4px !important;left:4px !important;width:1072px !important;padding:0 10px 10px;border-radius:20px}
-body.src-strip .top-bar{height:62px;margin:0 -10px 8px;padding:0 18px 0 16px;gap:12px}
-body.src-strip .top-bar::before{width:6px}
-body.src-strip .smj-badge{width:48px;height:48px;border-width:2px}
-body.src-strip .brand-text{display:flex;align-items:baseline;gap:16px}
-body.src-strip .break-title{font-size:32px}
-body.src-strip .break-subtitle{font-size:13px;margin:0}
-body.src-strip .remaining{display:flex;align-items:baseline;gap:10px}
-body.src-strip .remaining-count{font-size:40px}
-body.src-strip .remaining-count em{font-size:22px}
-body.src-strip .remaining-label{font-size:12px}
-body.src-strip .progress-segs{height:4px}
-body.src-strip .teams-grid{grid-template-columns:repeat(var(--stripCols,16),1fr);gap:6px}
-body.src-strip .teams-grid.roomy{grid-template-columns:repeat(var(--stripCols,16),1fr)}
-body.src-strip .team-box{aspect-ratio:1/1.22;border-radius:9px;box-shadow:inset 0 0 0 3px var(--teamColor),0 3px 8px rgba(0,0,0,.35)}
-body.src-strip .nameplate{font-size:17px;height:26%}
-body.src-strip .team-box.sold .nameplate{font-size:9.5px;line-height:2.4;padding:0 3px}
-body.src-strip .team-box.sold.no-buyer .nameplate{font-size:15px;line-height:1.5}
-body.src-strip .sold-stamp{font-size:15px;border-width:2px;padding:0 4px;border-radius:5px}
-body.src-strip .takeover{gap:24px;padding:0 40px}
-body.src-strip .to-logo{width:170px;height:170px;box-shadow:0 0 0 6px rgba(255,255,255,.25),0 0 0 14px rgba(255,255,255,.1),0 16px 30px rgba(0,0,0,.45)}
-body.src-strip .to-kicker{font-size:20px;padding:3px 12px}
-body.src-strip .to-team{font-size:70px;margin:6px 0 10px}
-body.src-strip .to-team small{font-size:28px}
-body.src-strip .to-buyer{font-size:22px;padding:5px 16px}
+body.src-strip .top-bar{margin:0 -10px 8px}
 
 /* ---------- ticker 1080x72 ---------- */
 body.src-ticker .ticker-wrap{top:0;left:0;right:0}
