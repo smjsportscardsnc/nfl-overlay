@@ -30,10 +30,6 @@ function hydrate(){
   setVal(tickerInput,state.ticker||DEFAULT.ticker);
   setVal(brandInput,state.brand||DEFAULT.brand);
   setVal(currencySelect,state.currency||"$");
-  setVal(ptLabelInput,(state.priceTag||{}).label||"");
-  setVal(ptAmountInput,(state.priceTag||{}).amount||"");
-  const ptState=document.getElementById("ptState");
-  if(ptState){const pt=state.priceTag||{};ptState.textContent=pt.show?`Showing: ${pt.label||""}${pt.amount?" · "+(state.currency||"$")+pt.amount:""}`:"Hidden";ptState.className=`pill ${pt.show?"ok":""}`}
   hydrateSocials();
   setVal(subtitleInput,state.subtitle==null?DEFAULT.subtitle:state.subtitle);
   renderProgress();
@@ -136,7 +132,9 @@ function triggerMoment(id){
 function renderMomentButtons(){
   const wrap=document.getElementById("momentButtons");
   if(!wrap)return;
-  Object.entries(window.SMJ_MOMENTS||{}).forEach(([id,m])=>{
+  // Only the animations listed in SMJ_MOMENT_BUTTONS (js/moments.js) get a button.
+  const all=window.SMJ_MOMENTS||{},ids=window.SMJ_MOMENT_BUTTONS||Object.keys(all);
+  ids.filter(id=>all[id]).map(id=>[id,all[id]]).forEach(([id,m])=>{
     const b=document.createElement("button");
     b.type="button";
     b.className="moment-btn";
@@ -164,7 +162,6 @@ const SOURCES=[
   ["Spot strip (2 rows)","strip.html",1080,260,"Always the compact 2-row board, sized exactly"],
   ["Animations","animations.html",1080,1920,"Full-screen break animations (Free Respin, etc.)"],
   ["Ticker","ticker.html",1080,72,"Scrolling LIVE ticker"],
-  ["Price tag","price-tag.html",520,180,"Break type and price for your facecam corner"],
   ["Break stats","stats.html",520,120,"Average spot, total and spots sold"],
   ["Socials","socials.html",420,80,"Rotates through your handles"],
   ["Facecam frame","facecam.html",640,360,"Animated border with LIVE tag and your name"],
@@ -188,20 +185,6 @@ const SOURCES=[
   });
 })();
 
-// ---------- price tag ----------
-const ptLabelInput=document.getElementById("ptLabelInput"),ptAmountInput=document.getElementById("ptAmountInput");
-["Free Respin","Double Respin","Stash or Pass","Spin 2 Choose 1","See 3 Take 2","Spot Price"].forEach(l=>{
-  const b=document.createElement("button");b.type="button";b.className="ghost";b.textContent=l;
-  b.addEventListener("click",()=>{if(ptLabelInput)ptLabelInput.value=l});
-  const presets=document.getElementById("ptPresets");if(presets)presets.appendChild(b);
-});
-function savePriceTag(show){
-  const priceTag={label:ptLabelInput.value.trim()||"Free Respin",amount:ptAmountInput.value.trim(),show};
-  state.priceTag=priceTag;hydrate();
-  if(ref)ref.update({priceTag}).then(()=>setCmd(show?`Price tag showing: ${priceTag.label}`:"Price tag hidden.","ok"));
-}
-on("ptShowBtn","click",()=>savePriceTag(true));
-on("ptHideBtn","click",()=>savePriceTag(false));
 if(currencySelect)currencySelect.addEventListener("change",()=>{state.currency=currencySelect.value;if(ref)ref.update({currency:state.currency})});
 
 // ---------- socials ----------
@@ -228,7 +211,11 @@ if(window.SMJFIREBASE_READY&&window.smjDB){
   setConn("Firebase connected","ok");
   setCmd("Ready.","ok");
 
-  ref.once("value").then(s=>{if(!s.exists())return ref.set(DEFAULT)});
+  ref.once("value").then(s=>{
+    if(!s.exists())return ref.set(DEFAULT);
+    // the price tag controls were removed, so don't leave an old one showing
+    if(s.val().priceTag&&s.val().priceTag.show)ref.child("priceTag/show").set(false);
+  });
 
   ref.on("value",snap=>{
     const data=snap.val();
