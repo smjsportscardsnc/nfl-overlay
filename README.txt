@@ -67,3 +67,17 @@ Gameday look (trading-card board + team takeover):
   and confetti, the words drop in, two foil shines, then it flips out (~4.6s).
   Add or edit them in js/moments.js. Test: playMoment("free-respin").
   (assets/graphics PNGs are no longer used.)
+
+Separate OBS sources (like Breakers Overlays):
+Add only the ones you want as Browser Sources. All update live from control.html.
+- board.html          1080 x 700   spot board + team takeover on each sale
+- strip.html          1080 x 260   two-row landscape board + takeover
+- animations.html     1080 x 1920  full-screen break animations
+- ticker.html         1080 x 72    scrolling LIVE ticker
+- price-tag.html       520 x 180   break type + price (show/hide from panel)
+- stats.html           520 x 120   average spot, total, spots sold
+- socials.html         420 x 80    rotates through your handles
+- facecam.html         640 x 360   animated border, LIVE tag, brand chip
+- index-1080x1920.html 1080 x 1920 all-in-one (board, ticker, takeover, animations)
+The control panel lists every link with its size and a Copy button.
+New Firebase fields: brand, prices {abbr: number}, currency, priceTag {label, amount, show}, socials {platform: handle}.

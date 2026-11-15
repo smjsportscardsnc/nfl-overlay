@@ -1,0 +1,136 @@
+/* Separate OBS Browser Sources. Each page sets its size on <body>
+   (--w / --h) and these rules undo the 1080x1920 lock in style.css. */
+html.src,html.src body{
+  width:var(--w,1080px) !important;
+  height:var(--h,1920px) !important;
+  min-width:0 !important;min-height:0 !important;
+  max-width:none !important;max-height:none !important;
+  overflow:hidden !important;
+  background:transparent !important;
+}
+html.src{--w:auto;--h:auto}
+.src-frame{position:absolute;left:0;top:0;width:var(--w);height:var(--h);overflow:hidden}
+
+/* ---------- spot board 1080x700 ---------- */
+body.src-board .scoreboard-panel{top:14px !important;left:36px !important}
+
+/* ---------- landscape strip 1080x260 ---------- */
+body.src-strip .scoreboard-panel{top:4px !important;left:4px !important;width:1072px !important;padding:0 10px 10px;border-radius:20px}
+body.src-strip .top-bar{height:62px;margin:0 -10px 8px;padding:0 18px 0 16px;gap:12px}
+body.src-strip .top-bar::before{width:6px}
+body.src-strip .smj-badge{width:48px;height:48px;border-width:2px}
+body.src-strip .brand-text{display:flex;align-items:baseline;gap:16px}
+body.src-strip .break-title{font-size:32px}
+body.src-strip .break-subtitle{font-size:13px;margin:0}
+body.src-strip .remaining{display:flex;align-items:baseline;gap:10px}
+body.src-strip .remaining-count{font-size:40px}
+body.src-strip .remaining-count em{font-size:22px}
+body.src-strip .remaining-label{font-size:12px}
+body.src-strip .progress-segs{height:4px}
+body.src-strip .teams-grid{grid-template-columns:repeat(var(--stripCols,16),1fr);gap:6px}
+body.src-strip .teams-grid.roomy{grid-template-columns:repeat(var(--stripCols,16),1fr)}
+body.src-strip .team-box{aspect-ratio:1/1.22;border-radius:9px;box-shadow:inset 0 0 0 3px var(--teamColor),0 3px 8px rgba(0,0,0,.35)}
+body.src-strip .nameplate{font-size:17px;height:26%}
+body.src-strip .team-box.sold .nameplate{font-size:9.5px;line-height:2.4;padding:0 3px}
+body.src-strip .team-box.sold.no-buyer .nameplate{font-size:15px;line-height:1.5}
+body.src-strip .sold-stamp{font-size:15px;border-width:2px;padding:0 4px;border-radius:5px}
+body.src-strip .takeover{gap:24px;padding:0 40px}
+body.src-strip .to-logo{width:170px;height:170px;box-shadow:0 0 0 6px rgba(255,255,255,.25),0 0 0 14px rgba(255,255,255,.1),0 16px 30px rgba(0,0,0,.45)}
+body.src-strip .to-kicker{font-size:20px;padding:3px 12px}
+body.src-strip .to-team{font-size:70px;margin:6px 0 10px}
+body.src-strip .to-team small{font-size:28px}
+body.src-strip .to-buyer{font-size:22px;padding:5px 16px}
+
+/* ---------- ticker 1080x72 ---------- */
+body.src-ticker .ticker-wrap{top:0;left:0;right:0}
+
+/* ---------- animations 1080x1920 ---------- */
+body.src-anim .moment{--cy:960px}
+
+/* ---------- price tag 520x180 ---------- */
+.price-tag{
+  position:absolute;left:10px;top:10px;
+  width:500px;height:160px;
+  border-radius:26px;
+  display:flex;align-items:center;gap:20px;
+  padding:0 26px 0 20px;
+  background:linear-gradient(120deg,#0e1528,#0a0f1d);
+  box-shadow:0 14px 30px rgba(0,0,0,.45);
+  color:#fff;
+  opacity:0;transform:translateY(30px) scale(.9);
+  transition:opacity .4s,transform .5s cubic-bezier(.2,1.4,.4,1);
+}
+.price-tag.show{opacity:1;transform:none}
+.price-tag::before,.facecam::before,.stats::before{
+  content:"";position:absolute;inset:0;padding:3px;border-radius:inherit;
+  background:conic-gradient(from var(--ba,0deg),var(--brand),var(--brand2),var(--gold),var(--brand));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+  animation:borderSpin 4s linear infinite;
+  pointer-events:none;
+}
+@property --ba{syntax:'<angle>';inherits:false;initial-value:0deg}
+@keyframes borderSpin{to{--ba:360deg}}
+.pt-ball{flex:none;width:104px;height:104px;border-radius:50%;overflow:hidden;border:3px solid rgba(255,255,255,.18);box-shadow:0 0 22px rgba(31,107,255,.5);background:#0c1220}
+.pt-ball img{width:100%;height:100%;object-fit:cover;transform:scale(1.12)}
+.pt-text{min-width:0;flex:1}
+.pt-text small{display:block;font-size:16px;font-weight:800;letter-spacing:.22em;color:var(--mute)}
+.pt-text b{display:block;font-family:var(--head);font-size:54px;font-weight:900;line-height:.95;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:linear-gradient(180deg,#fff,#c9d6ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.pt-amount{flex:none;font-family:var(--head);font-size:68px;font-weight:900;color:var(--gold)}
+.price-tag.pop{animation:widgetPop .5s cubic-bezier(.2,1.6,.4,1)}
+
+/* ---------- break stats 520x120 ---------- */
+.stats{
+  position:absolute;left:10px;top:10px;
+  width:500px;height:100px;
+  border-radius:24px;
+  display:flex;align-items:center;gap:18px;
+  padding:0 16px 0 24px;
+  background:var(--glass);
+  color:#fff;
+  box-shadow:0 12px 26px rgba(0,0,0,.4);
+}
+.st-k{font-size:14px;font-weight:800;letter-spacing:.2em;color:var(--mute)}
+.st-v{font-family:var(--head);font-size:50px;font-weight:900;line-height:1}
+.st-div{width:2px;height:56px;background:var(--line)}
+.st-ring{
+  margin-left:auto;flex:none;
+  width:80px;height:80px;border-radius:50%;
+  display:flex;align-items:baseline;justify-content:center;padding-top:22px;
+  background:radial-gradient(circle,#0b0f1c 58%,transparent 59%),conic-gradient(var(--gold) calc(var(--p,0)*1%),rgba(255,255,255,.1) 0);
+  font-family:var(--head);
+}
+.st-ring b{font-size:30px;font-weight:900}
+.st-ring small{font-size:15px;color:var(--mute);font-weight:800}
+.stats.pop{animation:widgetPop .5s cubic-bezier(.2,1.6,.4,1)}
+
+/* ---------- socials 420x80 ---------- */
+.socials{
+  position:absolute;left:6px;top:6px;
+  width:408px;height:68px;
+  border-radius:999px;
+  display:flex;align-items:center;gap:14px;
+  padding:0 22px 0 6px;
+  background:var(--glass);
+  border:1.5px solid var(--line);
+  color:#fff;
+  opacity:0;
+}
+.socials.show{opacity:1}
+.socials.flip .so-ic,.socials.flip .so-text{animation:soFlip .6s cubic-bezier(.2,1.3,.4,1)}
+.so-ic{flex:none;width:56px;height:56px;border-radius:50%;display:grid;place-items:center;font-family:var(--head);font-size:24px;font-weight:900;color:#fff;border:2px solid rgba(255,255,255,.25)}
+.so-text{min-width:0}
+.so-text small{display:block;font-size:11px;font-weight:800;letter-spacing:.2em;color:var(--mute)}
+.so-text b{display:block;font-family:var(--head);font-size:30px;font-weight:900;letter-spacing:.03em;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ---------- facecam frame 640x360 (inside stays transparent) ---------- */
+.facecam{position:absolute;inset:6px 6px 6px 6px;border-radius:30px}
+.facecam::before{padding:6px}
+.fc-live{position:absolute;right:20px;top:18px;font-family:var(--head);font-size:24px;font-weight:900;letter-spacing:.14em;color:#fff;background:var(--brand2);padding:3px 14px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.35)}
+.fc-live::before{content:"";display:inline-block;width:10px;height:10px;border-radius:50%;background:#fff;margin-right:8px;vertical-align:middle;animation:livePulse 1.2s infinite}
+.fc-chip{position:absolute;left:18px;bottom:16px;display:flex;align-items:center;gap:10px;background:rgba(10,14,28,.88);border:1.5px solid var(--line);border-radius:999px;padding:5px 18px 5px 5px;box-shadow:0 6px 16px rgba(0,0,0,.4)}
+.fc-chip img{width:42px;height:42px;border-radius:50%;object-fit:cover}
+.fc-chip b{font-family:var(--head);font-size:24px;font-weight:900;letter-spacing:.06em;color:#fff}
+
+@keyframes widgetPop{40%{transform:scale(1.06)}}
+@keyframes soFlip{from{transform:rotateX(90deg);opacity:0}to{transform:none;opacity:1}}

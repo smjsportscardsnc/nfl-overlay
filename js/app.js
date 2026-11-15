@@ -1,5 +1,5 @@
 const PATH="smjOverlay/current";
-const DEFAULT={title:"SMJ NFL BREAK",subtitle:"singles • rips • breaks",ticker:"Welcome to SMJ Sports Cards & Collectibles!",sold:{},buyers:{},league:"nfl",lastSold:""};
+const DEFAULT={brand:"SMJ Sports Cards",title:"SMJ NFL BREAK",subtitle:"singles • rips • breaks",ticker:"Welcome to SMJ Sports Cards & Collectibles!",sold:{},buyers:{},prices:{},league:"nfl",lastSold:"",currency:"$",priceTag:{label:"Free Respin",amount:"",show:false},socials:{}};
 const TAKEOVER_MS=4200;
 const TICKER_SPEED=110; // pixels per second
 
@@ -50,6 +50,7 @@ function logoPlate(team){
 
 // Shrink the break title until it fits next to the logo and counter
 function fitTitle(){
+  if(!breakTitle)return;
   breakTitle.style.fontSize="";
   const max=breakTitle.parentElement.clientWidth;
   let size=50;
@@ -58,6 +59,7 @@ function fitTitle(){
 
 // Same scroll speed no matter how long the message is
 function fitTicker(){
+  if(!tickerText)return;
   const win=tickerText.parentElement.offsetWidth;
   const dist=win+tickerText.scrollWidth;
   tickerText.style.setProperty("--tickerStart",win+"px");
@@ -66,12 +68,13 @@ function fitTicker(){
 
 function render(){
   const lg=currentLeague(),list=teams();
+  if(tickerText&&tickerText.textContent!==(state.ticker||DEFAULT.ticker)){tickerText.textContent=state.ticker||DEFAULT.ticker;fitTicker()}
+  (window.SMJ_HOOKS||[]).forEach(fn=>{try{fn(state)}catch(e){console.error(e)}});
+  if(!grid)return;
   if(breakTitle.textContent!==(state.title||DEFAULT.title)){breakTitle.textContent=state.title||DEFAULT.title}
   const sub=state.subtitle==null?DEFAULT.subtitle:state.subtitle;
-  breakSubtitle.textContent=sub;
-  breakSubtitle.hidden=!sub;
-  if(tickerText.textContent!==(state.ticker||DEFAULT.ticker)){tickerText.textContent=state.ticker||DEFAULT.ticker;fitTicker()}
-  leagueIndicator.textContent=lg.name;
+  if(breakSubtitle){breakSubtitle.textContent=sub;breakSubtitle.hidden=!sub}
+  if(leagueIndicator)leagueIndicator.textContent=lg.name;
 
   const soldN=list.filter(t=>!!state.sold?.[t.abbr]).length,left=list.length-soldN;
   remainingCount.textContent=left===0?"SOLD OUT":left;
@@ -85,6 +88,7 @@ function render(){
 
   const cols=list.length>16?8:Math.min(8,Math.ceil(list.length/2));
   grid.style.setProperty("--cols",cols);
+  grid.style.setProperty("--stripCols",Math.ceil(list.length/2));
   grid.classList.toggle("roomy",cols<8);
 
   grid.innerHTML="";
@@ -110,6 +114,7 @@ function render(){
 
 // ---------- team takeover on each sale ----------
 function queueTakeovers(newlySold){
+  if(!takeover)return;
   newlySold.forEach(abbr=>{
     const team=teams().find(t=>t.abbr===abbr);
     if(team)takeoverQueue.push(team);
@@ -148,6 +153,7 @@ function showTakeover(team,buyer){
   const max=panel.clientWidth-60-300-40-60;let size=104;
   while(tn.scrollWidth>max&&size>56){size-=4;tn.style.fontSize=size+"px"}
 }
+window.SMJ_state=()=>state;
 window.testTakeover=(abbr,buyer)=>{const t=teams().find(x=>x.abbr===abbr)||teams()[0];showTakeover(t,buyer||"@cardking88")};
 
 // ---------- full-screen moments ----------
@@ -159,8 +165,8 @@ momentSub=document.getElementById("momentSub"),
 momentBadge=document.getElementById("momentBadge"),
 momentSparks=document.getElementById("momentSparks");
 let momentTimer=null,lastMomentAt=null;
-const swoosh=new Audio("assets/sounds/swoosh.wav");
-swoosh.preload="auto";
+const swoosh=momentEl?new Audio("assets/sounds/swoosh.wav"):null;
+if(swoosh)swoosh.preload="auto";
 
 function playSound(volume){
   try{const a=swoosh.cloneNode();a.volume=volume;a.play().catch(()=>{})}catch(e){}
@@ -168,7 +174,7 @@ function playSound(volume){
 
 function playMoment(id){
   const m=window.SMJ_MOMENTS&&window.SMJ_MOMENTS[id];
-  if(!m)return;
+  if(!m||!momentEl)return;
   clearTimeout(momentTimer);
   momentEl.classList.remove("play");
   m.colors.forEach((c,i)=>momentEl.style.setProperty(`--c${i+1}`,c));
@@ -213,7 +219,7 @@ if(window.SMJFIREBASE_READY&&window.smjDB){
     if(!data){ref.set(DEFAULT);return}
     const leagueChanged=(data.league||DEFAULT.league)!==state.league;
     if(leagueChanged)previousSoldState={};
-    state={...DEFAULT,...data,sold:{...(data.sold||{})},buyers:{...(data.buyers||{})}};
+    state={...DEFAULT,...data,sold:{...(data.sold||{})},buyers:{...(data.buyers||{})},prices:{...(data.prices||{})}};
     const newlySold=(firstSnapshot||leagueChanged)?[]:Object.keys(state.sold).filter(a=>state.sold[a]&&!previousSoldState[a]);
     render();
     if(newlySold.length)queueTakeovers(newlySold);

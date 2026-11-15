@@ -34,7 +34,28 @@
 </section>
 
 <section class="panel">
+  <h2>OBS Browser Sources</h2>
+  <p class="hint">Add each one you want in OBS: Sources → + → Browser Source, paste the link and set the width and height shown. Everything updates live from this panel, no refresh needed.</p>
+  <div id="sourceList" class="source-list"></div>
+</section>
+
+<section class="panel">
+  <h2>Price Tag</h2>
+  <p class="hint">A small box for your facecam corner (Price tag source). Pick a break type or type your own, add a price, then Show.</p>
+  <div class="buttons chips" id="ptPresets"></div>
+  <div class="row">
+    <label>Label<input id="ptLabelInput" type="text" placeholder="Free Respin"/></label>
+    <label class="narrow">Price<input id="ptAmountInput" type="text" inputmode="decimal" placeholder="9"/></label>
+  </div>
+  <div class="buttons">
+    <button id="ptShowBtn" type="button">Show / Update</button>
+    <button id="ptHideBtn" type="button" class="ghost">Hide</button>
+  </div>
+</section>
+
+<section class="panel">
   <h2>Overlay Text Controls</h2>
+  <label>Brand Name (facecam frame)<input id="brandInput" type="text" placeholder="SMJ Sports Cards"/></label>
   <label>Break Title<input id="titleInput" type="text" value="SMJ NFL BREAK"/></label>
   <label>Break Details (line under the title)<input id="subtitleInput" type="text" placeholder="2025 Prizm Football · Hobby · Box 2 of 3"/></label>
   <label>Ticker Text<input id="tickerInput" type="text" value="Welcome to SMJ Sports Cards & Collectibles!"/></label>
@@ -44,8 +65,20 @@
 <section class="panel">
   <h2>Assign Teams as Sold</h2>
   <p class="hint">Type the buyer's name (optional), then tap their team. The overlay plays a full-board team takeover, then shows the team as SOLD with the buyer's name. Tap a sold team to make it available again.</p>
-  <label>Next buyer<input id="buyerInput" type="text" placeholder="@whatnot_username" autocomplete="off"/></label>
+  <div class="row">
+    <label>Next buyer<input id="buyerInput" type="text" placeholder="@whatnot_username" autocomplete="off"/></label>
+    <label class="narrow">Price paid<input id="priceInput" type="text" inputmode="decimal" placeholder="optional" autocomplete="off"/></label>
+    <label class="narrow">Currency<select id="currencySelect"><option>$</option><option>£</option><option>€</option></select></label>
+  </div>
+  <p class="hint">Prices feed the Break stats source (average spot and total).</p>
   <div id="teamControls" class="team-controls"></div>
+</section>
+
+<section class="panel">
+  <h2>Socials</h2>
+  <p class="hint">Fill in the handles you want on stream. The Socials source rotates through them every few seconds. Leave a box empty to skip it.</p>
+  <div id="socialInputs" class="social-grid"></div>
+  <button id="saveSocialsBtn" type="button">Save Socials</button>
 </section>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>

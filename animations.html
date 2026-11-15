@@ -1,0 +1,45 @@
+<!doctype html>
+<html class="src">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=1080"/>
+<title>Animations · SMJ overlay (1080x1920)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Inter:wght@600;700;800&display=swap"/>
+<link rel="stylesheet" href="css/style.css"/>
+<link rel="stylesheet" href="css/sources.css"/>
+</head>
+<body class="src src-anim" style="--w:1080px;--h:1920px">
+<!-- OBS Browser Source: 1080 x 1920 -->
+<main class="src-frame">
+  <div class="moment" id="moment">
+    <div class="gm-dim"></div>
+    <div class="gm-band b1"></div>
+    <div class="gm-band b2"></div>
+    <div class="gm-rays"></div>
+    <div class="gm-ring"></div>
+    <div class="gm-card">
+      <div class="gm-face">
+        <img class="gm-logo" src="assets/logo.png" alt=""/>
+        <div class="gm-kicker" id="momentKicker"></div>
+        <div class="gm-title" id="momentTitle"></div>
+        <div class="gm-sub" id="momentSub"></div>
+        <div class="gm-badge" id="momentBadge"></div>
+        <div class="gm-shine"></div>
+      </div>
+    </div>
+    <div id="momentSparks"></div>
+    <div class="gm-flash"></div>
+  </div>
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="js/firebase.js"></script>
+<script src="js/leagues.js"></script>
+<script src="js/moments.js"></script>
+<script src="js/widgets.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

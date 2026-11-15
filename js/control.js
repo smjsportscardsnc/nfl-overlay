@@ -1,5 +1,5 @@
 const PATH="smjOverlay/current";
-const DEFAULT={title:"SMJ NFL BREAK",subtitle:"singles • rips • breaks",ticker:"Welcome to SMJ Sports Cards & Collectibles!",sold:{},buyers:{},league:"nfl",lastSold:""};
+const DEFAULT={brand:"SMJ Sports Cards",title:"SMJ NFL BREAK",subtitle:"singles • rips • breaks",ticker:"Welcome to SMJ Sports Cards & Collectibles!",sold:{},buyers:{},prices:{},league:"nfl",lastSold:"",currency:"$",priceTag:{label:"Free Respin",amount:"",show:false},socials:{}};
 
 let state={...DEFAULT},ref=null;
 
@@ -8,6 +8,9 @@ titleInput=document.getElementById("titleInput"),
 tickerInput=document.getElementById("tickerInput"),
 subtitleInput=document.getElementById("subtitleInput"),
 buyerInput=document.getElementById("buyerInput"),
+priceInput=document.getElementById("priceInput"),
+currencySelect=document.getElementById("currencySelect"),
+brandInput=document.getElementById("brandInput"),
 connectionStatus=document.getElementById("connectionStatus"),
 commandStatus=document.getElementById("commandStatus");
 
@@ -20,6 +23,11 @@ function logo(abbr){const lg=currentLeague();return `https://a.espncdn.com/i/tea
 function hydrate(){
   titleInput.value=state.title||DEFAULT.title;
   tickerInput.value=state.ticker||DEFAULT.ticker;
+  brandInput.value=state.brand||DEFAULT.brand;
+  currencySelect.value=state.currency||"$";
+  if(document.activeElement!==ptLabelInput)ptLabelInput.value=(state.priceTag||{}).label||"";
+  if(document.activeElement!==ptAmountInput)ptAmountInput.value=(state.priceTag||{}).amount||"";
+  hydrateSocials();
   subtitleInput.value=state.subtitle==null?DEFAULT.subtitle:state.subtitle;
 }
 
@@ -52,7 +60,8 @@ function switchLeague(league){
   titleInput.value=title;
   renderTeams();
   markActiveLeague();
-  if(ref)ref.update({league,sold:{},buyers:{},lastSold:"",title});
+  state.prices={};
+  if(ref)ref.update({league,sold:{},buyers:{},prices:{},lastSold:"",title});
   setCmd(`League switched to ${name}`,"ok");
 }
 
@@ -61,13 +70,15 @@ function toggleSold(abbr){
   const team=teams().find(t=>t.abbr===abbr);
   if(!nowSold&&!confirm(`Mark ${team?team.name:abbr.toUpperCase()} as available again?`))return;
   const buyer=nowSold?buyerInput.value.trim():"";
+  const price=nowSold?(parseFloat(priceInput.value.replace(/[^\d.]/g,""))||0):0;
+  state.prices={...(state.prices||{}),[abbr]:price};
   state.sold={...(state.sold||{}),[abbr]:nowSold};
   state.buyers={...(state.buyers||{}),[abbr]:buyer};
-  if(nowSold){state.lastSold=abbr;buyerInput.value=""}
+  if(nowSold){state.lastSold=abbr;buyerInput.value="";priceInput.value=""}
   else if(state.lastSold===abbr)state.lastSold="";
   renderTeams();
   // one write, so the overlay gets the team and buyer name together
-  if(ref)ref.update({[`sold/${abbr}`]:nowSold,[`buyers/${abbr}`]:buyer,lastSold:state.lastSold});
+  if(ref)ref.update({[`sold/${abbr}`]:nowSold,[`buyers/${abbr}`]:buyer,[`prices/${abbr}`]:price,lastSold:state.lastSold});
   setCmd(nowSold?`${team?team.name:abbr} sold${buyer?` to ${buyer}`:""}.`:`${team?team.name:abbr} is available again.`,"ok");
 }
 
@@ -77,11 +88,12 @@ function resetSold(){
   state.buyers={};
   state.lastSold="";
   renderTeams();
-  if(ref)ref.update({sold:{},buyers:{},lastSold:""});
+  state.prices={};
+  if(ref)ref.update({sold:{},buyers:{},prices:{},lastSold:""});
 }
 
 function saveText(){
-  const payload={title:titleInput.value.trim()||DEFAULT.title,subtitle:subtitleInput.value.trim(),ticker:tickerInput.value.trim()||DEFAULT.ticker};
+  const payload={brand:brandInput.value.trim()||DEFAULT.brand,title:titleInput.value.trim()||DEFAULT.title,subtitle:subtitleInput.value.trim(),ticker:tickerInput.value.trim()||DEFAULT.ticker};
   state={...state,...payload};
   if(ref)ref.update(payload).then(()=>setCmd("Overlay text updated.","ok"));
 }
@@ -116,6 +128,65 @@ renderMomentButtons();
 
 document.querySelectorAll("[data-league]").forEach(b=>b.addEventListener("click",()=>switchLeague(b.dataset.league)));
 document.getElementById("saveTextBtn").addEventListener("click",saveText);
+
+// ---------- OBS sources ----------
+const SOURCES=[
+  ["Spot board","board.html",1080,700,"Your team board, with the team takeover on every sale"],
+  ["Spot strip (landscape)","strip.html",1080,260,"Two-row board for horizontal layouts"],
+  ["Animations","animations.html",1080,1920,"Full-screen break animations (Free Respin, etc.)"],
+  ["Ticker","ticker.html",1080,72,"Scrolling LIVE ticker"],
+  ["Price tag","price-tag.html",520,180,"Break type and price for your facecam corner"],
+  ["Break stats","stats.html",520,120,"Average spot, total and spots sold"],
+  ["Socials","socials.html",420,80,"Rotates through your handles"],
+  ["Facecam frame","facecam.html",640,360,"Animated border with LIVE tag and your name"],
+  ["All-in-one (phone)","index-1080x1920.html",1080,1920,"Board, ticker, takeover and animations together"]
+];
+(function renderSources(){
+  const base=location.href.replace(/[^/]*([?#].*)?$/,"");
+  const wrap=document.getElementById("sourceList");
+  SOURCES.forEach(([name,file,w,h,desc])=>{
+    const url=base+file,row=document.createElement("div");
+    row.className="source-row";
+    row.innerHTML=`<div class="src-info"><strong></strong><span class="src-size">${w} × ${h}</span><small></small><code></code></div><button type="button" class="ghost">Copy</button>`;
+    row.querySelector("strong").textContent=name;
+    row.querySelector("small").textContent=desc;
+    row.querySelector("code").textContent=url;
+    row.querySelector("button").addEventListener("click",e=>{
+      navigator.clipboard.writeText(url).then(()=>{e.target.textContent="Copied!";setTimeout(()=>e.target.textContent="Copy",1500)});
+    });
+    wrap.appendChild(row);
+  });
+})();
+
+// ---------- price tag ----------
+const ptLabelInput=document.getElementById("ptLabelInput"),ptAmountInput=document.getElementById("ptAmountInput");
+["Free Respin","Double Respin","Stash or Pass","Spin 2 Choose 1","See 3 Take 2","Spot Price"].forEach(l=>{
+  const b=document.createElement("button");b.type="button";b.className="ghost";b.textContent=l;
+  b.addEventListener("click",()=>{ptLabelInput.value=l});
+  document.getElementById("ptPresets").appendChild(b);
+});
+function savePriceTag(show){
+  const priceTag={label:ptLabelInput.value.trim()||"Free Respin",amount:ptAmountInput.value.trim(),show};
+  state.priceTag=priceTag;
+  if(ref)ref.update({priceTag}).then(()=>setCmd(show?`Price tag showing: ${priceTag.label}`:"Price tag hidden.","ok"));
+}
+document.getElementById("ptShowBtn").addEventListener("click",()=>savePriceTag(true));
+document.getElementById("ptHideBtn").addEventListener("click",()=>savePriceTag(false));
+currencySelect.addEventListener("change",()=>{state.currency=currencySelect.value;if(ref)ref.update({currency:state.currency})});
+
+// ---------- socials ----------
+const SOCIALS=[["instagram","Instagram"],["tiktok","TikTok"],["youtube","YouTube"],["x","X / Twitter"],["facebook","Facebook"],["whatnot","Whatnot"],["discord","Discord"],["twitch","Twitch"]];
+SOCIALS.forEach(([k,n])=>{
+  const l=document.createElement("label");l.textContent=n;
+  const i=document.createElement("input");i.type="text";i.id=`social_${k}`;i.placeholder="@handle";i.autocomplete="off";
+  l.appendChild(i);document.getElementById("socialInputs").appendChild(l);
+});
+function hydrateSocials(){SOCIALS.forEach(([k])=>{const i=document.getElementById(`social_${k}`);if(i&&document.activeElement!==i)i.value=(state.socials||{})[k]||""})}
+document.getElementById("saveSocialsBtn").addEventListener("click",()=>{
+  const socials={};SOCIALS.forEach(([k])=>{socials[k]=document.getElementById(`social_${k}`).value.trim()});
+  state.socials=socials;
+  if(ref)ref.update({socials}).then(()=>setCmd("Socials saved.","ok"));
+});
 document.getElementById("resetAllBtn").addEventListener("click",resetSold);
 
 hydrate();
@@ -132,7 +203,7 @@ if(window.SMJFIREBASE_READY&&window.smjDB){
   ref.on("value",snap=>{
     const data=snap.val();
     if(!data)return;
-    state={...DEFAULT,...data,sold:{...(data.sold||{})},buyers:{...(data.buyers||{})}};
+    state={...DEFAULT,...data,sold:{...(data.sold||{})},buyers:{...(data.buyers||{})},prices:{...(data.prices||{})}};
     hydrate();
     renderTeams();
     markActiveLeague();
