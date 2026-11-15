@@ -1,0 +1,12 @@
+name = "smj-whatnot"
+main = "src/index.js"
+compatibility_date = "2025-06-01"
+
+# Safety net: check for missed sales once a minute.
+[triggers]
+crons = ["* * * * *"]
+
+[vars]
+FIREBASE_URL = "https://smj-overlay-default-rtdb.firebaseio.com"
+OVERLAY_PATH = "smjOverlay/current"
+WHATNOT_PATH = "smjOverlay/whatnot"

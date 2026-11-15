@@ -72,6 +72,16 @@
   <button id="saveTextBtn" type="button">Update Overlay Text</button>
 </section>
 
+<section class="panel" id="whatnotPanel">
+  <h2>Whatnot Auto-Mark</h2>
+  <p class="hint">When this is on, every auction that sells on Whatnot marks its team sold on the board, with the buyer's username and price, and plays the takeover. The team comes from the end of the listing title, for example "… - Dallas Cowboys". Giveaways and $0 orders are ignored. You can still tap teams below to fix anything.</p>
+  <div class="wn-bar">
+    <button id="wnToggle" type="button" class="ghost">Auto-mark is off</button>
+    <span id="wnStatus" class="wn-status">Waiting for Firebase…</span>
+  </div>
+  <div id="wnLog" class="wn-log"></div>
+</section>
+
 <section class="panel">
   <h2>Assign Teams as Sold</h2>
   <p class="hint">Type the buyer's name (optional), then tap their team. The overlay plays a full-board team takeover, then shows the team as SOLD with the buyer's name. Tap a sold team to make it available again.</p>
@@ -97,5 +107,6 @@
 <script src="js/leagues.js"></script>
 <script src="js/moments.js"></script>
 <script src="js/control.js"></script>
+<script src="js/whatnot-panel.js"></script>
 </body>
 </html>
