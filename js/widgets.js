@@ -86,6 +86,30 @@
   }
 
   // ---------- facecam frame ----------
+  // Setup > Facecam: "camera" = transparent frame with LIVE tag for your webcam,
+  // "logo" (default) = no LIVE tag, the frame fills with a rotating logo reel.
   const fc=$("facecam");
-  if(fc)hooks.push(s=>{$("fcBrand").textContent=(s.brand||"SMJ Sports Cards").toUpperCase()});
+  if(fc){
+    const scenes=[...fc.querySelectorAll(".scene")],dots=$("fcDots"),REEL_MS=7000;
+    let sceneIdx=-1,reelTimer=null;
+    if(dots)dots.innerHTML=scenes.map(()=>"<i></i>").join("");
+    function nextScene(){
+      sceneIdx=(sceneIdx+1)%scenes.length;
+      scenes.forEach((sc,i)=>sc.classList.toggle("active",i===sceneIdx));
+      if(dots)[...dots.children].forEach((d,i)=>d.classList.toggle("on",i===sceneIdx));
+    }
+    function setMode(mode){
+      if(fc.dataset.mode===mode&&(mode!=="logo"||reelTimer))return;
+      fc.dataset.mode=mode;
+      clearInterval(reelTimer);reelTimer=null;
+      if(mode==="logo"&&scenes.length){sceneIdx=-1;nextScene();reelTimer=setInterval(nextScene,REEL_MS)}
+    }
+    setMode("logo");
+    hooks.push(s=>{
+      $("fcBrand").textContent=(s.brand||"SMJ Sports Cards").toUpperCase();
+      if($("fcNowTitle"))$("fcNowTitle").textContent=s.title||"SMJ BREAK";
+      if($("fcNowSub")){const sub=s.subtitle==null?"singles • rips • breaks":s.subtitle;$("fcNowSub").textContent=sub;$("fcNowSub").hidden=!sub}
+      setMode(s.facecam==="camera"?"camera":"logo");
+    });
+  }
 })();
