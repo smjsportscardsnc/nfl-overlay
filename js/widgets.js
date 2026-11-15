@@ -58,7 +58,6 @@
       youtube:{n:"YouTube",i:"YT",c:"#ff0033"},
       x:{n:"X",i:"X",c:"#111"},
       facebook:{n:"Facebook",i:"FB",c:"#1877f2"},
-      whatnot:{n:"Whatnot",i:"W",c:"linear-gradient(135deg,#ffd400,#ffb000)",dark:true},
       discord:{n:"Discord",i:"DC",c:"#5865f2"},
       twitch:{n:"Twitch",i:"TW",c:"#9146ff"}
     };

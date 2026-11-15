@@ -194,7 +194,7 @@ const SOURCES=[
 if(currencySelect)currencySelect.addEventListener("change",()=>{state.currency=currencySelect.value;if(ref)ref.update({currency:state.currency})});
 
 // ---------- socials ----------
-const SOCIALS=[["instagram","Instagram"],["tiktok","TikTok"],["youtube","YouTube"],["x","X / Twitter"],["facebook","Facebook"],["whatnot","Whatnot"],["discord","Discord"],["twitch","Twitch"]];
+const SOCIALS=[["instagram","Instagram"],["tiktok","TikTok"],["youtube","YouTube"],["x","X / Twitter"],["facebook","Facebook"],["discord","Discord"],["twitch","Twitch"]];
 SOCIALS.forEach(([k,n])=>{
   const l=document.createElement("label");l.textContent=n;
   const i=document.createElement("input");i.type="text";i.id=`social_${k}`;i.placeholder="@handle";i.autocomplete="off";
