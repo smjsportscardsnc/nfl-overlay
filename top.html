@@ -1,0 +1,98 @@
+<!doctype html>
+<html class="src">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=1080"/>
+<title>Top overlay · SMJ overlay (1080x360)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Inter:wght@600;700;800&display=swap"/>
+<link rel="stylesheet" href="css/style.css"/>
+<link rel="stylesheet" href="css/sources.css"/>
+</head>
+<body class="src src-top" style="--w:1080px;--h:360px">
+<!-- OBS Browser Source: 1080 x 360. The whole upper section: league art on the left,
+     facecam / logo reel in the middle, league art or spots sold on the right.
+     Switches are on the Live Show panel (Top Overlay). -->
+<main class="src-frame">
+  <div class="tb-slot tb-left">
+    <div class="side" data-side="left" data-sport="football">
+      <div class="sd-surface"><i class="sd-mark"></i><i class="sd-sweep"></i></div>
+      <div class="sd-top"><small class="sd-kicker"></small><b class="sd-big"></b></div>
+      <div class="sd-art"></div>
+      <div class="sd-tag"></div>
+    </div>
+  </div>
+  <div class="tb-slot tb-mid">
+    <div class="facecam" id="facecam" data-mode="logo">
+      <div class="fc-live">LIVE</div>
+      <div class="fc-chip"><img src="assets/logo.png" alt=""/><b id="fcBrand">SMJ SPORTS CARDS</b></div>
+
+      <!-- Logo reel: shown instead of the camera when the Live Show panel says "Not live" -->
+      <div class="fc-reel" id="fcReel">
+        <div class="reel-bg"><i class="reel-stripes"></i><i class="reel-glow"></i></div>
+
+        <div class="scene s-hero">
+          <div class="hero-logo"><img src="assets/logo-720.png" alt="SMJ Sports Cards &amp; Collectibles"/><i class="shine"></i></div>
+        </div>
+
+        <div class="scene s-word">
+          <img class="word-logo" src="assets/logo-720.png" alt=""/>
+          <div class="word-text">
+            <b>SMJ</b>
+            <strong>SPORTS CARDS</strong>
+            <small>&amp; COLLECTIBLES</small>
+          </div>
+        </div>
+
+        <div class="scene s-now">
+          <div class="now-card"><div class="now-flip"><div class="now-front"><img src="assets/logo-720.png" alt=""/></div><div class="now-back">SMJ</div></div></div>
+          <div class="now-text">
+            <small>NOW BREAKING</small>
+            <b id="fcNowTitle">SMJ NFL BREAK</b>
+            <span id="fcNowSub">singles • rips • breaks</span>
+          </div>
+        </div>
+
+        <div class="scene s-cta">
+          <div class="cta-text">
+            <small>TAP</small>
+            <b>FOLLOW</b>
+            <span>Never miss a break</span>
+          </div>
+          <img class="cta-logo" src="assets/logo-720.png" alt=""/>
+        </div>
+
+        <div class="reel-dots" id="fcDots"></div>
+      </div>
+    </div>
+  </div>
+  <div class="tb-slot tb-right">
+    <div class="side" data-side="right" data-sport="football">
+      <div class="sd-surface"><i class="sd-mark"></i><i class="sd-sweep"></i></div>
+      <div class="sd-top"><small class="sd-kicker"></small><b class="sd-big"></b></div>
+      <div class="sd-art"></div>
+      <div class="sd-tag"></div>
+      <div class="sd-stats">
+        <small>THE BREAK</small>
+        <div class="st-ring sd-ring"><b class="sd-sold">0</b><small class="sd-of">/32</small></div>
+        <div class="sd-stats-k">SPOTS SOLD</div>
+        <i class="sd-stats-div"></i>
+        <b class="sd-left">32</b>
+        <div class="sd-stats-k sd-left-k">SPOTS LEFT</div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="js/firebase.js"></script>
+<script src="js/leagues.js"></script>
+<script src="js/moments.js"></script>
+<script src="js/social-icons.js"></script>
+<script src="js/sport-art.js"></script>
+<script src="js/widgets.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

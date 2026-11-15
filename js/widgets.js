@@ -94,27 +94,46 @@
   }
 
   // ---------- side art beside the facecam (follows the league) ----------
-  const sd=$("side");
-  if(sd){
-    let last="";
-    const paint=s=>{
-      const lg=s.league||"nfl",sport=(window.SMJ_LEAGUE_SPORT||{})[lg]||"football";
-      const art=(window.SMJ_SPORT_ART||{})[sport];if(!art)return;
-      const left=sd.dataset.side!=="right",piece=left?art.left:art.right;
-      const lgName=((window.SMJ_LEAGUES||{})[lg]||{}).name||"NFL";
-      const key=sport+"|"+lgName;
-      if(key===last)return;
-      sd.dataset.sport=sport;
-      $("sdKicker").textContent=left?"NOW BREAKING":"LET'S RIP";
-      $("sdBig").textContent=left?lgName:art.word;
-      $("sdArt").innerHTML=piece.art;
-      $("sdTag").textContent=piece.tag;
-      fitText($("sdBig"),left?78:56,28);
-      if(last){sd.classList.remove("swap");void sd.offsetWidth;sd.classList.add("swap")}
-      last=key;
-    };
-    hooks.push(paint);
-    if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{if($("sdBig").textContent)fitText($("sdBig"),sd.dataset.side!=="right"?78:56,28)});
+  // Used by side-left.html / side-right.html and the two sides of top.html.
+  // The right side of top.html can swap its art for "spots sold" (Live Show > Top Overlay).
+  const sides=[...document.querySelectorAll(".side")];
+  if(sides.length){
+    const fitBig=sd=>fitText(sd.querySelector(".sd-big"),sd.dataset.side!=="right"?78:56,28);
+    sides.forEach(sd=>{
+      const q=c=>sd.querySelector(c);
+      let last="",lastStats=null;
+      hooks.push(s=>{
+        // spots sold (no prices)
+        const box=q(".sd-stats");
+        if(box){
+          const on=!!s.topStats,list=teams(),sold=list.filter(t=>s.sold&&s.sold[t.abbr]).length,left=list.length-sold;
+          q(".sd-sold").textContent=sold;
+          q(".sd-of").textContent="/"+list.length;
+          q(".sd-ring").style.setProperty("--p",list.length?sold/list.length*100:0);
+          q(".sd-left").textContent=left===0?"SOLD OUT":left;
+          q(".sd-left-k").textContent=left===0?"THANK YOU!":left<=3?"LAST "+left+"!":"SPOTS LEFT";
+          if(lastStats!==null&&on!==lastStats){sd.classList.remove("swap");void sd.offsetWidth;sd.classList.add("swap")}
+          sd.classList.toggle("stats-on",on);
+          lastStats=on;
+        }
+        // league art
+        const lg=s.league||"nfl",sport=(window.SMJ_LEAGUE_SPORT||{})[lg]||"football";
+        const art=(window.SMJ_SPORT_ART||{})[sport];if(!art)return;
+        const left=sd.dataset.side!=="right",piece=left?art.left:art.right;
+        const lgName=((window.SMJ_LEAGUES||{})[lg]||{}).name||"NFL";
+        const key=sport+"|"+lgName;
+        if(key===last)return;
+        sd.dataset.sport=sport;
+        q(".sd-kicker").textContent=left?"NOW BREAKING":"LET'S RIP";
+        q(".sd-big").textContent=left?lgName:art.word;
+        q(".sd-art").innerHTML=piece.art;
+        q(".sd-tag").textContent=piece.tag;
+        fitBig(sd);
+        if(last){sd.classList.remove("swap");void sd.offsetWidth;sd.classList.add("swap")}
+        last=key;
+      });
+    });
+    if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>sides.forEach(sd=>{if(sd.querySelector(".sd-big").textContent)fitBig(sd)}));
   }
 
   // ---------- facecam frame ----------

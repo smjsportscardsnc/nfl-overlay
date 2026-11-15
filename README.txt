@@ -81,6 +81,11 @@ Add only the ones you want as Browser Sources. All update live from control.html
 - stats.html           220 x 360   spots sold, average spot, total (sits beside the facecam)
 - socials.html         420 x 80    rotates through your handles
 - facecam.html         640 x 360   animated border, LIVE tag, brand chip
+- top.html            1080 x 360   the whole facecam row: league art left and right,
+                                   facecam / logo reel in the middle. Live Show panel >
+                                   Top Overlay: Camera Live / Not live (logo reel), and
+                                   Spots sold Show / Hide (swaps the right art for spots
+                                   sold and spots left, no prices). Firebase: facecam, topStats.
 - side-left.html       220 x 360   league art for the left of the facecam
 - side-right.html      220 x 360   league art for the right of the facecam
   Football for NFL, basketball for NBA/WNBA, baseball for MLB, hockey for NHL.
