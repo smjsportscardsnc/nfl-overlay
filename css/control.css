@@ -58,3 +58,35 @@ button.ghost{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,
 .wn-main strong{display:block;font-size:15px}
 .wn-main small{display:block;color:#b8def5;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .wn-row button{padding:8px 12px;font-size:13px}
+
+/* ---------- two-page layout: Live Show + Setup ---------- */
+body{padding:0 22px 22px}
+.topbar{position:sticky;top:0;z-index:5;margin:0 -22px 18px;padding:14px 22px;background:rgba(7,16,31,.94);backdrop-filter:blur(8px);border-bottom:1px solid rgba(255,255,255,.1)}
+.topbar h1{font-size:28px}
+.status-row{display:flex;gap:8px;flex-wrap:wrap}
+.status-row .connection,.status-row .command-status{margin-top:6px;padding:5px 10px;font-size:13px}
+.topbar-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.topbar-actions button{padding:11px 16px;font-size:15px}
+.nav-link{display:inline-block;padding:11px 16px;border-radius:14px;font-weight:900;font-size:15px;color:#cfeeff;text-decoration:none;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16)}
+.nav-link:hover{background:rgba(255,255,255,.14)}
+.nav-link.primary{background:linear-gradient(135deg,#087bff,#00c9ff);color:#fff;border:0}
+.panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.panel-head h2{margin:0}
+.pill{display:inline-block;padding:5px 12px;border-radius:999px;font-size:13px;font-weight:800;color:#b8def5;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14)}
+.pill.ok{color:#7dffbd;background:rgba(0,220,120,.14);border-color:rgba(0,220,120,.35)}
+.hint.small{font-size:13px;margin:8px 0 12px}
+.small-btn{padding:9px 14px;font-size:14px}
+.live-grid{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(320px,1fr);gap:18px;align-items:start}
+.live-grid .panel{margin-bottom:0}
+.side-col{display:grid;gap:18px}
+.league-chips{margin-bottom:4px}
+.buyer-row label{margin:10px 0 0}
+.page-live .moment-buttons{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
+.page-live .moment-btn{padding:12px 10px;font-size:15px}
+.page-live .moment-badge{min-width:44px;height:44px;font-size:20px}
+.setup-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:start}
+.setup-grid .panel{margin-bottom:0}
+.span-2{grid-column:1/-1}
+@media(max-width:1100px){.live-grid{grid-template-columns:1fr}}
+@media(max-width:800px){.setup-grid{grid-template-columns:1fr}.topbar{position:static}.team-controls{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.league-chips button:not(.active),.setup-grid [data-rows]:not(.active){background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);box-shadow:none}
