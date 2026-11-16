@@ -1,0 +1,16 @@
+Night-stadium photos used in the side panels.
+
+All eight are free photos from Unsplash, used under the Unsplash License
+(https://unsplash.com/license): free to use and modify, including commercially,
+with no credit required. They are listed here anyway so they can be traced.
+Each was cropped to the panel shape; 02 is mirrored; sponsor boards and screens
+in 03, 04 and 07 were blurred so no brand text shows.
+
+01-floodlights-snow.jpg   https://unsplash.com/photos/stadium-floodlights-illuminating-night-snow-29Jx9qyTW14
+02-floodlight-tower.jpg   https://unsplash.com/photos/a-tall-tower-with-a-light-on-top-of-it-zfdv3tyGo4E
+03-packed-bowl.jpg        https://unsplash.com/photos/people-watching-soccer-game-in-stadium-hQBIJsBtyBw
+04-ballpark-lights.jpg    https://unsplash.com/photos/a-baseball-stadium-filled-with-lots-of-people-YhbbbrgXrMU
+05-stadium-skyline.jpg    https://unsplash.com/photos/soccer-specific-stadium-during-night-time-9UbSjJAUtBE
+06-light-banks.jpg        https://unsplash.com/photos/people-in-arena-at-night-o9h6KJG52eU
+07-misty-stadium.jpg      https://unsplash.com/photos/a-soccer-stadium-filled-with-lots-of-people-yKHZ65nuEtE
+08-roof-lights.jpg        https://unsplash.com/photos/high-angel-photography-of-football-stadium-70YxSTWa2Zw

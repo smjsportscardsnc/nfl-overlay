@@ -81,16 +81,17 @@ Add only the ones you want as Browser Sources. All update live from control.html
 - stats.html           220 x 360   spots sold, average spot, total (sits beside the facecam)
 - socials.html         420 x 80    rotates through your handles
 - facecam.html         640 x 360   animated border, LIVE tag, brand chip
-- top.html            1080 x 360   the whole facecam row: stadium scenery left and right,
+- top.html            1080 x 360   the whole facecam row: night-stadium photos left and right,
                                    facecam / logo reel in the middle. Live Show panel >
                                    Top Overlay: Camera Live / Not live (logo reel), and
-                                   Spots sold Show / Hide (swaps the right scenery for spots
+                                   Spots sold Show / Hide (swaps the right photo for spots
                                    sold and spots left, no prices). Firebase: facecam, topStats.
-- side-left.html       220 x 360   stadium scenery for the left of the facecam
-- side-right.html      220 x 360   stadium scenery for the right of the facecam
-  One night stadium for every league (light towers, a packed crowd with camera
-  flashes, a moving ribbon board, the field under the lights). The right side is
-  the mirror image of the left. Drawn in js/stadium.js.
+- side-left.html       220 x 360   night-stadium photos for the left of the facecam
+- side-right.html      220 x 360   night-stadium photos for the right of the facecam
+  Real photos (floodlight towers, packed stands, a ballpark under the lights, a
+  stadium in a city skyline) that drift slowly and crossfade every 16s; the two
+  sides take turns changing. Same photos for every league. The list is in
+  js/stadium.js, the files and their sources are in assets/stadium/.
 - index-1080x1920.html 1080 x 1920 all-in-one (board, ticker, takeover, animations)
 The control panel lists every link with its size and a Copy button.
 New Firebase fields: brand, prices {abbr: number}, currency, priceTag {label, amount, show}, socials {platform: handle}.
