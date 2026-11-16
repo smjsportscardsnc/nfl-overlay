@@ -162,10 +162,7 @@ window.testTakeover=(abbr,buyer)=>{const t=teams().find(x=>x.abbr===abbr)||teams
 // ---------- full-screen moments ----------
 const MOMENT_MS=4600;
 const momentEl=document.getElementById("moment"),
-momentKicker=document.getElementById("momentKicker"),
 momentTitle=document.getElementById("momentTitle"),
-momentSub=document.getElementById("momentSub"),
-momentBadge=document.getElementById("momentBadge"),
 momentSparks=document.getElementById("momentSparks");
 let momentTimer=null,lastMomentAt=null;
 // Stomp when the graphic lands, swoosh as it flies off.
@@ -189,16 +186,12 @@ function playMoment(id){
   clearTimeout(momentTimer);
   momentEl.classList.remove("play");
   m.colors.forEach((c,i)=>momentEl.style.setProperty(`--c${i+1}`,c));
-  momentKicker.textContent=m.kicker||"";
-  momentKicker.hidden=!m.kicker;
   momentTitle.replaceChildren(...(m.lines||[]).map(l=>{
     const s=el("span",l.small?"small":"",l.t);
     if(l.c)s.style.setProperty("--lc",l.c);
     return s;
   }));
   momentTitle.classList.toggle("long",(m.lines||[]).some(l=>!l.small&&l.t.length>6));
-  momentSub.textContent=m.sub||"";
-  momentBadge.textContent=m.badge||"";
 
   // sparks that burst out when the graphic lands
   momentSparks.innerHTML="";
