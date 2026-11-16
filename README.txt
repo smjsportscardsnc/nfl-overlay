@@ -86,12 +86,12 @@ Add only the ones you want as Browser Sources. All update live from control.html
                                    Top Overlay: Camera Live / Not live (logo reel), and
                                    Spots sold Show / Hide (swaps the right art for spots
                                    sold and spots left, no prices). Firebase: facecam, topStats.
-- side-left.html       220 x 360   league art for the left of the facecam
-- side-right.html      220 x 360   league art for the right of the facecam
-  Football for NFL, basketball for NBA/WNBA, baseball for MLB, hockey for NHL.
-  Artwork is in js/sport-art.js. The balls and puck are pre-rendered 3D sprite
-  sheets in assets/balls/ (24 frames of one full spin), made by
-  tools/render_balls.py (python3 tools/render_balls.py, needs numpy + Pillow).
+- side-left.html       220 x 360   locker stall for the left of the facecam
+- side-right.html      220 x 360   locker stall for the right of the facecam
+  Each stall shows a legend's jersey (name and number, team colours, no logos)
+  under a brass name plate, swinging in on its hanger; the two sides take turns
+  changing every 9s. Legends per league (NFL, NBA, WNBA, MLB, NHL) are in
+  js/locker-room.js.
 - index-1080x1920.html 1080 x 1920 all-in-one (board, ticker, takeover, animations)
 The control panel lists every link with its size and a Copy button.
 New Firebase fields: brand, prices {abbr: number}, currency, priceTag {label, amount, show}, socials {platform: handle}.
