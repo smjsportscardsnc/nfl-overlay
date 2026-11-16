@@ -1,20 +1,22 @@
 """Builds the animation sound effects in assets/sounds.
 
-  stomp.wav  - heavy stomp that hits when the graphic lands
+  stomp.wav  - deep, heavy stomp that hits when the graphic lands
   swoosh.wav - air swoosh for the fly-away at the end
 
 Both are synthesized (no samples), so they are ours to use. Run:
-  python3 tools/make_sounds.py
+  python3 tools/make_sounds.py          (both)
+  python3 tools/make_sounds.py stomp    (just one)
 Needs numpy only.
 """
 import os
+import sys
 import wave
 
 import numpy as np
 
 SR = 44100
 OUT = os.path.join(os.path.dirname(__file__), "..", "assets", "sounds")
-rng = np.random.default_rng(7)
+rng = np.random.default_rng(7)  # each sound reseeds this, so they build independently
 
 
 def t_axis(seconds):
@@ -68,63 +70,57 @@ def write(name, left, right, peak_db):
     print(f"wrote {os.path.normpath(path)} ({len(left) / SR:.2f}s)")
 
 
-def hit(t, pitch=1.0):
-    """One boot hitting a wooden stage, impact at t=0."""
-    n = len(t)
-    # deep boom with a fast pitch drop (kept short so it punches, not rumbles)
-    f_sub = (46 + 80 * np.exp(-t / 0.03)) * pitch
-    sub = 0.8 * np.sin(2 * np.pi * np.cumsum(f_sub) / SR) * np.exp(-t / 0.14)
-    # chest punch in the range phone and laptop speakers can play
-    f_body = (98 + 160 * np.exp(-t / 0.015)) * pitch
-    body = 0.9 * np.sin(2 * np.pi * np.cumsum(f_body) / SR) * np.exp(-t / 0.06)
-    # stage boards: two wooden resonances
-    wood = rng.standard_normal(n)
-    knock = (1.2 * svf_bandpass(wood, 185 * pitch, 3.0)
-             + 0.8 * svf_bandpass(wood, 330 * pitch, 4.0)) * np.exp(-t / 0.075)
-    # heel crack and the slap that gives it bite
-    crack = 1.2 * onepole_lp(rng.standard_normal(n), 3500) * np.exp(-t / 0.008)
-    slap = 1.0 * svf_bandpass(rng.standard_normal(n), 1500 * pitch, 1.2) * np.exp(-t / 0.03)
-    return sub + body + knock + crack + slap
-
-
 def stomp():
-    """A big stadium stomp: one heavy hit with a few others a hair behind it,
-    then a short, dark arena tail. The impact is at t=0 so the page can time
-    it to the moment the graphic lands."""
-    t = t_axis(1.2)
-    main = hit(t)
-    left, right = main.copy(), main.copy()
-    # a few extra feet landing within ~18ms makes it big without a flam
-    for i in range(5):
-        d = int(SR * rng.uniform(0.004, 0.018))
-        h = 0.32 * hit(t, rng.uniform(0.92, 1.08))
-        h = np.concatenate([np.zeros(d), h[:-d]])
-        pan = rng.uniform(-0.8, 0.8)
-        left += h * np.cos((pan + 1) * np.pi / 4) * 1.41
-        right += h * np.sin((pan + 1) * np.pi / 4) * 1.41
-    drive = 2.6
-    left, right = np.tanh(drive * left / 3) , np.tanh(drive * right / 3)
+    """A deep, heavy stomp: a big low boom with a dull thud on top and a
+    dark rumble after it, like a giant foot landing in an arena. The impact
+    is at t=0 so the page can time it to the moment the graphic lands."""
+    global rng
+    rng = np.random.default_rng(11)
+    t = t_axis(1.6)
+    n = len(t)
+    # the boom: starts around 75Hz and sinks to 34Hz, rings for a while
+    f_boom = 34 + 41 * np.exp(-t / 0.06)
+    boom = np.sin(2 * np.pi * np.cumsum(f_boom) / SR) * np.exp(-t / 0.42)
+    # chest punch an octave up so the hit has weight on smaller speakers
+    f_punch = 64 + 90 * np.exp(-t / 0.025)
+    punch = 0.85 * np.sin(2 * np.pi * np.cumsum(f_punch) / SR) * np.exp(-t / 0.12)
+    f_body = 100 + 60 * np.exp(-t / 0.02)
+    punch += 0.35 * np.sin(2 * np.pi * np.cumsum(f_body) / SR) * np.exp(-t / 0.05)
+    # dull thud of the foot: dark noise, no crack
+    thud = 0.9 * onepole_lp(onepole_lp(rng.standard_normal(n), 420), 420) * np.exp(-t / 0.035)
+    thud /= np.max(np.abs(thud[:2000]))
+    thud *= 0.55
+    # low rumble that hangs after the hit
+    rumble = onepole_lp(onepole_lp(rng.standard_normal(n), 110), 110)
+    rumble *= 0.5 / np.max(np.abs(rumble)) * np.clip(t / 0.03, 0, 1) * np.exp(-t / 0.5)
+    dry = boom + punch + thud + rumble
+    # gentle warm saturation: adds overtones of the boom (so it is heard on
+    # phones) while it still sounds low
+    dry = np.tanh(2.2 * (dry + 0.35 * dry * dry)) / np.tanh(2.2)
+    dry -= onepole_lp(dry, 18)  # keep it centered (no DC from the overtones)
 
-    # dark arena tail
-    tir = t_axis(1.0)
-    decay = np.exp(-tir / 0.25)
-    irl = onepole_lp(rng.standard_normal(len(tir)), 1600) * decay
-    irr = onepole_lp(rng.standard_normal(len(tir)), 1600) * decay
-    irl[: int(0.014 * SR)] = 0
-    irr[: int(0.021 * SR)] = 0
-    wl = fft_convolve(left, irl)
-    wr = fft_convolve(right, irr)
-    scale = 0.2 * max(np.max(np.abs(left)), np.max(np.abs(right))) / max(np.max(np.abs(wl)), np.max(np.abs(wr)))
-    left = left + scale * wl
-    right = right + scale * wr
+    # very dark, big room
+    tir = t_axis(1.4)
+    decay = np.exp(-tir / 0.38)
+    irl = onepole_lp(onepole_lp(rng.standard_normal(len(tir)), 700), 700) * decay
+    irr = onepole_lp(onepole_lp(rng.standard_normal(len(tir)), 700), 700) * decay
+    irl[: int(0.02 * SR)] = 0
+    irr[: int(0.028 * SR)] = 0
+    wl = fft_convolve(dry, irl)
+    wr = fft_convolve(dry, irr)
+    scale = 0.22 * np.max(np.abs(dry)) / max(np.max(np.abs(wl)), np.max(np.abs(wr)))
+    left = dry + scale * wl
+    right = dry + scale * wr
 
-    fade = np.clip((t[-1] - t) / 0.3, 0, 1)
+    fade = np.clip((t[-1] - t) / 0.4, 0, 1) * np.clip(t / 0.0005, 0, 1)
     write("stomp.wav", left * fade, right * fade, -1.0)
 
 
 def swoosh():
     """Air swoosh that passes left to right. Loudest at 0.38s, so the page
     starts it a little before the graphic flies off."""
+    global rng
+    rng = np.random.default_rng(7)
     dur, tp = 0.95, 0.38
     t = t_axis(dur)
     env = np.where(t < tp, (t / tp) ** 2.2, np.exp(-(t - tp) / 0.14))
@@ -148,5 +144,5 @@ def swoosh():
 
 
 if __name__ == "__main__":
-    stomp()
-    swoosh()
+    for name in sys.argv[1:] or ["stomp", "swoosh"]:
+        {"stomp": stomp, "swoosh": swoosh}[name]()
