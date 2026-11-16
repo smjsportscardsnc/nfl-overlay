@@ -43,7 +43,7 @@ Animations:
   light streaks, the graphic slams in with a burst and sparks, holds, then flies out.
 - Graphics and colors are listed in js/moments.js. To add one, put a transparent PNG
   in assets/graphics and add an entry there.
-- Animation sound is off by default (Setup > Animation Sound turns the swoosh back on).
+- Animation sound is off by default. Setup > Animation Sound > Stomp + swoosh turns it on: a stomp when the graphic lands and a swoosh when it flies away. "Hear it here" plays them on the Setup page. To change the sounds, edit and run tools/make_sounds.py.
   If you turn it on, in OBS tick "Control audio via OBS"
   on the Browser Source so viewers hear it.
 

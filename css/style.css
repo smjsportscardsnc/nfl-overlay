@@ -548,25 +548,13 @@ body{
   color:#fff;
 }
 .gm-logo{
-  position:absolute;
-  left:34px;top:30px;
-  width:96px;height:96px;
+  width:150px;height:150px;
+  margin-bottom:26px;
   border-radius:50%;
   object-fit:cover;
-  border:3px solid rgba(255,255,255,.25);
-  box-shadow:0 0 24px color-mix(in srgb,var(--c2) 60%,transparent);
-}
-.gm-kicker{
-  display:inline-block;
-  font-family:var(--head);
-  font-size:34px;
-  font-weight:900;
-  letter-spacing:.32em;
-  padding:8px 22px 8px 30px;
-  border-radius:10px;
-  background:#fff;
-  color:#0a0e1c;
-  margin-bottom:18px;
+  border:4px solid rgba(255,255,255,.3);
+  box-shadow:0 0 34px color-mix(in srgb,var(--c2) 65%,transparent);
+  flex:none;
 }
 .gm-title{
   display:flex;
@@ -585,38 +573,11 @@ body{
   opacity:0;
 }
 .gm-title span.small{font-size:58px;letter-spacing:.2em;text-transform:lowercase;color:#c9d1e6;text-shadow:none;margin:6px 0}
-.gm-title.long span{font-size:130px}
+.gm-title.long span{font-size:150px}
 .moment.play .gm-title span{animation:gmWord .55s cubic-bezier(.2,1.5,.4,1) forwards}
 .moment.play .gm-title span:nth-child(1){animation-delay:.75s}
 .moment.play .gm-title span:nth-child(2){animation-delay:.9s}
 .moment.play .gm-title span:nth-child(3){animation-delay:1.05s}
-.gm-sub{
-  margin-top:20px;
-  font-size:30px;
-  font-weight:700;
-  letter-spacing:.04em;
-  color:#c9d1e6;
-  opacity:0;
-}
-.moment.play .gm-sub{animation:gmRise .5s ease-out 1.25s forwards}
-.gm-badge{
-  position:absolute;
-  right:30px;top:28px;
-  min-width:110px;height:110px;
-  padding:0 16px;
-  border-radius:55px;
-  display:grid;
-  place-items:center;
-  font-family:var(--head);
-  font-size:58px;
-  font-weight:900;
-  color:#1a1300;
-  background:linear-gradient(135deg,#fff3c4,var(--c3));
-  box-shadow:0 8px 20px rgba(0,0,0,.4);
-  transform:rotate(12deg) scale(0);
-}
-.gm-badge:empty{display:none}
-.moment.play .gm-badge{animation:gmStamp .45s cubic-bezier(.2,1.8,.4,1) 1.15s forwards}
 .gm-shine{
   position:absolute;inset:-20%;
   background:linear-gradient(110deg,transparent 40%,rgba(255,255,255,.45) 50%,transparent 60%);
@@ -665,8 +626,6 @@ body{
 }
 @keyframes gmSpinBorder{to{--ga:360deg}}
 @keyframes gmWord{from{opacity:0;transform:translateY(70px) scale(.8)}to{opacity:1;transform:none}}
-@keyframes gmRise{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
-@keyframes gmStamp{to{transform:rotate(12deg) scale(1)}}
 @keyframes gmShine{0%,30%{transform:translateX(-120%)}44%{transform:translateX(120%)}44.1%,58%{transform:translateX(-120%)}72%,100%{transform:translateX(120%)}}
 @keyframes gmFlash{0%{opacity:.45}100%{opacity:0}}
 @keyframes mSpark{0%{opacity:1;transform:translate(0,0) rotate(0) scale(1)}100%{opacity:0;transform:translate(var(--x),var(--y)) rotate(540deg) scale(.4)}}
