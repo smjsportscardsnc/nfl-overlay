@@ -224,9 +224,9 @@ body.src-anim .moment{--cy:960px}
 .sd-top b{display:block;width:100%;margin-top:2px;font-family:var(--head);font-size:78px;font-weight:900;line-height:.9;white-space:nowrap;overflow:hidden;text-shadow:0 4px 0 rgba(0,0,0,.35),0 0 18px rgba(0,0,0,.5)}
 .sd-top{display:none}
 .sd-art{position:absolute;inset:6px;border-radius:24px;overflow:hidden;z-index:1;background:#0c0a09}
-.lk-scene,.lk-scene>svg{position:absolute;inset:0;width:100%;height:100%;display:block}
-.lk-scene.lk-in{animation:lkIn .9s ease both}
-@keyframes lkIn{from{opacity:0}}
+.stadium,.stadium>svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.stadium{animation:stadiumIn 1.2s ease both}
+@keyframes stadiumIn{from{opacity:0}}
 .sd-tag{max-width:100%;font-family:var(--head);font-size:21px;font-weight:900;letter-spacing:.08em;white-space:nowrap;background:rgba(10,14,28,.86);border:1.5px solid rgba(255,255,255,.28);padding:5px 14px;border-radius:999px;box-shadow:0 6px 14px rgba(0,0,0,.4)}
 @keyframes sdIn{from{transform:scale(.4) translateY(20px);opacity:0}}
 
