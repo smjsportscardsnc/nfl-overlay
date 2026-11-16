@@ -26,7 +26,8 @@ function logo(abbr){const lg=currentLeague();return `https://a.espncdn.com/i/tea
 
 function hydrate(){
   document.querySelectorAll("[data-rows]").forEach(b=>b.classList.toggle("active",+b.dataset.rows===(+state.boardRows||3)));
-  document.querySelectorAll("[data-sound]").forEach(b=>b.classList.toggle("active",b.dataset.sound===(state.animSound||"off")));
+  const sound=state.animSound&&state.animSound!=="off"?"on":"off"; // "swoosh" is the old saved value for on
+  document.querySelectorAll("[data-sound]").forEach(b=>b.classList.toggle("active",b.dataset.sound===sound));
   document.querySelectorAll("[data-facecam]").forEach(b=>b.classList.toggle("active",b.dataset.facecam===(state.facecam==="camera"?"camera":"logo")));
   document.querySelectorAll("[data-topstats]").forEach(b=>b.classList.toggle("active",b.dataset.topstats===(state.topStats?"on":"off")));
   setVal(titleInput,state.title||DEFAULT.title);
@@ -163,6 +164,13 @@ document.querySelectorAll("[data-sound]").forEach(b=>b.addEventListener("click",
   state.animSound=b.dataset.sound;hydrate();
   if(ref)ref.update({animSound:state.animSound}).then(()=>setCmd(`Animation sound: ${b.textContent}`,"ok"));
 }));
+
+// Plays the animation sounds on this page, spaced like they are in the animation.
+on("hearSoundBtn","click",()=>{
+  const play=name=>new Audio(`assets/sounds/${name}.wav`).play().catch(()=>{});
+  play("stomp");
+  setTimeout(()=>play("swoosh"),1800);
+});
 
 document.querySelectorAll("[data-facecam]").forEach(b=>b.addEventListener("click",()=>{
   state.facecam=b.dataset.facecam;hydrate();

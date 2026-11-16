@@ -168,13 +168,19 @@ momentSub=document.getElementById("momentSub"),
 momentBadge=document.getElementById("momentBadge"),
 momentSparks=document.getElementById("momentSparks");
 let momentTimer=null,lastMomentAt=null;
-const swoosh=momentEl?new Audio("assets/sounds/swoosh.wav"):null;
-if(swoosh)swoosh.preload="auto";
+// Stomp when the graphic lands, swoosh as it flies off.
+const SFX=momentEl?{stomp:new Audio("assets/sounds/stomp.wav"),swoosh:new Audio("assets/sounds/swoosh.wav")}:{};
+Object.values(SFX).forEach(a=>{a.preload="auto"});
+const STOMP_AT=600,SWOOSH_AT=3560; // ms into the animation (see gmCard / gmFlash in style.css)
+let soundTimers=[];
 
-// Sound is off unless "Animation sound" is set to Swoosh on the Setup page.
-function playSound(volume){
-  if(!swoosh||state.animSound!=="swoosh")return;
-  try{const a=swoosh.cloneNode();a.volume=volume;a.play().catch(()=>{})}catch(e){}
+// Sound is off unless "Animation sound" is turned on on the Setup page
+// ("swoosh" is the old saved value for on).
+function soundOn(){return !!state.animSound&&state.animSound!=="off"}
+function playSound(name,volume){
+  const src=SFX[name];
+  if(!src||!soundOn())return;
+  try{const a=src.cloneNode();a.volume=volume;a.play().catch(()=>{})}catch(e){}
 }
 
 function playMoment(id){
@@ -208,8 +214,8 @@ function playMoment(id){
 
   void momentEl.offsetWidth;
   momentEl.classList.add("play");
-  playSound(1);
-  setTimeout(()=>playSound(.6),3650);
+  soundTimers.forEach(clearTimeout);
+  soundTimers=[setTimeout(()=>playSound("stomp",1),STOMP_AT),setTimeout(()=>playSound("swoosh",1),SWOOSH_AT)];
   momentTimer=setTimeout(()=>momentEl.classList.remove("play"),MOMENT_MS);
 }
 window.playMoment=playMoment; // handy for testing from the browser console
