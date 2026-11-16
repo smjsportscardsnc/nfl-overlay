@@ -223,10 +223,13 @@ body.src-anim .moment{--cy:960px}
 .sd-top small{font-size:12px;font-weight:900;letter-spacing:.22em;color:var(--gold);text-shadow:0 2px 6px rgba(0,0,0,.6)}
 .sd-top b{display:block;width:100%;margin-top:2px;font-family:var(--head);font-size:78px;font-weight:900;line-height:.9;white-space:nowrap;overflow:hidden;text-shadow:0 4px 0 rgba(0,0,0,.35),0 0 18px rgba(0,0,0,.5)}
 .sd-top{display:none}
-.sd-art{position:absolute;inset:6px;border-radius:24px;overflow:hidden;z-index:1;background:#0c0a09}
-.stadium,.stadium>svg{position:absolute;inset:0;width:100%;height:100%;display:block}
-.stadium{animation:stadiumIn 1.2s ease both}
+.sd-art{position:absolute;inset:6px;border-radius:24px;overflow:hidden;z-index:1;background:#05080f}
+.stadium{position:absolute;inset:0;background:center/cover no-repeat;animation:stadiumIn 1.8s ease both,stadiumDrift 32s ease-in-out infinite alternate}
+.stadium.alt{animation-name:stadiumIn,stadiumDriftAlt}
+.sd-art::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse at 50% 45%,transparent 55%,rgba(3,6,14,.5) 100%)}
 @keyframes stadiumIn{from{opacity:0}}
+@keyframes stadiumDrift{from{transform:scale(1.02)}to{transform:scale(1.12) translate(-1.5%,-1%)}}
+@keyframes stadiumDriftAlt{from{transform:scale(1.12) translate(1.5%,1%)}to{transform:scale(1.02)}}
 .sd-tag{max-width:100%;font-family:var(--head);font-size:21px;font-weight:900;letter-spacing:.08em;white-space:nowrap;background:rgba(10,14,28,.86);border:1.5px solid rgba(255,255,255,.28);padding:5px 14px;border-radius:999px;box-shadow:0 6px 14px rgba(0,0,0,.4)}
 @keyframes sdIn{from{transform:scale(.4) translateY(20px);opacity:0}}
 

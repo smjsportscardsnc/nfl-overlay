@@ -93,23 +93,37 @@
     });
   }
 
-  // ---------- stadium scenery beside the facecam ----------
-  // Used by side-left.html / side-right.html and the two sides of top.html. One night
-  // stadium for every league (js/stadium.js); the right side is drawn mirrored.
-  // The right side of top.html can swap to "spots sold".
-  const sides=[...document.querySelectorAll(".side")];
-  if(sides.length&&window.SMJ_STADIUM){
-    sides.forEach((sd,i)=>{
-      const q=c=>sd.querySelector(c),right=sd.dataset.side==="right";
-      let lastStats=null;
-      const art=document.createElement("div");
-      art.className="stadium";
-      art.innerHTML=window.SMJ_STADIUM.scene(right?"right":"left",(right?"r":"l")+i);
-      q(".sd-art").appendChild(art);
+  // ---------- stadium photos beside the facecam ----------
+  // Used by side-left.html / side-right.html and the two sides of top.html. Real
+  // night-stadium photos (listed in js/stadium.js) that drift slowly and crossfade;
+  // the left shows the 1st, 3rd, 5th... photo, the right the 2nd, 4th... and they
+  // take turns changing. The right side of top.html can swap to "spots sold".
+  const sides=[...document.querySelectorAll(".side")],PHOTOS=window.SMJ_STADIUM_PHOTOS||[];
+  if(sides.length){
+    const ROTATE_MS=16000;
+    sides.forEach(sd=>{
+      const q=c=>sd.querySelector(c),right=sd.dataset.side==="right",box=q(".sd-art");
+      let idx=right?1:0,shown=0,lastStats=null;
+      function show(){
+        if(!PHOTOS.length)return;
+        const src=PHOTOS[idx%PHOTOS.length],img=new Image();
+        idx+=2;
+        // swap only once the photo has loaded, so there is never a blank panel
+        img.onload=()=>{
+          const el=document.createElement("div"),old=[...box.children];
+          el.className="stadium"+(shown++%2?" alt":"");
+          el.style.backgroundImage=`url("${src}")`;
+          box.appendChild(el);
+          setTimeout(()=>old.forEach(o=>o.remove()),2000);
+        };
+        img.src=src;
+      }
+      show();
+      // the right side changes halfway between the left side's changes
+      if(PHOTOS.length>2)setTimeout(()=>{show();setInterval(show,ROTATE_MS)},right?ROTATE_MS*1.5:ROTATE_MS);
       hooks.push(s=>{
         // spots sold (no prices)
-        const box=q(".sd-stats");
-        if(!box)return;
+        if(!q(".sd-stats"))return;
         const on=!!s.topStats,list=teams(),sold=list.filter(t=>s.sold&&s.sold[t.abbr]).length,left=list.length-sold;
         q(".sd-sold").textContent=sold;
         q(".sd-of").textContent="/"+list.length;
