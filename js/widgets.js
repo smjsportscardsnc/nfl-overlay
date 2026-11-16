@@ -93,28 +93,52 @@
     });
   }
 
-  // ---------- side art beside the facecam (follows the league) ----------
-  const sd=$("side");
-  if(sd){
-    let last="";
-    const paint=s=>{
-      const lg=s.league||"nfl",sport=(window.SMJ_LEAGUE_SPORT||{})[lg]||"football";
-      const art=(window.SMJ_SPORT_ART||{})[sport];if(!art)return;
-      const left=sd.dataset.side!=="right",piece=left?art.left:art.right;
-      const lgName=((window.SMJ_LEAGUES||{})[lg]||{}).name||"NFL";
-      const key=sport+"|"+lgName;
-      if(key===last)return;
-      sd.dataset.sport=sport;
-      $("sdKicker").textContent=left?"NOW BREAKING":"LET'S RIP";
-      $("sdBig").textContent=left?lgName:art.word;
-      $("sdArt").innerHTML=piece.art;
-      $("sdTag").textContent=piece.tag;
-      fitText($("sdBig"),left?78:56,28);
-      if(last){sd.classList.remove("swap");void sd.offsetWidth;sd.classList.add("swap")}
-      last=key;
-    };
-    hooks.push(paint);
-    if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{if($("sdBig").textContent)fitText($("sdBig"),sd.dataset.side!=="right"?78:56,28)});
+  // ---------- locker room beside the facecam (follows the league) ----------
+  // Used by side-left.html / side-right.html and the two sides of top.html. Each side is
+  // a locker stall; the left shows the 1st, 3rd, 5th... legend, the right the 2nd, 4th...
+  // and they take turns changing. The right side of top.html can swap to "spots sold".
+  const sides=[...document.querySelectorAll(".side")];
+  if(sides.length&&window.SMJ_LOCKER){
+    const LK=window.SMJ_LOCKER,ROTATE_MS=9000;
+    let uid=0;
+    sides.forEach(sd=>{
+      const q=c=>sd.querySelector(c),right=sd.dataset.side==="right";
+      let league="",idx=0,timer=null,lastStats=null;
+      function show(){
+        const list=LK.greats[league]||LK.greats.nfl,box=q(".sd-art");
+        const el=document.createElement("div");
+        el.className="lk-scene";
+        el.innerHTML=LK.scene(list[idx%list.length],LK.sport[league]||"football",(right?"r":"l")+(uid++));
+        const old=[...box.children];
+        box.appendChild(el);
+        if(old.length){el.classList.add("lk-in");setTimeout(()=>old.forEach(o=>o.remove()),1000)}
+        idx+=2;
+      }
+      function start(lg){
+        league=lg;idx=right?1:0;sd.dataset.sport=LK.sport[lg]||"football";
+        clearTimeout(timer);clearInterval(timer);
+        show();
+        // the right side changes halfway between the left side's changes
+        timer=setTimeout(()=>{show();timer=setInterval(show,ROTATE_MS)},right?ROTATE_MS*1.5:ROTATE_MS);
+      }
+      hooks.push(s=>{
+        // spots sold (no prices)
+        const box=q(".sd-stats");
+        if(box){
+          const on=!!s.topStats,list=teams(),sold=list.filter(t=>s.sold&&s.sold[t.abbr]).length,left=list.length-sold;
+          q(".sd-sold").textContent=sold;
+          q(".sd-of").textContent="/"+list.length;
+          q(".sd-ring").style.setProperty("--p",list.length?sold/list.length*100:0);
+          q(".sd-left").textContent=left===0?"SOLD OUT":left;
+          q(".sd-left-k").textContent=left===0?"THANK YOU!":left<=3?"LAST "+left+"!":"SPOTS LEFT";
+          if(lastStats!==null&&on!==lastStats){sd.classList.remove("swap");void sd.offsetWidth;sd.classList.add("swap")}
+          sd.classList.toggle("stats-on",on);
+          lastStats=on;
+        }
+        const lg=LK.greats[s.league]?s.league:"nfl";
+        if(lg!==league)start(lg);
+      });
+    });
   }
 
   // ---------- facecam frame ----------
