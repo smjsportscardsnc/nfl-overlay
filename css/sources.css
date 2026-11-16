@@ -224,7 +224,7 @@ body.src-anim .moment{--cy:960px}
 .sd-top small{font-size:12px;font-weight:900;letter-spacing:.22em;color:var(--gold);text-shadow:0 2px 6px rgba(0,0,0,.6)}
 .sd-top b{display:block;width:100%;margin-top:2px;font-family:var(--head);font-size:78px;font-weight:900;line-height:.9;white-space:nowrap;overflow:hidden;text-shadow:0 4px 0 rgba(0,0,0,.35),0 0 18px rgba(0,0,0,.5)}
 .sd-art{width:184px;height:184px;filter:drop-shadow(0 10px 14px rgba(0,0,0,.5))}
-.sd-art svg{width:100%;height:100%;overflow:visible}
+.sd-art>svg{width:100%;height:100%;overflow:visible}
 .sd-tag{max-width:100%;font-family:var(--head);font-size:21px;font-weight:900;letter-spacing:.08em;white-space:nowrap;background:rgba(10,14,28,.86);border:1.5px solid rgba(255,255,255,.28);padding:5px 14px;border-radius:999px;box-shadow:0 6px 14px rgba(0,0,0,.4)}
 .side.swap .sd-top,.side.swap .sd-art{animation:sdIn .7s cubic-bezier(.2,1.4,.4,1) both}
 .side.swap .sd-art{animation-delay:.1s}

@@ -89,7 +89,9 @@ Add only the ones you want as Browser Sources. All update live from control.html
 - side-left.html       220 x 360   league art for the left of the facecam
 - side-right.html      220 x 360   league art for the right of the facecam
   Football for NFL, basketball for NBA/WNBA, baseball for MLB, hockey for NHL.
-  Artwork is in js/sport-art.js.
+  Artwork is in js/sport-art.js. The balls and puck are pre-rendered 3D sprite
+  sheets in assets/balls/ (24 frames of one full spin), made by
+  tools/render_balls.py (python3 tools/render_balls.py, needs numpy + Pillow).
 - index-1080x1920.html 1080 x 1920 all-in-one (board, ticker, takeover, animations)
 The control panel lists every link with its size and a Copy button.
 New Firebase fields: brand, prices {abbr: number}, currency, priceTag {label, amount, show}, socials {platform: handle}.
