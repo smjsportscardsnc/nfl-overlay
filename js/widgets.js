@@ -94,8 +94,8 @@
   }
 
   // ---------- stadium artwork beside the facecam ----------
-  // Used by side-left.html / side-right.html and the two sides of top.html. Painted
-  // night-stadium artwork (listed in js/stadium.js) that drift slowly and crossfade;
+  // Used by side-left.html / side-right.html and the two sides of top.html. Night-stadium
+  // artwork (listed in js/stadium.js) that drift slowly and crossfade;
   // the left shows the 1st, 3rd, 5th... picture, the right the 2nd, 4th... and they
   // take turns changing. The right side of top.html can swap to "spots sold".
   const sides=[...document.querySelectorAll(".side")],ART=window.SMJ_STADIUM_ART||[];

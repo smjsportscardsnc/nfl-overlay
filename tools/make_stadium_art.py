@@ -1,211 +1,330 @@
-"""Builds the painted night-stadium artwork in assets/stadium (the side panels of the Top overlay).
+"""Builds the night-stadium artwork in assets/stadium (the side panels of the Top overlay).
 
-Each picture starts from a free Unsplash photo (listed in SCENES and in assets/stadium/CREDITS.txt),
-has any team or sponsor marks taken out, and is then repainted in the SMJ brand colours: layered
-brush strokes, a navy night lit in royal blue with red accent light and silver-white floodlights
-(the colours of the logo), glow from the lights, and a little canvas grain. So the panels read as
-one set of brand illustrations, not as photographs. Run:
+The pictures are drawn from scratch, in the look of the SMJ show thumbnails: a dark indigo sky
+with lit clouds, banks of warm peach-gold floodlights with glow and star flares, wine-coloured
+stands full of amber crowd sparkle, mauve haze, and a dark grainy field lit from the far edge.
+Nothing is photographed or downloaded, so the pictures are ours to use. Run:
 
   python3 tools/make_stadium_art.py            (all eight)
   python3 tools/make_stadium_art.py 03 07      (just those)
 
-Needs numpy and OpenCV with the contrib modules: pip install opencv-contrib-python-headless
-The source photos are downloaded once into a temp folder (or put them there yourself as <photo-id>.jpg).
+Needs numpy and OpenCV: pip install opencv-python-headless
+Each scene is a short description in SCENES (where the lights, tiers and field edge sit) plus a
+seed, so a scene always comes out the same and a new seed gives a new crowd and sky.
 """
 import os
 import sys
-import tempfile
-import urllib.request
 
 import cv2
 import numpy as np
 
 OUT = os.path.join(os.path.dirname(__file__), "..", "assets", "stadium")
-SRC = os.path.join(tempfile.gettempdir(), "smj-stadium-src")
 PW, PH = 478, 800          # final panel picture
-WW, WH = PW * 2, PH * 2    # working size
+W, H = PW * 2, PH * 2      # working size
 
-# Brand palette, the same colours the logo reel uses (css/sources.css .fc-reel).
-# Each ramp runs from shadow to highlight; the picture's brightness picks the colour.
-STOPS = [0, 0.16, 0.40, 0.62, 0.82, 1]
-BLUE = ["#02040c", "#0a1736", "#1d4fd8", "#6f9dff", "#dfe6f2", "#ffffff"]   # navy -> royal blue -> silver -> white
-RED = ["#060205", "#3a0710", "#e0222f", "#ff7068", "#ffe6e1", "#ffffff"]    # the red accent light
+# Sparkle colours: mostly amber and orange, a little cream, rose and lilac.
+WARM = ["#ff8a2e", "#ffa64a", "#ffc27a", "#ff6f3a", "#ffdcae", "#f08f8f", "#c9a6ff"]
 
-# name, photo id, crop (left, top, height as fractions of the photo; mirror), retouch steps, grade options.
-# Retouch steps use final-picture pixels:
-#   ("smear", (x0, y0, x1, y1), thickness)  turns a ribbon board along that line into a streak of light
-#   ("unmark", [(x, y), ...])               paints a logo off the turf inside that outline
-# Grade options:
-#   red    glows of red light, each (centre x, centre y, radius x, radius y, strength) in fractions of the picture
-#   warmk  how strongly lights that were warm in the photo turn red (0 = everything stays blue)
+# Positions are fractions of the picture (x from the left, y from the top).
+#   horizon  where the stands meet the field
+#   roof     top edge of the stands: (y at the sides, how far it sags in the middle, tilt)
+#   bands    dark fronts of the upper tiers, each with a string of lights: (y, sag, tilt, thickness)
+#   rows     extra rows of small lights across the stands: (y, sag, tilt, spacing in px)
+#   banks    floodlight banks: centre, lamps across and down, lamp spacing, optional slant and size
+#   xc       where the middle of the bowl is (0.5 = straight ahead); hot = brightest spot at the field edge
+#   mirror   flip the finished picture left to right
 SCENES = [
-    ("01-floodlights", "photo-1509928015542-fcc9b3bcd048", (0.0, 0.0, 1.0, False), [],
-     {"red": [(1.0, 0.50, 0.50, 0.45, 0.95)]}),
-    ("02-light-tower", "photo-1671723204288-1b3794effd87", (0.10, 0.0, 1.0, True), [],
-     {"red": [(0.10, 0.80, 0.50, 0.35, 0.95)]}),
-    ("03-football-night", "photo-1584484530553-df6bbdc47c89", (0.559, 0.0, 0.70, False),
-     [("smear", (0, 405, 478, 415), 30), ("smear", (230, 440, 478, 452), 30),
-      ("unmark", [(96, 716), (144, 716), (176, 728), (176, 744), (118, 744), (96, 726)])],
-     {"red": [(1.0, 0.56, 0.60, 0.20, 0.9)], "warmk": 0.2}),
-    ("04-light-banks", "photo-1556764420-e37ef4cdfa5c", (0.543, 0.086, 0.39, False), [],
-     {"red": [(0.0, 0.80, 0.40, 0.30, 0.95)]}),
-    ("05-stadium-skyline", "photo-1573838886533-c90767b6e60e", (0.126, 0.0, 1.0, False), [],
-     {"red": [(0.5, 1.05, 0.90, 0.30, 0.9)], "warmk": 0.8}),
-    ("06-fog-lights", "photo-1638573615178-6f2950746614", (0.345, 0.0, 1.0, False), [],
-     {"red": [(0.0, 0.62, 0.45, 0.25, 0.6)], "warmk": 1.0}),
-    ("07-roof-curve", "photo-1568101794887-a7a3f149f6e6", (0.40, 0.10, 0.80, False), [],
-     {"red": [(0.0, 0.85, 0.55, 0.30, 0.75)]}),
-    ("08-roof-lights", "photo-1489944440615-453fc2b6a9a9", (0.80, 0.0, 1.0, False), [],
-     {"red": [(0.95, 0.65, 0.50, 0.30, 0.9)]}),
+    ("01-near-tower", 11, dict(
+        horizon=0.78, roof=(0.42, 0.02, 0.10), xc=0.75, hot=0.7,
+        bands=[(0.515, 0.02, 0.07, 0.024), (0.585, 0.02, 0.05, 0.022)],
+        rows=[(0.455, 0.02, 0.09, 56), (0.64, 0.02, 0.03, 84)],
+        banks=[dict(cx=0.27, cy=0.235, cols=6, rows=4, dx=0.056, dy=0.037, sky=0.006, r=0.014, power=1.1),
+               dict(cx=0.86, cy=0.42, cols=5, rows=2, dx=0.027, dy=0.018, r=0.0072, power=0.9)])),
+    ("02-near-tower", 12, dict(
+        mirror=True,
+        horizon=0.76, roof=(0.40, 0.025, 0.09), xc=0.8, hot=0.65,
+        bands=[(0.50, 0.02, 0.065, 0.024), (0.57, 0.02, 0.045, 0.022)],
+        rows=[(0.44, 0.02, 0.08, 60), (0.63, 0.02, 0.03, 80)],
+        banks=[dict(cx=0.30, cy=0.25, cols=5, rows=4, dx=0.058, dy=0.038, sky=0.005, r=0.0145, power=1.1),
+               dict(cx=0.84, cy=0.405, cols=6, rows=1, dx=0.027, dy=0.016, r=0.0072, power=0.9)])),
+    ("03-bowl-end", 21, dict(
+        horizon=0.74, roof=(0.335, 0.03, 0.0),
+        bands=[(0.425, 0.035, 0.0, 0.024), (0.490, 0.035, 0.0, 0.022)],
+        rows=[(0.352, 0.032, 0.0, 60), (0.385, 0.034, 0.0, 52), (0.56, 0.035, 0.0, 80)],
+        banks=[dict(cx=0.085, cy=0.292, cols=6, rows=3, dx=0.030, dy=0.021, sky=0.0045, skx=-0.004),
+               dict(cx=0.915, cy=0.292, cols=6, rows=3, dx=0.030, dy=0.021, sky=-0.0045, skx=0.004),
+               dict(cx=0.5, cy=0.362, cols=9, rows=1, dx=0.031, dy=0.02, power=1.15)])),
+    ("04-light-rows", 22, dict(
+        horizon=0.71, roof=(0.30, 0.045, 0.0),
+        bands=[(0.39, 0.045, 0.0, 0.022), (0.455, 0.045, 0.0, 0.022), (0.525, 0.04, 0.0, 0.02)],
+        rows=[(0.33, 0.045, 0.0, 58), (0.60, 0.035, 0.0, 84)],
+        banks=[dict(cx=0.5, cy=0.335, cols=13, rows=1, dx=0.034, dy=0.02, power=1.1),
+               dict(cx=0.13, cy=0.262, cols=6, rows=2, dx=0.034, dy=0.022, sky=0.006),
+               dict(cx=0.87, cy=0.262, cols=6, rows=2, dx=0.034, dy=0.022, sky=-0.006)])),
+    ("05-corner", 31, dict(
+        horizon=0.75, roof=(0.31, 0.07, 0.0), xc=0.95, hot=0.75,
+        bands=[(0.40, 0.07, 0.0, 0.024), (0.47, 0.065, 0.0, 0.022)],
+        rows=[(0.345, 0.07, 0.0, 58), (0.55, 0.06, 0.0, 82)],
+        banks=[dict(cx=0.20, cy=0.20, cols=5, rows=3, dx=0.046, dy=0.031, sky=0.008, r=0.012),
+               dict(cx=0.78, cy=0.335, cols=7, rows=2, dx=0.028, dy=0.019, sky=0.002, r=0.008)])),
+    ("06-corner", 32, dict(
+        mirror=True,
+        horizon=0.73, roof=(0.30, 0.075, 0.0), xc=1.0, hot=0.8,
+        bands=[(0.39, 0.075, 0.0, 0.024), (0.46, 0.07, 0.0, 0.022)],
+        rows=[(0.335, 0.075, 0.0, 60), (0.54, 0.065, 0.0, 80)],
+        banks=[dict(cx=0.24, cy=0.19, cols=4, rows=4, dx=0.048, dy=0.032, sky=0.007, r=0.012),
+               dict(cx=0.80, cy=0.33, cols=8, rows=1, dx=0.028, dy=0.019, r=0.008)])),
+    ("07-twin-towers", 41, dict(
+        horizon=0.72, roof=(0.345, 0.02, 0.0),
+        bands=[(0.435, 0.022, 0.0, 0.024), (0.505, 0.022, 0.0, 0.022)],
+        rows=[(0.375, 0.02, 0.0, 60), (0.58, 0.022, 0.0, 80)],
+        banks=[dict(cx=0.22, cy=0.255, cols=5, rows=4, dx=0.040, dy=0.027, sky=0.004, r=0.0105),
+               dict(cx=0.78, cy=0.255, cols=5, rows=4, dx=0.040, dy=0.027, sky=-0.004, r=0.0105)])),
+    ("08-centre-bank", 42, dict(
+        horizon=0.75, roof=(0.37, 0.03, 0.0),
+        bands=[(0.46, 0.032, 0.0, 0.024), (0.53, 0.032, 0.0, 0.022)],
+        rows=[(0.40, 0.03, 0.0, 58), (0.60, 0.03, 0.0, 82)],
+        banks=[dict(cx=0.5, cy=0.27, cols=8, rows=3, dx=0.040, dy=0.027, r=0.0105, power=1.1),
+               dict(cx=0.07, cy=0.35, cols=4, rows=2, dx=0.030, dy=0.02, sky=0.004),
+               dict(cx=0.93, cy=0.35, cols=4, rows=2, dx=0.030, dy=0.02, sky=-0.004)])),
 ]
 
 
-def source(photo):
-    """Path of the source photo, downloading it the first time."""
-    os.makedirs(SRC, exist_ok=True)
-    path = os.path.join(SRC, photo + ".jpg")
-    if not os.path.exists(path):
-        url = "https://images.unsplash.com/%s?fm=jpg&q=88&w=3000&fit=max" % photo
-        print("  downloading", url)
-        urllib.request.urlretrieve(url, path)
-    return path
-
-
-def load_crop(photo, left, top, hfrac, mirror=False):
-    im = cv2.imread(source(photo))
-    ih, iw = im.shape[:2]
-    ch = hfrac * ih
-    cw = ch * PW / PH
-    x = int(round(max(0, min(left * iw, iw - cw))))
-    y = int(round(max(0, min(top * ih, ih - ch))))
-    im = im[y:y + int(round(ch)), x:x + int(round(cw))]
-    im = cv2.resize(im, (WW, WH), interpolation=cv2.INTER_AREA if im.shape[1] >= WW else cv2.INTER_LANCZOS4)
-    return im[:, ::-1].copy() if mirror else im
+def hx(hexcolor):
+    h = hexcolor.lstrip("#")
+    return np.array([int(h[4:6], 16), int(h[2:4], 16), int(h[0:2], 16)], np.float32) / 255.0
 
 
 def lum(f):
     return f[..., 0] * 0.114 + f[..., 1] * 0.587 + f[..., 2] * 0.299
 
 
-def bgr(hexcolor):
-    h = hexcolor.lstrip("#")
-    return np.array([int(h[4:6], 16), int(h[2:4], 16), int(h[0:2], 16)], np.float32) / 255.0
+def smooth(t):
+    t = np.clip(t, 0, 1)
+    return t * t * (3 - 2 * t)
 
 
-def ramp(L, colors):
-    """Colour for each brightness L (0..1) along one of the brand ramps."""
-    c = np.stack([bgr(x) for x in colors])
-    return np.stack([np.interp(L, np.array(STOPS, np.float32), c[:, k]) for k in range(3)], -1)
+def screen(a, b):
+    return 1 - (1 - np.clip(a, 0, 1)) * (1 - np.clip(b, 0, 1))
 
 
-def tone(im, mean=0.20):
-    """Even out exposure so every scene sits in the same night range."""
-    f = im.astype(np.float32) / 255.0
-    hi = np.percentile(lum(f), 99.7)
-    f = np.clip(f / max(hi, 0.5), 0, 1)
-    m = float(lum(f).mean())
-    g = float(np.clip(np.log(mean) / np.log(max(m, 1e-3)), 0.75, 1.9))
-    return (np.clip(f ** g, 0, 1) * 255).astype(np.uint8)
+def ramp(t, stops, colors):
+    c = np.stack([hx(x) for x in colors])
+    return np.stack([np.interp(t, np.array(stops, np.float32), c[:, k]) for k in range(3)], -1)
 
 
-def unmark(im, poly):
-    """Inside the outline, everything that is not grass is filled back in from the grass around it."""
-    k = WW / PW
-    area = np.zeros(im.shape[:2], np.uint8)
-    cv2.fillPoly(area, [np.array([[int(round(x * k)), int(round(y * k))] for x, y in poly], np.int32)], 255)
-    b, g, r = [im[..., c].astype(np.int16) for c in range(3)]
-    notgrass = ((g - np.maximum(r, b)) < 18).astype(np.uint8) * 255
-    mask = cv2.dilate(cv2.bitwise_and(area, notgrass), np.ones((9, 9), np.uint8))
-    mask = cv2.bitwise_and(mask, cv2.dilate(area, np.ones((5, 5), np.uint8)))
-    return cv2.inpaint(im, mask, 7, cv2.INPAINT_TELEA)
+def fbm(rng, w, h, base=4, octaves=5, aspect=1.0):
+    """Cloudy noise, 0..1. aspect < 1 stretches it sideways."""
+    out = np.zeros((h, w), np.float32)
+    amp, total = 1.0, 0.0
+    for o in range(octaves):
+        n = rng.standard_normal((max(2, int(base * 2 ** o)), max(2, int(base * aspect * 2 ** o)))).astype(np.float32)
+        out += cv2.resize(n, (w, h), interpolation=cv2.INTER_CUBIC) * amp
+        total += amp
+        amp *= 0.55
+    out /= total
+    return (out - out.min()) / (out.max() - out.min() + 1e-6)
 
 
-def retouch(im, ops):
-    """Take out team and sponsor marks before painting."""
-    k = WW / PW
-    for op in ops:
-        if op[0] == "unmark":
-            im = unmark(im, op[1])
-        elif op[0] == "smear":
-            x0, y0, x1, y1 = [int(round(v * k)) for v in op[1]]
-            mask = np.zeros(im.shape[:2], np.uint8)
-            cv2.line(mask, (x0, y0), (x1, y1), 255, int(round(op[2] * k)))
-            sm = cv2.blur(cv2.blur(im, (121, 3)), (121, 3))
-            m = cv2.GaussianBlur(mask, (0, 0), 3).astype(np.float32)[..., None] / 255.0
-            im = (im * (1 - m) + sm * m).astype(np.uint8)
-    return im
+def disc_kernel(r):
+    n = int(np.ceil(r)) * 2 + 3
+    c = n // 2
+    yy, xx = np.mgrid[0:n, 0:n]
+    d = np.hypot(xx - c, yy - c)
+    return (np.clip(r + 0.5 - d, 0, 1) * (0.75 + 0.25 * np.clip(d / max(r, 1e-3), 0, 1))).astype(np.float32)
 
 
-def paint(im, coarse=9, mid=5, fine=2):
-    """Layered brush work: broad dabs everywhere, finer strokes only where there is an edge worth keeping."""
-    den = cv2.fastNlMeansDenoisingColored(im, None, 7, 7, 5, 15)
-    base = cv2.edgePreservingFilter(den, flags=cv2.RECURS_FILTER, sigma_s=40, sigma_r=0.35)
-    half = cv2.resize(base, (WW // 2, WH // 2), interpolation=cv2.INTER_AREA)
-    big = cv2.resize(cv2.xphoto.oilPainting(half, coarse, 1), (WW, WH), interpolation=cv2.INTER_CUBIC)
-    med = cv2.xphoto.oilPainting(base, mid, 1)
-    fin = cv2.xphoto.oilPainting(base, fine, 1)
-    g = cv2.cvtColor(base, cv2.COLOR_BGR2GRAY).astype(np.float32) / 255.0
-    e = cv2.magnitude(cv2.Sobel(g, cv2.CV_32F, 1, 0, ksize=3), cv2.Sobel(g, cv2.CV_32F, 0, 1, ksize=3))
-    e = cv2.GaussianBlur(e, (0, 0), 5)
-    m1 = np.clip(e / 0.10, 0, 1)[..., None]              # some structure: medium strokes
-    m2 = np.clip((e - 0.14) / 0.20, 0, 1)[..., None]     # strong edges and lights: fine strokes
-    out = big.astype(np.float32) * (1 - m1) + med.astype(np.float32) * m1
-    out = out * (1 - m2) + fin.astype(np.float32) * m2
-    return np.clip(out, 0, 255).astype(np.uint8)
+def splat(canvas, xs, ys, cols, r):
+    """Add points of light (pixel positions, one colour each), drawn as soft discs of radius r."""
+    imp = np.zeros_like(canvas)
+    xi = np.clip(np.round(xs).astype(int), 0, W - 1)
+    yi = np.clip(np.round(ys).astype(int), 0, H - 1)
+    np.add.at(imp, (yi, xi), cols)
+    if r < 1.2:
+        imp = cv2.GaussianBlur(imp, (0, 0), max(r, 0.5)) * (2 * np.pi * max(r, 0.5) ** 2) ** 0.5
+    else:
+        imp = cv2.filter2D(imp, -1, disc_kernel(r))
+    canvas += imp
 
 
-def grade(im, red=(), warmk=0.6, keep=0.12, glow=1.0, seed=1):
-    """Brand grade: the whole picture is relit in navy and royal blue, with red accent light where
-    `red` puts it (and on lights that were warm in the photo), silver-white floodlights, bloom and grain."""
-    h, w = im.shape[:2]
-    f = im.astype(np.float32) / 255.0
-    s = f * f * (3 - 2 * f)
-    f = f * 0.6 + s * 0.4                                             # contrast
-    L = lum(f)
-    b, g_, r = f[..., 0], f[..., 1], f[..., 2]
-    mx = f.max(-1)
-    warm = np.clip(((r - np.maximum(b, g_ * 0.9)) / np.maximum(mx, 1e-3) - 0.04) / 0.35, 0, 1) * np.clip(mx / 0.25, 0, 1)
-    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
-    xx /= w
-    yy /= h
-    wr = cv2.GaussianBlur(warm, (0, 0), 5) * warmk                    # how red each spot is, 0..1
-    for cx, cy, rx, ry, strength in red:
-        wr = wr + strength * np.exp(-((xx - cx) / rx) ** 2 - ((yy - cy) / ry) ** 2)
-    wr = np.clip(wr, 0, 1)[..., None]
-    # the power keeps the blue-to-red crossover dark instead of purple
-    mapped = ramp(L, BLUE) * (1 - wr) ** 1.4 + ramp(L, RED) * wr ** 1.4
-    f = f * keep + mapped * (1 - keep)
-    # bloom from the lights: white core, wider glow in the local light colour, a thin silver streak
-    bright = f * np.clip((lum(f)[..., None] - 0.80) / 0.20, 0, 1) ** 1.5
-    b1 = cv2.GaussianBlur(bright, (0, 0), 9)
-    b2 = cv2.GaussianBlur(bright, (0, 0), 34)
-    b3 = cv2.GaussianBlur(bright, (0, 0), 100)
-    tint = bgr("#7fa8ff") * (1 - wr) + bgr("#ff6a66") * wr
-    streak = cv2.GaussianBlur(bright, (0, 0), sigmaX=170, sigmaY=2.0) * bgr("#dfe6f2")
-    add = (0.7 * b1 + 0.9 * b2 * (0.5 + 0.5 * tint) + 1.1 * b3 * tint + 0.5 * streak) * glow
-    f = 1 - (1 - f) * (1 - np.clip(add, 0, 1))
-    rng = np.random.default_rng(seed)                                 # canvas grain
-    grain = cv2.GaussianBlur(rng.standard_normal(f.shape[:2]).astype(np.float32), (0, 0), 1.1)
-    f = f + grain[..., None] * 0.02
-    return (np.clip(f, 0, 1) * 255).astype(np.uint8)
+def warm(rng, n, p=(0.30, 0.22, 0.10, 0.22, 0.05, 0.08, 0.03)):
+    return np.stack([hx(c) for c in WARM])[rng.choice(len(WARM), n, p=p)]
 
 
-def finish(im):
-    out = cv2.resize(im, (PW, PH), interpolation=cv2.INTER_AREA)
-    blur = cv2.GaussianBlur(out, (0, 0), 1.2)
-    return cv2.addWeighted(out, 1.35, blur, -0.35, 0)   # crisp the strokes
+LIGHTS = (0.45, 0.30, 0.15, 0.05, 0.05, 0, 0)   # colour mix for string lights: amber and cream only
 
 
-def render(photo, crop, ops=(), mean=0.20, **kw):
-    return finish(grade(paint(retouch(tone(load_crop(photo, *crop), mean), ops)), **kw))
+def render(sc, seed=1):
+    rng = np.random.default_rng(seed)
+    yy, xx = np.mgrid[0:H, 0:W].astype(np.float32)
+    u, v = xx / W, yy / H
+    xc = sc.get("xc", 0.5)
+    hot = sc.get("hot", 0.5)
+    hor = sc["horizon"]
+
+    def curve(x, y0, sag, tilt=0.0):
+        """Height of a tier line at x: it sags toward the middle of the bowl."""
+        return y0 + sag * (1 - ((x - xc) * 2) ** 2) + tilt * (x - 0.5)
+
+    roof = curve(u, *sc["roof"])
+
+    # ---- sky: indigo, darker at the top, with clouds
+    t = np.clip(v / np.maximum(roof, 1e-3), 0, 1)
+    sky = ramp(t, [0, 0.3, 0.7, 1.0], ["#06050d", "#0f0f20", "#22233a", "#2f2f48"])
+    cloud = smooth((fbm(rng, W, H, base=3, octaves=7, aspect=0.7) - 0.25) / 0.6)
+    lit = cloud * smooth(t * 1.4)
+    img = sky * (0.5 + 0.9 * lit[..., None])
+
+    # ---- stands: wine-coloured, brighter toward the field, mottled
+    st = smooth((v - roof) / 0.035) * smooth((hor + 0.004 - v) / 0.006)      # 1 inside the stands
+    depth = np.clip((v - roof) / np.maximum(hor - roof, 1e-3), 0, 1)        # 0 top row, 1 at the field
+    mott = fbm(rng, W, H, base=10, octaves=5, aspect=0.5)
+    base = ramp(depth, [0, 0.35, 0.7, 1.0], ["#1c1020", "#1d0d18", "#34131a", "#6a2e2a"]) * (0.35 + 1.2 * mott[..., None])
+    img = img * (1 - st[..., None]) + base * st[..., None]
+
+    # ---- crowd sparkle: thousands of points, denser along the seat rows and toward the field
+    glit = np.zeros((H, W, 3), np.float32)
+    n = int(sc.get("crowd", 125000))
+    px, py = rng.random(n) * W, (rng.random(n) ** 0.8) * H
+    ok = st[py.astype(int), px.astype(int)] > 0.5
+    px, py = px[ok], py[ok]
+    d = depth[py.astype(int), px.astype(int)]
+    keep = rng.random(len(px)) < (0.35 + 0.65 * d)
+    px, py, d = px[keep], py[keep], d[keep]
+    rw = fbm(rng, W, H, base=26, octaves=3, aspect=0.06)[py.astype(int), px.astype(int)]   # seat rows
+    keep = rng.random(len(px)) < (0.25 + 0.9 * rw)
+    px, py, d, rw = px[keep], py[keep], d[keep], rw[keep]
+    clump = fbm(rng, W, H, base=7, octaves=4, aspect=0.35)[py.astype(int), px.astype(int)]
+    br = ((rng.pareto(2.0, len(px)).astype(np.float32) + 0.15) * (0.48 + 0.85 * d ** 1.4)
+          * (0.25 + 1.5 * rw) * (0.12 + 1.75 * clump ** 1.5) * sc.get("sparkle", 1.0))
+    cols = warm(rng, len(px)) * np.clip(br, 0, 7)[:, None]
+    size = rng.choice(4, len(px), p=(0.62, 0.27, 0.09, 0.02))
+    for k, (r, gain) in enumerate([(1.0, 0.42), (1.9, 0.15), (3.4, 0.075), (6.0, 0.04)]):
+        m = size == k
+        splat(glit, px[m], py[m], cols[m] * gain, r)
+    glit = glit + cv2.GaussianBlur(glit, (0, 0), 5) * 0.6 + cv2.GaussianBlur(glit, (0, 0), 22) * 0.9   # glow + warm air
+
+    # ---- tier fronts: dark curved bands, each with a string of small lights
+    for (y0, sag, tilt, th) in sc["bands"]:
+        c = curve(u, y0, sag, tilt) + (mott - 0.5) * 0.004
+        band = smooth((v - c) / 0.006) * smooth((c + th - v) / 0.008) * st
+        img = img * (1 - 0.9 * band[..., None]) + hx("#150a16") * (0.8 + 0.5 * mott[..., None]) * 0.9 * band[..., None]
+        glit *= 1 - 0.96 * band[..., None]
+        m = int(W / 34)
+        bx = (np.arange(m) + rng.random(m) * 0.5) / m
+        by = curve(bx, y0, sag, tilt) + th * 0.55
+        bc = warm(rng, m, LIGHTS) * (rng.random(m)[:, None] ** 2 * 7 + 0.6)
+        splat(glit, bx * W, by * H, bc * 0.5, 2.2)
+        splat(glit, bx * W, by * H, bc * 0.06, 8)
+    for (y0, sag, tilt, spacing) in sc.get("rows", ()):
+        m = int(W / spacing)
+        bx = (np.arange(m) + rng.random(m) * 0.6) / m
+        bx = bx[rng.random(m) < 0.7]
+        by = curve(bx, y0, sag, tilt)
+        bc = warm(rng, len(bx), LIGHTS) * (rng.random(len(bx))[:, None] ** 1.5 * 6 + 1.0)
+        splat(glit, bx * W, by * H, bc * 0.5, 2.6)
+        splat(glit, bx * W, by * H, bc * 0.05, 9)
+    img = img + glit
+
+    # ---- field: dark grainy surface, lit from the far edge
+    dy = np.maximum(v - hor, 1e-4)
+    n1 = cv2.GaussianBlur(rng.standard_normal((H, W)).astype(np.float32), (0, 0), sigmaX=1.1, sigmaY=0.6)
+    n2 = cv2.GaussianBlur(rng.standard_normal((H, W)).astype(np.float32), (0, 0), sigmaX=2.0, sigmaY=1.1)
+    near = smooth(dy / 0.22)
+    grain = (n1 / n1.std() * (1 - 0.5 * near) + n2 / n2.std() * near) * smooth(dy / 0.02)   # finer far away
+    sheen = fbm(rng, W, H, base=3, octaves=5, aspect=0.12)
+    fall = np.exp(-dy / 0.068) * 0.9
+    gl = np.clip(fall * (0.35 + 0.65 * np.exp(-((u - hot) / 0.55) ** 2)) * (0.45 + 1.1 * sheen), 0, 1)
+    ground = ramp(gl, [0, 0.12, 0.35, 0.7, 1.0], ["#0a050c", "#170d1b", "#3d2439", "#875862", "#dba08c"])
+    ground = ground * (1 + 0.30 * grain[..., None]) + 0.014 * np.clip(grain, 0, 3)[..., None] * hx("#c9a0a8")
+    gmask = smooth((v - hor) / 0.004)[..., None]
+    img = img * (1 - gmask) + ground * gmask
+
+    # ---- lights along the field edge
+    m = 24
+    ex = (np.arange(m) + rng.random(m)) / m * W
+    ey = np.full(m, hor * H) + rng.normal(0, 2.0, m)
+    eb = (rng.random(m) ** 1.6 * 6 + 1.0) * (0.55 + 0.45 * np.exp(-((ex / W - hot) / 0.5) ** 2))
+    ec = warm(rng, m, (0.4, 0.3, 0.2, 0.05, 0.05, 0, 0)) * eb[:, None]
+    edge = np.zeros_like(img)
+    splat(edge, ex, ey, ec * 0.6, 5.0)
+    splat(edge, ex, ey, ec * 0.05, 13)
+    img = img + edge + cv2.GaussianBlur(edge, (0, 0), 16) * 1.6 + cv2.GaussianBlur(edge, (0, 0), 50) * 2.2
+
+    # ---- floodlight banks
+    lamps = np.zeros((H, W, 3), np.float32)    # one bright pixel per lamp: the source for glow, flares and rays
+    cores = np.zeros((H, W, 3), np.float32)
+    for b in sc["banks"]:
+        r = b.get("r", 0.0085) * W
+        for j in range(b["rows"]):
+            for i in range(b["cols"]):
+                fx, fy = i - (b["cols"] - 1) / 2, j - (b["rows"] - 1) / 2
+                x = (b["cx"] + fx * b["dx"] + fy * b.get("skx", 0)) * W
+                y = (b["cy"] + fy * b["dy"] + fx * b.get("sky", 0)) * H
+                p = b.get("power", 1.0) * (0.75 + 0.5 * rng.random())
+                splat(cores, np.array([x]), np.array([y]), (hx("#ffe2ad") * p * 1.25)[None], r)
+                splat(lamps, np.array([x]), np.array([y]), (hx("#ffd9b0") * p)[None], 0.8)
+    core = cv2.GaussianBlur(cores, (0, 0), 1.6)
+
+    def layer(sigma, peak):
+        g = cv2.GaussianBlur(lum(lamps), (0, 0), sigma)
+        return (g / max(float(g.max()), 1e-9) * peak)[..., None]
+
+    halo = (layer(5, 0.45) * hx("#ffe2b0") + layer(16, 0.55) * hx("#ffb06a")
+            + layer(48, 0.68) * hx("#f39672") + layer(130, 0.45) * hx("#b8707a"))
+    halo = halo + layer(220, 1.0) * lit[..., None] * hx("#b98486") * 0.42          # clouds catch the light
+    # star flares: thin spikes out of every lamp
+    L = 160
+    k = np.zeros((2 * L + 1, 2 * L + 1), np.float32)
+    for ang in (0, 60, 120):
+        for sgn in (-1, 1):
+            for rr in range(2, L):
+                kx = int(round(L + sgn * rr * np.cos(np.radians(ang))))
+                ky = int(round(L + sgn * rr * np.sin(np.radians(ang))))
+                k[ky, kx] += (1 - rr / L) ** 2.2 / (rr ** 0.55)
+    flare = cv2.filter2D(lamps, -1, cv2.GaussianBlur(k, (0, 0), 0.7))
+    flare = flare / max(float(np.percentile(flare, 99.9)), 1e-9) * 0.8
+    # shafts of light spreading from each bank
+    src = cv2.resize(cv2.GaussianBlur(lamps, (0, 0), 5), (W // 2, H // 2), interpolation=cv2.INTER_AREA)
+    src = src / max(float(src.max()), 1e-9)
+    rays = np.zeros_like(src)
+    for b in sc["banks"]:
+        cx, cy = b["cx"] * W / 2, (b["cy"] - 0.02) * H / 2
+        for q in range(26):
+            s = 1 + q * 0.035
+            rays += cv2.warpAffine(src, np.float32([[s, 0, cx * (1 - s)], [0, s, cy * (1 - s)]]), (W // 2, H // 2)) * (1 - q / 26) ** 0.8 / 26
+    rays = np.maximum(rays, 0) ** 0.6 * (0.45 + 1.1 * fbm(rng, W // 2, H // 2, base=14, octaves=3, aspect=3.0)[..., None])
+    rays = cv2.resize(rays, (W, H), interpolation=cv2.INTER_LINEAR)
+    rays = rays / max(float(rays.max()), 1e-9) * hx("#ffc39c") * 0.6
+    img = screen(screen(img, halo), rays)
+    img = screen(screen(img, flare * hx("#ffe6cc")), core)
+
+    # ---- haze, floating dust, finish
+    hz = fbm(rng, W, H, base=3, octaves=4, aspect=0.6)
+    hband = np.exp(-((v - sc.get("haze_y", (sc["roof"][0] + hor) / 2 - 0.1)) / 0.20) ** 2)
+    img = screen(img, (hband * (0.5 + hz))[..., None] * hx("#8a5f70") * 0.27)
+    low = np.exp(-((v - hor) / 0.05) ** 2) * np.exp(-((u - hot) / 0.6) ** 2)
+    img = screen(img, low[..., None] * hx("#ffb98f") * 0.38)
+    dust = np.zeros_like(img)
+    dxs, dys, db = rng.random(260) * W, rng.random(260) * H, rng.random(260) ** 3
+    for r, sel in ((3.5, db < 0.3), (7, (db >= 0.3) & (db < 0.8)), (13, db >= 0.8)):
+        splat(dust, dxs[sel], dys[sel], warm(rng, int(sel.sum())) * (0.012 + 0.05 * db[sel, None]) * (3.5 / r) ** 1.2, r)
+    img = screen(img, dust * smooth((v - 0.18) / 0.2)[..., None])
+    img = img * 0.72 + cv2.GaussianBlur(img, (0, 0), 2.2) * 0.28                   # dreamy softness
+    img = screen(img, cv2.GaussianBlur(np.clip(img - 0.7, 0, 1), (0, 0), 14) * 0.55)
+    img = img * (1 - 0.62 * smooth((np.hypot((u - 0.5) * 1.15, (v - 0.48) * 0.95) - 0.42) / 0.5))[..., None]   # vignette
+    img = np.clip(img, 0, 1)
+    img = img * 0.7 + img * img * (3 - 2 * img) * 0.3                              # contrast
+    img = img + cv2.GaussianBlur(rng.standard_normal((H, W)).astype(np.float32), (0, 0), 0.9)[..., None] * 0.022
+    out = cv2.resize((np.clip(img, 0, 1) * 255).astype(np.uint8), (PW, PH), interpolation=cv2.INTER_AREA)
+    return out[:, ::-1].copy() if sc.get("mirror") else out
 
 
 if __name__ == "__main__":
     only = sys.argv[1:]
     os.makedirs(OUT, exist_ok=True)
-    for i, (name, photo, crop, ops, kw) in enumerate(SCENES):
+    for name, seed, scene in SCENES:
         if only and name[:2] not in only:
             continue
         print(name)
-        cv2.imwrite(os.path.join(OUT, name + ".jpg"), render(photo, crop, ops, seed=i + 1, **kw),
-                    [cv2.IMWRITE_JPEG_QUALITY, 88])
+        cv2.imwrite(os.path.join(OUT, name + ".jpg"), render(scene, seed), [cv2.IMWRITE_JPEG_QUALITY, 90])

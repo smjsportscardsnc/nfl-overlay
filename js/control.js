@@ -183,7 +183,7 @@ document.querySelectorAll("[data-topstats]").forEach(b=>b.addEventListener("clic
 
 // ---------- OBS sources ----------
 const SOURCES=[
-  ["Top overlay","top.html",1080,360,"The facecam row: night-stadium artwork in your brand colors on both sides, your facecam or logo reel in the middle, and spots sold on the right when it's on. Switches are on the Live Show panel"],
+  ["Top overlay","top.html",1080,360,"The facecam row: night-stadium artwork in your thumbnail look on both sides, your facecam or logo reel in the middle, and spots sold on the right when it's on. Switches are on the Live Show panel"],
   ["Spot board · 4 rows","board-4-rows.html",1080,680,"The full-size team board, always 4 rows"],
   ["Spot board · 3 rows","board-3-rows.html",1080,402,"Always 3 rows. Leaves room for the top overlay above it"],
   ["Spot board · 2 rows","board-2-rows.html",1080,252,"The compact board, always 2 rows"],
