@@ -91,9 +91,14 @@ Add only the ones you want as Browser Sources. All update live from control.html
   Eight scenes in the look of the show thumbnails: warm gold floodlights with
   glow and star flares, purple haze, stands full of glittering crowd, a dark
   field. They drift slowly and crossfade every 16s; the two sides take turns
-  changing. Same artwork for every league. The list is in js/stadium.js, the
-  pictures are in assets/stadium/, and tools/make_stadium_art.py draws them
-  from scratch (no photos), so a new scene is a few lines in that file.
+  changing. The pictures are alive: crowd lights twinkle and glitter, camera
+  flashes pop in the stands, the floodlights shimmer and specks float in the
+  haze (drawn on top by js/widgets.js, nothing to set up). Same artwork for
+  every league. The list is in js/stadium.js, the pictures are in
+  assets/stadium/, and tools/make_stadium_art.py draws them from scratch (no
+  photos), so a new scene is a few lines in that file. That tool also writes
+  js/stadium.js, including where each picture's stands and lights are, which
+  is how the sparkle lands in the right places.
 - index-1080x1920.html 1080 x 1920 all-in-one (board, ticker, takeover, animations)
 The control panel lists every link with its size and a Copy button.
 New Firebase fields: brand, prices {abbr: number}, currency, priceTag {label, amount, show}, socials {platform: handle}.

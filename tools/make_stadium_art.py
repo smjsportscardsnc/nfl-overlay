@@ -11,7 +11,11 @@ Nothing is photographed or downloaded, so the pictures are ours to use. Run:
 Needs numpy and OpenCV: pip install opencv-python-headless
 Each scene is a short description in SCENES (where the lights, tiers and field edge sit) plus a
 seed, so a scene always comes out the same and a new seed gives a new crowd and sky.
+
+Every run also rewrites js/stadium.js, the list the overlay reads. It carries each scene's layout
+(stands, tier fronts, light banks) so the overlay can put its moving sparkle in the right places.
 """
+import json
 import os
 import sys
 
@@ -19,6 +23,7 @@ import cv2
 import numpy as np
 
 OUT = os.path.join(os.path.dirname(__file__), "..", "assets", "stadium")
+LIST = os.path.join(os.path.dirname(__file__), "..", "js", "stadium.js")
 PW, PH = 478, 800          # final panel picture
 W, H = PW * 2, PH * 2      # working size
 
@@ -320,9 +325,39 @@ def render(sc, seed=1):
     return out[:, ::-1].copy() if sc.get("mirror") else out
 
 
+LIST_HEADER = """// Night-stadium artwork for the side panels (top.html, side-left.html, side-right.html).
+// WRITTEN BY tools/make_stadium_art.py - change the scenes there and run it again.
+// Eight scenes in the look of the show thumbnails, 478 x 800, in assets/stadium/. The panels
+// rotate through this list: the left shows the 1st, 3rd, 5th... and the right the 2nd, 4th...
+// Delete a line to drop that picture.
+"""
+LAYOUT_HEADER = """// Where the stands, tier fronts and light banks are in each picture (as fractions of the
+// picture, before any mirroring), so js/widgets.js can twinkle the crowd and shimmer the
+// floodlights in the right places. A picture with no line here simply does not sparkle.
+"""
+
+
+def write_list():
+    srcs, rows = [], []
+    for name, _seed, sc in SCENES:
+        src = "assets/stadium/%s.jpg" % name
+        srcs.append("  " + json.dumps(src))
+        rows.append("  " + json.dumps(src) + ":" + json.dumps({
+            "mirror": bool(sc.get("mirror")),
+            "xc": sc.get("xc", 0.5), "horizon": sc["horizon"], "roof": list(sc["roof"]),
+            "bands": [list(b) for b in sc["bands"]],
+            "banks": [[b["cx"], b["cy"], round(b["cols"] * b["dx"] / 2, 4), round(b["rows"] * b["dy"] / 2, 4)]
+                      for b in sc["banks"]],
+        }, separators=(",", ":")))
+    with open(LIST, "w") as f:
+        f.write(LIST_HEADER + "window.SMJ_STADIUM_ART=[\n" + ",\n".join(srcs) + "\n];\n"
+                + LAYOUT_HEADER + "window.SMJ_STADIUM_LAYOUT={\n" + ",\n".join(rows) + "\n};\n")
+
+
 if __name__ == "__main__":
     only = sys.argv[1:]
     os.makedirs(OUT, exist_ok=True)
+    write_list()
     for name, seed, scene in SCENES:
         if only and name[:2] not in only:
             continue
