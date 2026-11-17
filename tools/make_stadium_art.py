@@ -1,9 +1,10 @@
 """Builds the painted night-stadium artwork in assets/stadium (the side panels of the Top overlay).
 
 Each picture starts from a free Unsplash photo (listed in SCENES and in assets/stadium/CREDITS.txt),
-has any team or sponsor marks taken out, and is then repainted: layered brush strokes, a shared
-navy / steel-blue / gold night palette, glow and streaks from the lights, and a little canvas grain.
-So the panels read as one set of illustrations, not as photographs. Run:
+has any team or sponsor marks taken out, and is then repainted in the SMJ brand colours: layered
+brush strokes, a navy night lit in royal blue with red accent light and silver-white floodlights
+(the colours of the logo), glow from the lights, and a little canvas grain. So the panels read as
+one set of brand illustrations, not as photographs. Run:
 
   python3 tools/make_stadium_art.py            (all eight)
   python3 tools/make_stadium_art.py 03 07      (just those)
@@ -24,24 +25,38 @@ SRC = os.path.join(tempfile.gettempdir(), "smj-stadium-src")
 PW, PH = 478, 800          # final panel picture
 WW, WH = PW * 2, PH * 2    # working size
 
+# Brand palette, the same colours the logo reel uses (css/sources.css .fc-reel).
+# Each ramp runs from shadow to highlight; the picture's brightness picks the colour.
+STOPS = [0, 0.16, 0.40, 0.62, 0.82, 1]
+BLUE = ["#02040c", "#0a1736", "#1d4fd8", "#6f9dff", "#dfe6f2", "#ffffff"]   # navy -> royal blue -> silver -> white
+RED = ["#060205", "#3a0710", "#e0222f", "#ff7068", "#ffe6e1", "#ffffff"]    # the red accent light
+
 # name, photo id, crop (left, top, height as fractions of the photo; mirror), retouch steps, grade options.
 # Retouch steps use final-picture pixels:
 #   ("smear", (x0, y0, x1, y1), thickness)  turns a ribbon board along that line into a streak of light
 #   ("unmark", [(x, y), ...])               paints a logo off the turf inside that outline
-#   ("fill", (x0, y0, x1, y1))              paints a small mark out with what surrounds it
+# Grade options:
+#   red    glows of red light, each (centre x, centre y, radius x, radius y, strength) in fractions of the picture
+#   warmk  how strongly lights that were warm in the photo turn red (0 = everything stays blue)
 SCENES = [
-    ("01-floodlights", "photo-1509928015542-fcc9b3bcd048", (0.0, 0.0, 1.0, False), [], {}),
-    ("02-light-tower", "photo-1671723204288-1b3794effd87", (0.10, 0.0, 1.0, True), [], {}),
+    ("01-floodlights", "photo-1509928015542-fcc9b3bcd048", (0.0, 0.0, 1.0, False), [],
+     {"red": [(1.0, 0.50, 0.50, 0.45, 0.95)]}),
+    ("02-light-tower", "photo-1671723204288-1b3794effd87", (0.10, 0.0, 1.0, True), [],
+     {"red": [(0.10, 0.80, 0.50, 0.35, 0.95)]}),
     ("03-football-night", "photo-1584484530553-df6bbdc47c89", (0.559, 0.0, 0.70, False),
      [("smear", (0, 405, 478, 415), 30), ("smear", (230, 440, 478, 452), 30),
-      ("unmark", [(96, 716), (144, 716), (176, 728), (176, 744), (118, 744), (96, 726)])], {"turf": 0.22}),
-    ("04-ballpark-lights", "photo-1682384157113-47285026d285", (0.67, 0.07, 0.86, False),
-     [("smear", (78, 480, 478, 480), 30), ("fill", (0, 0, 84, 30))], {}),
-    ("05-stadium-skyline", "photo-1573838886533-c90767b6e60e", (0.126, 0.0, 1.0, False), [], {}),
-    ("06-light-banks", "photo-1556764420-e37ef4cdfa5c", (0.543, 0.086, 0.39, False), [], {}),
-    ("07-dome-lights", "photo-1787762001721-0f30c8b6af94", (0.50, 0.10, 0.90, False),
-     [("smear", (60, 570, 250, 578), 22), ("smear", (340, 598, 478, 604), 24)], {"turf": 0.30}),
-    ("08-roof-lights", "photo-1489944440615-453fc2b6a9a9", (0.80, 0.0, 1.0, False), [], {}),
+      ("unmark", [(96, 716), (144, 716), (176, 728), (176, 744), (118, 744), (96, 726)])],
+     {"red": [(1.0, 0.56, 0.60, 0.20, 0.9)], "warmk": 0.2}),
+    ("04-light-banks", "photo-1556764420-e37ef4cdfa5c", (0.543, 0.086, 0.39, False), [],
+     {"red": [(0.0, 0.80, 0.40, 0.30, 0.95)]}),
+    ("05-stadium-skyline", "photo-1573838886533-c90767b6e60e", (0.126, 0.0, 1.0, False), [],
+     {"red": [(0.5, 1.05, 0.90, 0.30, 0.9)], "warmk": 0.8}),
+    ("06-fog-lights", "photo-1638573615178-6f2950746614", (0.345, 0.0, 1.0, False), [],
+     {"red": [(0.0, 0.62, 0.45, 0.25, 0.6)], "warmk": 1.0}),
+    ("07-roof-curve", "photo-1568101794887-a7a3f149f6e6", (0.40, 0.10, 0.80, False), [],
+     {"red": [(0.0, 0.85, 0.55, 0.30, 0.75)]}),
+    ("08-roof-lights", "photo-1489944440615-453fc2b6a9a9", (0.80, 0.0, 1.0, False), [],
+     {"red": [(0.95, 0.65, 0.50, 0.30, 0.9)]}),
 ]
 
 
@@ -72,6 +87,17 @@ def lum(f):
     return f[..., 0] * 0.114 + f[..., 1] * 0.587 + f[..., 2] * 0.299
 
 
+def bgr(hexcolor):
+    h = hexcolor.lstrip("#")
+    return np.array([int(h[4:6], 16), int(h[2:4], 16), int(h[0:2], 16)], np.float32) / 255.0
+
+
+def ramp(L, colors):
+    """Colour for each brightness L (0..1) along one of the brand ramps."""
+    c = np.stack([bgr(x) for x in colors])
+    return np.stack([np.interp(L, np.array(STOPS, np.float32), c[:, k]) for k in range(3)], -1)
+
+
 def tone(im, mean=0.20):
     """Even out exposure so every scene sits in the same night range."""
     f = im.astype(np.float32) / 255.0
@@ -100,17 +126,13 @@ def retouch(im, ops):
     for op in ops:
         if op[0] == "unmark":
             im = unmark(im, op[1])
-            continue
-        x0, y0, x1, y1 = [int(round(v * k)) for v in op[1]]
-        mask = np.zeros(im.shape[:2], np.uint8)
-        if op[0] == "smear":
+        elif op[0] == "smear":
+            x0, y0, x1, y1 = [int(round(v * k)) for v in op[1]]
+            mask = np.zeros(im.shape[:2], np.uint8)
             cv2.line(mask, (x0, y0), (x1, y1), 255, int(round(op[2] * k)))
             sm = cv2.blur(cv2.blur(im, (121, 3)), (121, 3))
             m = cv2.GaussianBlur(mask, (0, 0), 3).astype(np.float32)[..., None] / 255.0
             im = (im * (1 - m) + sm * m).astype(np.uint8)
-        elif op[0] == "fill":
-            cv2.rectangle(mask, (x0, y0), (x1, y1), 255, -1)
-            im = cv2.inpaint(im, mask, 11, cv2.INPAINT_TELEA)
     return im
 
 
@@ -132,36 +154,35 @@ def paint(im, coarse=9, mid=5, fine=2):
     return np.clip(out, 0, 255).astype(np.uint8)
 
 
-def grade(im, sat=1.22, glow=1.0, tint=0.30, turf=0.16, seed=1):
-    """Night grade: navy shadows, a shared blue-to-gold palette, bloom and light streaks, canvas grain."""
+def grade(im, red=(), warmk=0.6, keep=0.12, glow=1.0, seed=1):
+    """Brand grade: the whole picture is relit in navy and royal blue, with red accent light where
+    `red` puts it (and on lights that were warm in the photo), silver-white floodlights, bloom and grain."""
+    h, w = im.shape[:2]
     f = im.astype(np.float32) / 255.0
     s = f * f * (3 - 2 * f)
-    f = f * 0.65 + s * 0.35                                           # contrast
-    L = lum(f)[..., None]
-    f = np.clip(L + (f - L) * sat, 0, 1)                              # saturation
-    # fields: pull yellow-green turf toward a deeper night green
-    b, g_, r = f[..., 0], f[..., 1], f[..., 2]
-    green = np.clip((g_ - np.maximum(r * 0.92, b)) / np.maximum(g_, 1e-3) / 0.22, 0, 1)
-    f = np.stack([(b + green * 0.04 * g_) * (1 - turf * 0.6 * green), g_ * (1 - turf * green),
-                  r * (1 - 0.42 * green) * (1 - turf * 0.6 * green)], -1)
-    # shared palette (BGR): navy -> steel blue -> warm gold -> white, mixed in by `tint`
+    f = f * 0.6 + s * 0.4                                             # contrast
     L = lum(f)
-    stops = np.array([0, 0.35, 0.75, 1.0], np.float32)
-    pal = np.array([[0.085, 0.035, 0.012], [0.52, 0.30, 0.12], [0.62, 0.82, 0.98], [1, 1, 1]], np.float32)
-    tri = np.stack([np.interp(L, stops, pal[:, c]) for c in range(3)], -1)
-    f = f * (1 - tint) + tri * tint
-    L = lum(f)[..., None]
-    f = np.clip(f + (1 - L) ** 3 * np.array([0.06, 0.028, 0.008], np.float32), 0, 1)   # lift shadows to navy
-    # bloom: only from real lights (very bright and close to white)
-    mx = f.max(-1, keepdims=True)
-    mn = f.min(-1, keepdims=True)
-    white = 1 - np.clip((mx - mn) / np.maximum(mx, 1e-3) / 0.55, 0, 1)
-    bright = f * np.clip((lum(f)[..., None] - 0.80) / 0.20, 0, 1) ** 1.5 * white
+    b, g_, r = f[..., 0], f[..., 1], f[..., 2]
+    mx = f.max(-1)
+    warm = np.clip(((r - np.maximum(b, g_ * 0.9)) / np.maximum(mx, 1e-3) - 0.04) / 0.35, 0, 1) * np.clip(mx / 0.25, 0, 1)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    xx /= w
+    yy /= h
+    wr = cv2.GaussianBlur(warm, (0, 0), 5) * warmk                    # how red each spot is, 0..1
+    for cx, cy, rx, ry, strength in red:
+        wr = wr + strength * np.exp(-((xx - cx) / rx) ** 2 - ((yy - cy) / ry) ** 2)
+    wr = np.clip(wr, 0, 1)[..., None]
+    # the power keeps the blue-to-red crossover dark instead of purple
+    mapped = ramp(L, BLUE) * (1 - wr) ** 1.4 + ramp(L, RED) * wr ** 1.4
+    f = f * keep + mapped * (1 - keep)
+    # bloom from the lights: white core, wider glow in the local light colour, a thin silver streak
+    bright = f * np.clip((lum(f)[..., None] - 0.80) / 0.20, 0, 1) ** 1.5
     b1 = cv2.GaussianBlur(bright, (0, 0), 9)
     b2 = cv2.GaussianBlur(bright, (0, 0), 34)
     b3 = cv2.GaussianBlur(bright, (0, 0), 100)
-    streak = cv2.GaussianBlur(bright, (0, 0), sigmaX=170, sigmaY=2.0) * np.array([1.0, 0.82, 0.62], np.float32)
-    add = (0.7 * b1 + 0.9 * b2 + 0.9 * b3 + 0.5 * streak) * glow
+    tint = bgr("#7fa8ff") * (1 - wr) + bgr("#ff6a66") * wr
+    streak = cv2.GaussianBlur(bright, (0, 0), sigmaX=170, sigmaY=2.0) * bgr("#dfe6f2")
+    add = (0.7 * b1 + 0.9 * b2 * (0.5 + 0.5 * tint) + 1.1 * b3 * tint + 0.5 * streak) * glow
     f = 1 - (1 - f) * (1 - np.clip(add, 0, 1))
     rng = np.random.default_rng(seed)                                 # canvas grain
     grain = cv2.GaussianBlur(rng.standard_normal(f.shape[:2]).astype(np.float32), (0, 0), 1.1)

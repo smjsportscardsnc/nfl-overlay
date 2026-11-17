@@ -88,10 +88,11 @@ Add only the ones you want as Browser Sources. All update live from control.html
                                    sold and spots left, no prices). Firebase: facecam, topStats.
 - side-left.html       220 x 360   night-stadium artwork for the left of the facecam
 - side-right.html      220 x 360   night-stadium artwork for the right of the facecam
-  Painted illustrations (floodlight towers, a football night, a ballpark under
-  the lights, a stadium in a city skyline) that drift slowly and crossfade every
-  16s; the two sides take turns changing. Same artwork for every league. The
-  list is in js/stadium.js, the pictures and their sources are in
+  Painted illustrations in the brand colours (navy and royal blue with red
+  accent light and white floodlights): floodlight towers, a football night,
+  banks of lights, a stadium in a city skyline. They drift slowly and crossfade
+  every 16s; the two sides take turns changing. Same artwork for every league.
+  The list is in js/stadium.js, the pictures and their sources are in
   assets/stadium/, and tools/make_stadium_art.py rebuilds them.
 - index-1080x1920.html 1080 x 1920 all-in-one (board, ticker, takeover, animations)
 The control panel lists every link with its size and a Copy button.
